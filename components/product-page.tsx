@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, Download, Eye, Heart, Share2, MessageCircle, Shield, Zap, ArrowLeft } from "lucide-react"
+import { Star, Download, Eye, Heart, Share2, MessageCircle, Shield, Zap, ArrowLeft, ShoppingCart, Check } from "lucide-react"
+import { useCart, type CartProduct } from "@/hooks/use-cart"
+import { mockDb } from "@/lib/mock-db"
+import { toast } from "sonner"
 
 interface ProductPageProps {
   product: any
@@ -15,6 +18,58 @@ interface ProductPageProps {
 
 export function ProductPage({ product, onNavigate }: ProductPageProps) {
   const [selectedLicense, setSelectedLicense] = useState("standard")
+  const { addToCart, isInCart } = useCart()
+  const [reviews, setReviews] = useState<any[]>([])
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" })
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+
+  useEffect(() => {
+    if (product) {
+      // 1. Fetch Reviews
+      const productReviews = mockDb.getReviewsByProduct(product.id)
+
+      if (productReviews.length > 0) {
+        const mappedReviews = productReviews.map(r => ({
+          id: r.id,
+          user: mockDb.getUser(r.user_id)?.full_name || "Anonymous User",
+          rating: r.rating,
+          comment: r.content || "No comment provided.",
+          date: new Date(r.created_at).toLocaleDateString(),
+          helpful: r.helpful_count || 0
+        }))
+        setReviews(mappedReviews)
+      } else {
+        // Fallback to static if none found (so page doesn't look empty for demo)
+        // But ideally, we want to show "No reviews yet"
+        // For now, let's keep the static ones if database is empty for this product, OR just show empty.
+        // Let's show empty/real behavior to be "functional".
+        setReviews([])
+      }
+    }
+  }, [product, isSubmittingReview])
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmittingReview(true)
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    mockDb.addReview({
+      product_id: product.id,
+      user_id: "current-user-id", // In real app, get from auth context
+      rating: newReview.rating,
+      content: newReview.comment,
+      title: "User Review", // Default title
+      order_id: `ord-mock-${Date.now()}`,
+      is_verified_purchase: true,
+      helpful_count: 0
+    })
+
+    toast.success("Review submitted successfully!")
+    setNewReview({ rating: 5, comment: "" })
+    setIsSubmittingReview(false)
+  }
 
   if (!product) {
     return (
@@ -44,32 +99,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
     },
   ]
 
-  const reviews = [
-    {
-      id: 1,
-      user: "GameDev123",
-      rating: 5,
-      comment: "Amazing quality! Saved me weeks of development time.",
-      date: "2 days ago",
-      helpful: 12,
-    },
-    {
-      id: 2,
-      user: "ScriptMaster",
-      rating: 4,
-      comment: "Great product, well documented. Minor issues with setup but support was helpful.",
-      date: "1 week ago",
-      helpful: 8,
-    },
-    {
-      id: 3,
-      user: "UIDesigner",
-      rating: 5,
-      comment: "Perfect for my project needs. Clean code and excellent design.",
-      date: "2 weeks ago",
-      helpful: 15,
-    },
-  ]
+
 
   const getBadgeColor = (badge: string) => {
     switch (badge) {
@@ -190,7 +220,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
               </TabsContent>
               <TabsContent value="reviews" className="mt-6">
                 <div className="space-y-4">
-                  {reviews.map((review) => (
+                  {reviews.length > 0 ? reviews.map((review) => (
                     <Card
                       key={review.id}
                       className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl"
@@ -207,9 +237,8 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                                 {[...Array(5)].map((_, i) => (
                                   <Star
                                     key={i}
-                                    className={`w-4 h-4 ${
-                                      i < review.rating ? "text-yellow-400 fill-current" : "text-gray-300"
-                                    }`}
+                                    className={`w-4 h-4 ${i < review.rating ? "text-yellow-400 fill-current" : "text-gray-300"
+                                      }`}
                                   />
                                 ))}
                               </div>
@@ -223,8 +252,57 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No reviews yet. Be the first to review this product!
+                    </div>
+                  )}
                 </div>
+
+                {/* Write Review Form */}
+                <Card className="mt-8 border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Write a Review</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleSubmitReview} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Rating</label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setNewReview(prev => ({ ...prev, rating: star }))}
+                              className={`p-1 hover:scale-110 transition-transform ${star <= newReview.rating ? "text-yellow-400 fill-current" : "text-gray-300"
+                                }`}
+                            >
+                              <Star className={`w-6 h-6 ${star <= newReview.rating ? "fill-current" : ""}`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Comment</label>
+                        <textarea
+                          className="w-full p-3 rounded-xl border border-input bg-background"
+                          rows={4}
+                          placeholder="Share your thoughts..."
+                          value={newReview.comment}
+                          onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+                          required
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={isSubmittingReview}
+                        className="bg-gradient-to-r from-ambient-500 to-ambient-600 text-white rounded-xl"
+                      >
+                        {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="creator" className="mt-6">
                 <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
@@ -265,11 +343,10 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                   {licenses.map((license) => (
                     <div
                       key={license.id}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                        selectedLicense === license.id
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50"
-                          : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-                      }`}
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedLicense === license.id
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50"
+                        : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                        }`}
                       onClick={() => setSelectedLicense(license.id)}
                     >
                       <div className="flex justify-between items-start mb-2">
@@ -287,17 +364,78 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
 
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 rounded-2xl shadow-lg shadow-ambient-500/25 text-white"
+                    onClick={() => {
+                      const selectedPrice = licenses.find((l) => l.id === selectedLicense)?.price || product.price
+                      const cartProduct: CartProduct = {
+                        id: String(product.id),
+                        title: `${product.title} (${licenses.find((l) => l.id === selectedLicense)?.name})`,
+                        price: selectedPrice,
+                        thumbnail_url: product.thumbnail,
+                        creator: product.creator,
+                        creator_id: String(product.id),
+                      }
+                      addToCart(cartProduct)
+                      if (!isInCart(String(product.id))) {
+                        // Optional: Navigate to cart or show success toast
+                      }
+                    }}
+                    className={`w-full mb-3 rounded-2xl shadow-lg transition-all duration-300 ${isInCart(String(product.id))
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : "bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white shadow-ambient-500/25"
+                      }`}
                   >
-                    Buy Now - ${licenses.find((l) => l.id === selectedLicense)?.price}
+                    {isInCart(String(product.id)) ? (
+                      <>
+                        <Check className="w-5 h-5 mr-2" />
+                        Added to Cart
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Add to Cart - ${licenses.find((l) => l.id === selectedLicense)?.price}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (!isInCart(String(product.id))) {
+                        const selectedPrice = licenses.find((l) => l.id === selectedLicense)?.price || product.price
+                        const cartProduct: CartProduct = {
+                          id: String(product.id),
+                          title: `${product.title} (${licenses.find((l) => l.id === selectedLicense)?.name})`,
+                          price: selectedPrice,
+                          thumbnail_url: product.thumbnail,
+                          creator: product.creator,
+                          creator_id: String(product.id),
+                        }
+                        addToCart(cartProduct)
+                      }
+                      onNavigate("checkout")
+                    }}
+                    className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 rounded-2xl mb-4"
+                  >
+                    Buy Now
                   </Button>
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => toast.success("Added to Wishlist!")}
+                    >
                       <Heart className="w-4 h-4 mr-2" />
                       Save
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href)
+                        toast.success("Link copied to clipboard!")
+                      }}
+                    >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
                     </Button>
@@ -306,6 +444,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                   <Button
                     variant="outline"
                     className="w-full border-ambient-200 text-ambient-600 hover:bg-ambient-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950"
+                    onClick={() => toast.success("Customization request sent to creator!")}
                   >
                     Request Customization
                   </Button>
@@ -324,7 +463,12 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                       <p className="text-sm text-slate-600 dark:text-slate-300">Verified Creator</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => toast.info("Creator profile view coming soon!")}
+                  >
                     View Profile
                   </Button>
                 </CardContent>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,97 +18,172 @@ import {
   Edit,
   Trash2,
   ArrowLeft,
+  Upload,
 } from "lucide-react"
+
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useAuth } from "@/hooks/use-auth"
+import { mockDb } from "@/lib/mock-db"
+import { Product } from "@/lib/supabase"
+import { toast } from "sonner"
 
 interface CreatorDashboardProps {
   onNavigate: (page: string) => void
 }
 
 export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
+  const { user, profile } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false)
+  const [newProduct, setNewProduct] = useState({
+    title: "",
+    price: "",
+    description: "",
+    category: "ui",
+  })
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+
+  const [products, setProducts] = useState<Product[]>([])
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+
+  useEffect(() => {
+    const refreshData = () => {
+      if (user) {
+        const allProducts = mockDb.getProducts()
+        const myProducts = allProducts.filter(p => p.creator_id === user.id)
+        setProducts(myProducts)
+      }
+    }
+
+    refreshData()
+    return mockDb.subscribe(refreshData)
+  }, [user])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setUploadedImage(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleSaveProduct = () => {
+    if (!user) return
+
+    const price = Number.parseFloat(newProduct.price) || 0
+
+    if (editingProduct) {
+      mockDb.updateProduct(editingProduct.id, {
+        title: newProduct.title,
+        description: newProduct.description,
+        price: price,
+        category_id: newProduct.category,
+        thumbnail_url: uploadedImage || editingProduct.thumbnail_url,
+        updated_at: new Date().toISOString()
+      })
+      toast.success("Product updated successfully")
+    } else {
+      // @ts-ignore - Partial product construction
+      const productData: Partial<Product> = {
+        title: newProduct.title,
+        description: newProduct.description,
+        price: price,
+        category_id: newProduct.category,
+        creator_id: user.id,
+        status: "pending",
+        tags: [newProduct.category, "new"],
+        thumbnail_url: uploadedImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
+      }
+      mockDb.addProduct(productData)
+      toast.success("Product submitted for review!")
+    }
+
+
+    setIsAddProductOpen(false)
+    setEditingProduct(null)
+    setNewProduct({ title: "", price: "", description: "", category: "ui" })
+    setUploadedImage(null)
+    setActiveTab("products")
+  }
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product)
+    setNewProduct({
+      title: product.title,
+      price: product.price.toString(),
+      description: product.description || "",
+      category: product.category_id || "ui"
+    })
+    setIsAddProductOpen(true)
+    setUploadedImage(product.thumbnail_url || null)
+  }
+
+  const handleDeleteProduct = (productId: string) => {
+    mockDb.deleteProduct(productId)
+    toast.success("Product deleted")
+  }
+
+  // Calculate dynamic stats
+  const totalEarnings = products.reduce((acc, p) => acc + ((p.sales_count || 0) * p.price), 0)
+  const totalSales = products.reduce((acc, p) => acc + (p.sales_count || 0), 0)
+  const totalViews = products.reduce((acc, p) => acc + (p.views || 0), 0)
+  const avgRating = products.length > 0
+    ? (products.reduce((acc, p) => acc + (p.rating || 0), 0) / products.length).toFixed(1)
+    : "0.0"
 
   const stats = [
     {
       title: "Total Earnings",
-      value: "$2,847.50",
-      change: "+12.5%",
+      value: `$${totalEarnings.toFixed(2)}`,
+      change: "+0%", // Placeholder for real trend
       icon: DollarSign,
       color: "text-green-600",
     },
     {
       title: "Products Listed",
-      value: "23",
-      change: "+2",
+      value: products.length.toString(),
+      change: "+0",
       icon: Package,
       color: "text-blue-600",
     },
     {
       title: "Total Views",
-      value: "45,231",
-      change: "+8.2%",
+      value: totalViews.toLocaleString(),
+      change: "+0%",
       icon: Eye,
       color: "text-purple-600",
     },
     {
       title: "Average Rating",
-      value: "4.8",
-      change: "+0.1",
+      value: avgRating,
+      change: "0.0",
       icon: Star,
       color: "text-yellow-600",
     },
   ]
 
-  const products = [
-    {
-      id: 1,
-      title: "Modern Admin Panel UI",
-      status: "approved",
-      price: 15.99,
-      sales: 45,
-      revenue: 719.55,
-      views: 2500,
-      rating: 4.8,
-      reviews: 124,
-      dateSubmitted: "2024-01-15",
-    },
-    {
-      id: 2,
-      title: "RPG Combat System",
-      status: "pending",
-      price: 29.99,
-      sales: 0,
-      revenue: 0,
-      views: 0,
-      rating: 0,
-      reviews: 0,
-      dateSubmitted: "2024-01-20",
-    },
-    {
-      id: 3,
-      title: "Inventory System Pro",
-      status: "approved",
-      price: 19.99,
-      sales: 38,
-      revenue: 759.62,
-      views: 2100,
-      rating: 4.6,
-      reviews: 203,
-      dateSubmitted: "2024-01-10",
-    },
-    {
-      id: 4,
-      title: "Chat Filter Script",
-      status: "rejected",
-      price: 12.99,
-      sales: 0,
-      revenue: 0,
-      views: 0,
-      rating: 0,
-      reviews: 0,
-      dateSubmitted: "2024-01-18",
-    },
-  ]
-
+  // Placeholder recent orders logic (since we don't have per-order tracking fully linked to creator view in mockDb yet)
   const recentOrders = [
     {
       id: 1,
@@ -117,23 +192,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
       amount: 15.99,
       date: "2024-01-21",
       license: "Standard",
-    },
-    {
-      id: 2,
-      product: "Inventory System Pro",
-      buyer: "ScriptMaster",
-      amount: 49.98,
-      date: "2024-01-20",
-      license: "Extended",
-    },
-    {
-      id: 3,
-      product: "Modern Admin Panel UI",
-      buyer: "UIDesigner",
-      amount: 15.99,
-      date: "2024-01-19",
-      license: "Standard",
-    },
+    }
   ]
 
   const getStatusColor = (status: string) => {
@@ -187,10 +246,116 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
             </h1>
             <p className="text-muted-foreground">Manage your products and track your performance</p>
           </div>
-          <Button className="mt-4 md:mt-0 bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl shadow-lg shadow-ambient-500/25">
-            <Plus className="w-4 h-4 mr-2" />
-            Submit New Product
-          </Button>
+          <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+            <DialogTrigger asChild>
+              <Button className="mt-4 md:mt-0 bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl shadow-lg shadow-ambient-500/25">
+                <Plus className="w-4 h-4 mr-2" />
+                Submit New Product
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] rounded-2xl">
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? "Edit Product" : "Submit New Product"}</DialogTitle>
+                <DialogDescription>
+                  {editingProduct ? "Update your product details." : "Create a new product to list on the marketplace."}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="title">Product Title</Label>
+                  <Input
+                    id="title"
+                    value={newProduct.title}
+                    onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
+                    placeholder="e.g., Ultimate UI Kit"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={newProduct.category}
+                    onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
+                  >
+                    <SelectTrigger className="rounded-xl">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ui">UI Kits</SelectItem>
+                      <SelectItem value="templates">Templates</SelectItem>
+                      <SelectItem value="games">Full Games</SelectItem>
+                      <SelectItem value="scripts">Scripts</SelectItem>
+                      <SelectItem value="models">3D Models</SelectItem>
+                      <SelectItem value="audio">Audio</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Price ($)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                    placeholder="0.00"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newProduct.description}
+                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                    placeholder="Describe your product..."
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="image">Product Image</Label>
+                  <div className="flex items-center gap-4">
+                    {uploadedImage ? (
+                      <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-border/50 shadow-sm">
+                        <img src={uploadedImage} alt="Preview" className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setUploadedImage(null)}
+                          className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                        >
+                          <XCircle className="w-6 h-6 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-xl border-2 border-dashed border-ambient-200 dark:border-ambient-800 flex items-center justify-center bg-ambient-50/50 dark:bg-ambient-900/20">
+                        <Upload className="w-6 h-6 text-ambient-400" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <Input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="rounded-xl"
+                      />
+                      <p className="text-[10px] text-muted-foreground mt-1">Recommended: 800x600px. Max: 2MB.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => {
+                  setIsAddProductOpen(false)
+                  setEditingProduct(null)
+                  setNewProduct({ title: "", price: "", description: "", category: "ui" })
+                }} className="rounded-xl">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveProduct} className="bg-gradient-to-r from-ambient-500 to-ambient-600 text-white rounded-xl">
+                  {editingProduct ? "Save Changes" : "Create Product"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Stats Cards */}
@@ -232,27 +397,18 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     Recent Orders
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toast.info("Full order history coming soon!")}
+                    >
                       View All
                     </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentOrders.map((order) => (
-                      <div key={order.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
-                        <div>
-                          <p className="font-medium">{order.product}</p>
-                          <p className="text-sm text-muted-foreground">
-                            by {order.buyer} • {order.license}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{order.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-green-600">${order.amount}</p>
-                        </div>
-                      </div>
-                    ))}
+                    <div className="text-slate-500 text-center py-4">No recent orders (simulation pending)</div>
                   </div>
                 </CardContent>
               </Card>
@@ -271,20 +427,6 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                       </div>
                       <Progress value={83} className="h-2" />
                     </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Views</span>
-                        <span>67 / 100</span>
-                      </div>
-                      <Progress value={67} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Rating</span>
-                        <span>96 / 100</span>
-                      </div>
-                      <Progress value={96} className="h-2" />
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -298,47 +440,56 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {products.map((product) => (
-                    <div
-                      key={product.id}
-                      className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="font-semibold">{product.title}</h3>
-                          <Badge className={getStatusColor(product.status)}>
-                            {getStatusIcon(product.status)}
-                            <span className="ml-1 capitalize">{product.status}</span>
-                          </Badge>
+                  {products.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">You have no products listed. Create one!</div>
+                  ) : (
+                    products.map((product) => (
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="font-semibold">{product.title}</h3>
+                            <Badge className={getStatusColor(product.status)}>
+                              {getStatusIcon(product.status)}
+                              <span className="ml-1 capitalize">{product.status}</span>
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm text-muted-foreground">
+                            <div>
+                              <span className="font-medium">Price:</span> ${product.price}
+                            </div>
+                            <div>
+                              <span className="font-medium">Sales:</span> {product.sales_count}
+                            </div>
+                            <div>
+                              <span className="font-medium">Revenue:</span> ${(product.sales_count || 0) * product.price}
+                            </div>
+                            <div>
+                              <span className="font-medium">Views:</span> {product.views}
+                            </div>
+                            <div>
+                              <span className="font-medium">Rating:</span> {product.rating || "N/A"}
+                            </div>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm text-muted-foreground">
-                          <div>
-                            <span className="font-medium">Price:</span> ${product.price}
-                          </div>
-                          <div>
-                            <span className="font-medium">Sales:</span> {product.sales}
-                          </div>
-                          <div>
-                            <span className="font-medium">Revenue:</span> ${product.revenue}
-                          </div>
-                          <div>
-                            <span className="font-medium">Views:</span> {product.views}
-                          </div>
-                          <div>
-                            <span className="font-medium">Rating:</span> {product.rating || "N/A"}
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <Button variant="ghost" size="sm" onClick={() => handleEditProduct(product)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                            onClick={() => handleDeleteProduct(product.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -351,24 +502,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentOrders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl"
-                    >
-                      <div>
-                        <h3 className="font-semibold">{order.product}</h3>
-                        <p className="text-sm text-muted-foreground">Purchased by {order.buyer}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {order.date} • {order.license} License
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-green-600">${order.amount}</p>
-                        <p className="text-xs text-muted-foreground">You earned: ${(order.amount * 0.9).toFixed(2)}</p>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="text-center py-8 text-muted-foreground">No orders found.</div>
                 </div>
               </CardContent>
             </Card>
@@ -389,7 +523,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                           <div>
                             <p className="font-medium">{product.title}</p>
                             <p className="text-sm text-muted-foreground">
-                              {product.sales} sales • ${product.revenue}
+                              {product.sales_count} sales • ${(product.sales_count || 0) * product.price}
                             </p>
                           </div>
                           <Badge variant="secondary">#{index + 1}</Badge>
@@ -407,21 +541,15 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>Total Revenue</span>
-                      <span className="font-semibold">$2,847.50</span>
+                      <span className="font-semibold">${totalEarnings.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Platform Fee (10%)</span>
-                      <span className="text-red-600">-$284.75</span>
+                      <span className="text-red-600">-${(totalEarnings * 0.1).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Your Earnings (90%)</span>
-                      <span className="font-semibold text-green-600">$2,562.75</span>
-                    </div>
-                    <div className="pt-4 border-t">
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold">Next Payout</span>
-                        <span className="font-semibold">Jan 31, 2024</span>
-                      </div>
+                      <span className="font-semibold text-green-600">${(totalEarnings * 0.9).toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>

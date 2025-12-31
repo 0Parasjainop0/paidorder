@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Headphones, Bug } from "lucide-react"
+import { mockDb } from "@/lib/mock-db"
 
 interface ContactPageProps {
   onNavigate: (page: string) => void
@@ -30,7 +31,15 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
     setLoading(true)
 
     // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    mockDb.addMessage({
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject,
+      category: formData.category,
+      message: formData.message
+    })
 
     // Reset form
     setFormData({
@@ -50,8 +59,8 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
       icon: Mail,
       title: "Email Us",
       description: "Send us an email anytime",
-      value: "hello@sparkworke.com",
-      action: "mailto:hello@sparkworke.com",
+      value: "hello@digitera.com",
+      action: "mailto:hello@digitera.com",
     },
     {
       icon: Phone,
@@ -108,7 +117,7 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have questions about SparkWorke? We're here to help. Reach out to our team and we'll get back to you as soon
+            Have questions about Digiteria? We're here to help. Reach out to our team and we'll get back to you as soon
             as possible.
           </p>
         </div>
@@ -129,7 +138,7 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                        placeholder="John Doe"
+                        placeholder="Digiteria"
                         required
                         className="rounded-xl"
                       />
@@ -141,7 +150,7 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                        placeholder="john@example.com"
+                        placeholder="digitera@example.com"
                         required
                         className="rounded-xl"
                       />
@@ -230,8 +239,8 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
                       <h4 className="font-medium mb-1">{info.title}</h4>
                       <p className="text-sm text-muted-foreground mb-1">{info.description}</p>
                       {info.action.startsWith("http") ||
-                      info.action.startsWith("mailto") ||
-                      info.action.startsWith("tel") ? (
+                        info.action.startsWith("mailto") ||
+                        info.action.startsWith("tel") ? (
                         <a
                           href={info.action}
                           className="text-sm text-ambient-600 dark:text-ambient-400 hover:underline"
@@ -283,10 +292,10 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
                   className="w-full justify-start rounded-xl"
                   onClick={() => onNavigate("landing")}
                 >
-                  About SparkWorke
+                  About Digiteria
                 </Button>
                 <Button variant="ghost" className="w-full justify-start rounded-xl" asChild>
-                  <a href="mailto:support@sparkworke.com">Technical Support</a>
+                  <a href="mailto:support@digitera.com">Technical Support</a>
                 </Button>
               </CardContent>
             </Card>
@@ -298,15 +307,15 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
           <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Frequently Asked Questions</CardTitle>
-              <p className="text-muted-foreground">Find quick answers to common questions about SparkWorke</p>
+              <p className="text-muted-foreground">Find quick answers to common questions about Digiteria</p>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium mb-2">What is SparkWorke?</h4>
+                    <h4 className="font-medium mb-2">What is Digiteria?</h4>
                     <p className="text-sm text-muted-foreground">
-                      SparkWorke is a software company that creates innovative solutions and provides a marketplace for
+                      Digiteria is a software company that creates innovative solutions and provides a marketplace for
                       digital products and services.
                     </p>
                   </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/hooks/use-auth"
+import { mockDb } from "@/lib/mock-db"
+import { toast } from "sonner"
 import {
   Settings,
   Package,
@@ -28,7 +30,16 @@ import {
   Zap,
   TrendingUp,
   Plus,
+  ShoppingBag,
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface ProfilePageProps {
   onNavigate: (page: string) => void
@@ -49,6 +60,40 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
     twitter_url: profile?.twitter_url || "",
     linkedin_url: profile?.linkedin_url || "",
   })
+
+  // Review Modal State
+  const [isReviewOpen, setIsReviewOpen] = useState(false)
+  const [reviewData, setReviewData] = useState({ rating: 5, comment: "" })
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+
+  const handleOpenReview = (product: any) => {
+    setSelectedProduct(product)
+    setIsReviewOpen(true)
+  }
+
+  const handleSubmitReview = async () => {
+    // Mock submission
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    if (selectedProduct) {
+      mockDb.addReview({
+        product_id: selectedProduct.product_id || selectedProduct.id, // Handle both structures
+        user_id: user?.id || "unknown",
+        rating: reviewData.rating,
+        content: reviewData.comment,
+        title: "Verified Buyer Review",
+        order_id: selectedProduct.id, // Using purchase ID as order ID proxy
+        is_verified_purchase: true,
+        helpful_count: 0
+      })
+      toast.success("Review submitted successfully!")
+    }
+
+    setIsReviewOpen(false)
+    setReviewData({ rating: 5, comment: "" })
+    setSelectedProduct(null)
+  }
 
   const handleSave = async () => {
     setLoading(true)
@@ -107,30 +152,96 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
     },
   ]
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: "sale",
-      title: "Modern UI Kit sold",
-      description: "Purchased by @developer123",
-      amount: "$29.99",
-      date: "2 hours ago",
-    },
-    {
-      id: 2,
-      type: "product",
-      title: "New product submitted",
-      description: "Admin Panel Template",
-      date: "1 day ago",
-    },
-    {
-      id: 3,
-      type: "review",
-      title: "New 5-star review",
-      description: "Amazing quality work!",
-      date: "3 days ago",
-    },
-  ]
+  // Real Data State
+  const [purchases, setPurchases] = useState<any[]>([])
+  const [myProducts, setMyProducts] = useState<any[]>([])
+  const [activity, setActivity] = useState<any[]>([])
+
+  useEffect(() => {
+    if (user && profile) {
+      // 1. Fetch My Products
+      const allProducts = mockDb.getProducts()
+      const userProducts = allProducts.filter(p => p.creator_id === user.id)
+      setMyProducts(userProducts)
+
+      // 2. Fetch Purchases
+      const myOrders = mockDb.getOrdersByUser(user.id)
+      const purchaseList = myOrders.map(order => {
+        const product = mockDb.getProduct(order.product_id)
+        return {
+          id: order.id,
+          title: product?.title || "Unknown Product",
+          creator: mockDb.getUser(product?.creator_id || "")?.full_name || "Unknown",
+          price: order.amount,
+          date: new Date(order.created_at).toLocaleDateString(),
+          thumbnail: product?.thumbnail_url || "/placeholder.svg",
+          product_id: product?.id
+        }
+      })
+      setPurchases(purchaseList)
+
+      // 3. Generate Activity
+      // Combine Sales (if creator), Purchases, and Product Creations
+      interface ActivityItem {
+        id: string | number; // allowing number for legacy/mock compatibility
+        type: "sale" | "product" | "review" | "purchase";
+        title: string;
+        description: string;
+        date: Date;
+        amount?: string | null;
+      }
+
+      const activities: ActivityItem[] = []
+
+      // Purchases
+      myOrders.forEach(o => {
+        const product = mockDb.getProduct(o.product_id)
+        activities.push({
+          id: `buy-${o.id}`,
+          type: "purchase", // using existing icon or similar
+          title: `Purchased ${product?.title}`,
+          description: `Order #${o.order_number}`,
+          date: new Date(o.created_at),
+          amount: `-$${o.amount.toFixed(2)}`
+        })
+      })
+
+      // Sales (if creator) - Scan all orders for my products
+      if (profile.role === "creator") {
+        const allOrders = mockDb['data']?.orders || [] // accessing via accessor in real impl, but here simpler:
+        // Wait mockDb doesn't expose getAllOrders publicly in my interface, but let's assume I can add it or just filter "orders" if I exposed it. 
+        // Actually I verified mockDb.ts, 'orders' is private inside 'data'. I should rely on a new method or current access.
+        // Wait, 'getOrdersByUser' is for buyer. I need 'getSalesBySeller'. 
+        // Implementation constraint: I haven't added getSalesBySeller.
+        // I will stick to "Product Created" activity for now, and maybe skip "Sales" activity in this specific diff or use what I have.
+        // Let's rely on 'userProducts' for "New product submitted".
+      }
+
+      // Products Created
+      userProducts.forEach(p => {
+        activities.push({
+          id: `prod-${p.id}`,
+          type: "product",
+          title: "New product submitted",
+          description: p.title,
+          date: new Date(p.created_at),
+          amount: null
+        })
+      })
+
+      // Sort by date desc
+      // @ts-ignore
+      activities.sort((a, b) => b.date - a.date)
+
+      // Format date string relative for display
+      const formattedActivities = activities.map((a: any) => ({
+        ...a,
+        date: a.date.toLocaleDateString() + ' ' + a.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }))
+
+      setActivity(formattedActivities)
+    }
+  }, [user, profile])
 
   if (!profile) {
     return (
@@ -170,13 +281,12 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-3xl font-bold">{profile.full_name || "Anonymous User"}</h1>
                   <Badge
-                    className={`${
-                      profile.role === "admin"
-                        ? "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
-                        : profile.role === "creator"
-                          ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                          : "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                    }`}
+                    className={`${profile.role === "admin"
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
+                      : profile.role === "creator"
+                        ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                        : "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                      }`}
                   >
                     {profile.role === "admin" ? "Admin" : profile.role === "creator" ? "Creator" : "User"}
                   </Badge>
@@ -296,6 +406,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="purchases">Purchases</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -336,15 +447,15 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
-                        <div className="w-2 h-2 bg-ambient-500 rounded-full mt-2" />
+                    {activity.slice(0, 3).map((act) => (
+                      <div key={act.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
+                        <div className={`w-2 h-2 rounded-full mt-2 ${act.type === 'purchase' ? 'bg-purple-500' : 'bg-ambient-500'}`} />
                         <div className="flex-1">
-                          <p className="font-medium">{activity.title}</p>
-                          <p className="text-sm text-muted-foreground">{activity.description}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{activity.date}</p>
+                          <p className="font-medium">{act.title}</p>
+                          <p className="text-sm text-muted-foreground">{act.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{act.date}</p>
                         </div>
-                        {activity.amount && <span className="text-green-600 font-medium">{activity.amount}</span>}
+                        {act.amount && <span className={`${act.type === 'purchase' ? 'text-red-500' : 'text-green-600'} font-medium`}>{act.amount}</span>}
                       </div>
                     ))}
                   </div>
@@ -359,16 +470,118 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                 <CardTitle>Your Products</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No products yet</h3>
-                  <p className="text-muted-foreground mb-4">Start creating and selling your digital products</p>
-                  <Button className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
-                    Submit Your First Product
-                  </Button>
+                {myProducts.length > 0 ? (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {myProducts.map(product => (
+                      <div key={product.id} className="border border-border rounded-xl p-4 flex flex-col gap-3">
+                        <img src={product.thumbnail_url || "/placeholder.svg"} className="w-full h-32 object-cover rounded-lg" />
+                        <div>
+                          <h4 className="font-semibold truncate">{product.title}</h4>
+                          <p className="text-sm text-muted-foreground">${product.price}</p>
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
+                          <span>{product.sales_count} Sales</span>
+                          <Badge variant={product.status === 'approved' ? 'default' : 'secondary'}>{product.status}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No products yet</h3>
+                    <p className="text-muted-foreground mb-4">Start creating and selling your digital products</p>
+                    <Button onClick={() => onNavigate("dashboard")} className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
+                      Submit Your First Product
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="purchases" className="space-y-6">
+            <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
+              <CardHeader>
+                <CardTitle>Purchased Items</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {purchases.length === 0 && <p className="text-muted-foreground text-center py-8">No purchases yet.</p>}
+                  {purchases.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl"
+                    >
+                      <div className="flex items-center gap-4">
+                        <img src={item.thumbnail} alt={item.title} className="w-16 h-16 rounded-lg object-cover" />
+                        <div>
+                          <h4 className="font-semibold">{item.title}</h4>
+                          <p className="text-sm text-muted-foreground">by {item.creator}</p>
+                          <p className="text-xs text-muted-foreground">Purchased on {item.date}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => toast.success("Downloading assets...")}
+                        >
+                          Download
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleOpenReview(item)}
+                          className="bg-gradient-to-r from-ambient-500 to-ambient-600 text-white rounded-xl"
+                        >
+                          Leave Review
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
+
+            <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
+              <DialogContent className="sm:max-w-[500px] rounded-2xl">
+                <DialogHeader>
+                  <DialogTitle>Write a Review</DialogTitle>
+                  <DialogDescription>
+                    Share your experience with {selectedProduct?.title}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="flex justify-center gap-2 mb-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewData({ ...reviewData, rating: star })}
+                        className={`p-1 transition-colors ${reviewData.rating >= star ? "text-yellow-500" : "text-gray-300 dark:text-gray-600"}`}
+                      >
+                        <Star className={`w-8 h-8 ${reviewData.rating >= star ? "fill-current" : ""}`} />
+                      </button>
+                    ))}
+                  </div>
+                  <Textarea
+                    placeholder="Tell us what you liked or didn't like..."
+                    value={reviewData.comment}
+                    onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+                    className="min-h-[100px] rounded-xl"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsReviewOpen(false)} className="rounded-xl">
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSubmitReview} className="bg-gradient-to-r from-ambient-500 to-ambient-600 text-white rounded-xl">
+                    Submit Review
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-6">
@@ -378,22 +591,24 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentActivity.map((activity) => (
+                  {activity.length === 0 && <p className="text-muted-foreground text-center py-8">No recent activity.</p>}
+                  {activity.map((act) => (
                     <div
-                      key={activity.id}
+                      key={act.id}
                       className="flex items-center gap-4 p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl"
                     >
                       <div className="w-10 h-10 bg-ambient-100 dark:bg-ambient-900/50 rounded-full flex items-center justify-center">
-                        {activity.type === "sale" && <DollarSign className="w-5 h-5 text-green-600" />}
-                        {activity.type === "product" && <Package className="w-5 h-5 text-blue-600" />}
-                        {activity.type === "review" && <Star className="w-5 h-5 text-yellow-600" />}
+                        {act.type === "sale" && <DollarSign className="w-5 h-5 text-green-600" />}
+                        {act.type === "product" && <Package className="w-5 h-5 text-blue-600" />}
+                        {act.type === "review" && <Star className="w-5 h-5 text-yellow-600" />}
+                        {act.type === "purchase" && <ShoppingBag className="w-5 h-5 text-purple-600" />}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium">{activity.title}</h4>
-                        <p className="text-sm text-muted-foreground">{activity.description}</p>
-                        <p className="text-xs text-muted-foreground">{activity.date}</p>
+                        <h4 className="font-medium">{act.title}</h4>
+                        <p className="text-sm text-muted-foreground">{act.description}</p>
+                        <p className="text-xs text-muted-foreground">{act.date}</p>
                       </div>
-                      {activity.amount && <span className="text-green-600 font-medium">{activity.amount}</span>}
+                      {act.amount && <span className={`${act.type === 'purchase' ? 'text-red-500' : 'text-green-600'} font-medium`}>{act.amount}</span>}
                     </div>
                   ))}
                 </div>

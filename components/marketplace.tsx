@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Star, Search, Grid, List, Eye, Download, SlidersHorizontal, Settings } from "lucide-react"
+import { Star, Search, Grid, List, Eye, Download, SlidersHorizontal, Settings, ShoppingCart, Check } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import { mockDb } from "@/lib/mock-db"
+import { useCart, type CartProduct } from "@/hooks/use-cart"
 
 interface MarketplaceProps {
   onNavigate: (page: string) => void
@@ -16,10 +18,24 @@ interface MarketplaceProps {
 
 export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
   const { user, profile } = useAuth()
+  const { addToCart, isInCart } = useCart()
   const [viewMode, setViewMode] = useState("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("trending")
+
+  const handleAddToCart = (product: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const cartProduct: CartProduct = {
+      id: String(product.id),
+      title: product.title,
+      price: product.price,
+      thumbnail_url: product.thumbnail,
+      creator: product.creator,
+      creator_id: String(product.id),
+    }
+    addToCart(cartProduct)
+  }
 
   const categories = [
     { id: "all", label: "All Categories" },
@@ -32,92 +48,37 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
     { id: "audio", label: "Audio" },
   ]
 
-  const products = [
-    {
-      id: 1,
-      title: "Modern Admin Panel UI",
-      creator: "DevMaster",
-      price: 15.99,
-      rating: 4.8,
-      reviews: 124,
-      views: 2500,
-      downloads: 450,
-      category: "ui",
-      badges: ["Verified", "Top Seller"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Complete admin panel UI with modern design and animations",
-    },
-    {
-      id: 2,
-      title: "RPG Combat System",
-      creator: "ScriptWizard",
-      price: 29.99,
-      rating: 4.9,
-      reviews: 89,
-      views: 1800,
-      downloads: 320,
-      category: "scripts",
-      badges: ["Exclusive"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Advanced combat system with skills, leveling, and effects",
-    },
-    {
-      id: 3,
-      title: "Tycoon Game Template",
-      creator: "GameBuilder",
-      price: 49.99,
-      rating: 4.7,
-      reviews: 156,
-      views: 3200,
-      downloads: 280,
-      category: "games",
-      badges: ["Top Pick"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Complete tycoon game with progression system and GUI",
-    },
-    {
-      id: 4,
-      title: "Inventory System Pro",
-      creator: "UIExpert",
-      price: 19.99,
-      rating: 4.6,
-      reviews: 203,
-      views: 2100,
-      downloads: 380,
-      category: "ui",
-      badges: ["Verified"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Advanced inventory system with drag & drop functionality",
-    },
-    {
-      id: 5,
-      title: "Racing Game Kit",
-      creator: "SpeedDev",
-      price: 39.99,
-      rating: 4.8,
-      reviews: 92,
-      views: 1600,
-      downloads: 210,
-      category: "games",
-      badges: ["New"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Complete racing game with tracks, cars, and leaderboards",
-    },
-    {
-      id: 6,
-      title: "Chat System Plus",
-      creator: "CommDev",
-      price: 12.99,
-      rating: 4.5,
-      reviews: 167,
-      views: 1900,
-      downloads: 420,
-      category: "scripts",
-      badges: ["Popular"],
-      thumbnail: "/placeholder.svg?height=200&width=300",
-      description: "Enhanced chat system with filters and moderation tools",
-    },
-  ]
+  const [products, setProducts] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchProducts = () => {
+      const allProducts = mockDb.getProducts()
+      const approvedProducts = allProducts.filter(p => p.status === "approved" || p.status === undefined)
+
+      const mappedProducts = approvedProducts.map(p => {
+        const creatorData = mockDb.getUser(p.creator_id)
+        const creatorName = creatorData?.full_name || "Unknown Creator"
+        return {
+          id: p.id,
+          title: p.title,
+          creator: creatorName,
+          price: p.price,
+          rating: p.rating || 0,
+          reviews: p.review_count || 0,
+          views: p.views || 0,
+          downloads: p.sales_count || 0,
+          category: p.category_id,
+          badges: p.tags?.includes("new") ? ["New"] : [],
+          thumbnail: p.thumbnail_url || "/placeholder.svg?height=200&width=300",
+          description: p.description
+        }
+      })
+      setProducts(mappedProducts)
+    }
+
+    fetchProducts()
+    return mockDb.subscribe(fetchProducts)
+  }, [])
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
@@ -178,7 +139,7 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
               </span>
             </h1>
             <p className="text-muted-foreground text-lg">
-              Discover premium digital products created by the SparkWorke community
+              Discover premium digital products created by the Digiteria community
             </p>
           </div>
 
@@ -243,9 +204,8 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className={`rounded-l-xl rounded-r-none ${
-                    viewMode === "grid" ? "bg-ambient-500 hover:bg-ambient-600 text-white" : "hover:bg-muted/50"
-                  }`}
+                  className={`rounded-l-xl rounded-r-none ${viewMode === "grid" ? "bg-ambient-500 hover:bg-ambient-600 text-white" : "hover:bg-muted/50"
+                    }`}
                 >
                   <Grid className="w-4 h-4" />
                 </Button>
@@ -253,9 +213,8 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className={`rounded-r-xl rounded-l-none ${
-                    viewMode === "list" ? "bg-ambient-500 hover:bg-ambient-600 text-white" : "hover:bg-muted/50"
-                  }`}
+                  className={`rounded-r-xl rounded-l-none ${viewMode === "list" ? "bg-ambient-500 hover:bg-ambient-600 text-white" : "hover:bg-muted/50"
+                    }`}
                 >
                   <List className="w-4 h-4" />
                 </Button>
@@ -302,7 +261,7 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                   <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-                    {product.badges.map((badge, index) => (
+                    {product.badges.map((badge: string, index: number) => (
                       <Badge key={index} className={`text-xs rounded-full ${getBadgeColor(badge)}`}>
                         {badge}
                       </Badge>
@@ -318,7 +277,7 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
                   </h3>
                   <p className="text-sm text-muted-foreground mb-2">by {product.creator}</p>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
                       <span className="text-sm font-medium">{product.rating}</span>
@@ -335,6 +294,25 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
                       </div>
                     </div>
                   </div>
+                  <Button
+                    onClick={(e) => handleAddToCart(product, e)}
+                    className={`w-full rounded-xl transition-all duration-300 ${isInCart(String(product.id))
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : "bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white"
+                      }`}
+                  >
+                    {isInCart(String(product.id)) ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Added to Cart
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Add to Cart
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>

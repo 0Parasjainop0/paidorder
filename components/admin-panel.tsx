@@ -1,121 +1,128 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, XCircle, Clock, Eye, Flag, Users, Package, DollarSign, Search, Filter } from "lucide-react"
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  Flag,
+  Users,
+  Package,
+  DollarSign,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Upload
+} from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { mockDb, SellerApplication } from "@/lib/mock-db"
+import { Product, Profile } from "@/lib/supabase"
+import { toast } from "sonner"
 
 interface AdminPanelProps {
   onNavigate: (page: string) => void
+  onSelectProduct: (product: any) => void
 }
 
-export function AdminPanel({ onNavigate }: AdminPanelProps) {
+export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState("pending")
   const [searchQuery, setSearchQuery] = useState("")
+  const [products, setProducts] = useState<Product[]>([])
+  const [users, setUsers] = useState<Profile[]>([])
+  const [applications, setApplications] = useState<SellerApplication[]>([])
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [editForm, setEditForm] = useState({
+    title: "",
+    price: "",
+    description: "",
+    category: "",
+    status: ""
+  })
 
-  const adminStats = [
-    {
-      title: "Pending Reviews",
-      value: "12",
-      icon: Clock,
-      color: "text-yellow-600",
-    },
-    {
-      title: "Total Products",
-      value: "1,247",
-      icon: Package,
-      color: "text-blue-600",
-    },
-    {
-      title: "Active Creators",
-      value: "2,500",
-      icon: Users,
-      color: "text-green-600",
-    },
-    {
-      title: "Monthly Revenue",
-      value: "$45.2K",
-      icon: DollarSign,
-      color: "text-purple-600",
-    },
-  ]
+  useEffect(() => {
+    const refreshData = () => {
+      setProducts(mockDb.getProducts())
+      setUsers(mockDb.getUsers())
+      setApplications(mockDb.getApplications())
+    }
 
-  const pendingProducts = [
-    {
-      id: 1,
-      title: "Advanced Trading System",
-      creator: "TradeMaster",
-      category: "Scripts",
-      price: 34.99,
-      submittedDate: "2024-01-20",
-      description: "Complete trading system with GUI and database integration",
-      files: ["TradingSystem.lua", "TradingGUI.rbxm", "Documentation.pdf"],
-      status: "pending",
-    },
-    {
-      id: 2,
-      title: "Neon UI Kit",
-      creator: "NeonDesigner",
-      category: "UI",
-      price: 19.99,
-      submittedDate: "2024-01-19",
-      description: "Modern neon-themed UI components with animations",
-      files: ["NeonUI.rbxm", "ColorSchemes.lua", "Examples.rbxl"],
-      status: "pending",
-    },
-    {
-      id: 3,
-      title: "Battle Royale Template",
-      creator: "GameStudio",
-      category: "Games",
-      price: 89.99,
-      submittedDate: "2024-01-18",
-      description: "Complete battle royale game template with lobby system",
-      files: ["BattleRoyale.rbxl", "ServerScripts.zip", "Assets.zip"],
-      status: "pending",
-    },
-  ]
+    refreshData()
+    return mockDb.subscribe(refreshData)
+  }, [activeTab])
 
-  const recentActions = [
-    {
-      id: 1,
-      action: "Approved",
-      product: "Modern Admin Panel UI",
-      creator: "DevMaster",
-      admin: "AdminUser",
-      date: "2024-01-21",
-    },
-    {
-      id: 2,
-      action: "Rejected",
-      product: "Basic Chat Filter",
-      creator: "NewDev",
-      admin: "AdminUser",
-      date: "2024-01-21",
-    },
-    {
-      id: 3,
-      action: "Approved",
-      product: "RPG Combat System",
-      creator: "ScriptWizard",
-      admin: "AdminUser2",
-      date: "2024-01-20",
-    },
-  ]
+  const pendingProducts = products.filter(p => p.status === "pending")
 
-  const handleApprove = (productId: number) => {
-    console.log(`Approved product ${productId}`)
-    // In a real app, this would make an API call
+  const handleProductAction = (productId: string, action: "approved" | "rejected") => {
+    mockDb.updateProduct(productId, { status: action })
+    toast.success(`Product ${action} successfully`)
   }
 
-  const handleReject = (productId: number) => {
-    console.log(`Rejected product ${productId}`)
-    // In a real app, this would make an API call
+  const handleApplicationAction = (appId: string, action: "approved" | "rejected") => {
+    mockDb.updateApplicationStatus(appId, action)
+    toast.success(`Application ${action}`)
   }
+
+  const handleDeleteProduct = (productId: string) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      mockDb.deleteProduct(productId)
+      toast.success("Product deleted successfully")
+    }
+  }
+
+  const handleEditClick = (product: Product) => {
+    setEditingProduct(product)
+    setEditForm({
+      title: product.title,
+      price: product.price.toString(),
+      description: product.description || "",
+      category: product.category_id || "",
+      status: product.status
+    })
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateProduct = () => {
+    if (!editingProduct) return
+
+    mockDb.updateProduct(editingProduct.id, {
+      title: editForm.title,
+      price: parseFloat(editForm.price),
+      description: editForm.description,
+      category_id: editForm.category,
+      status: editForm.status as any,
+      updated_at: new Date().toISOString()
+    })
+
+    toast.success("Product updated successfully")
+    setIsEditModalOpen(false)
+  }
+
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,31 +146,74 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
           <p className="text-slate-600 dark:text-slate-300">Manage product submissions and platform oversight</p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - calculated from real data */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {adminStats.map((stat, index) => (
-            <Card key={index} className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900/50">
-                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                  </div>
+          <Card className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Pending Products</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{pendingProducts.length}</p>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+                <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900/50">
+                  <Clock className="w-6 h-6 text-yellow-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Products</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{products.length}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900/50">
+                  <Package className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Active Creators</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {users.filter(u => u.role === 'creator').length}
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900/50">
+                  <Users className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">System Users</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{users.length}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900/50">
+                  <DollarSign className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="pending">Pending Reviews</TabsTrigger>
-            <TabsTrigger value="approved">Approved</TabsTrigger>
-            <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="pending">Reviews</TabsTrigger>
+            <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="sellers">Sellers</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -191,165 +241,190 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {pendingProducts.map((product) => (
-                    <div
-                      key={product.id}
-                      className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl p-6"
-                    >
-                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-3">
-                            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{product.title}</h3>
-                            <Badge className={getStatusColor(product.status)}>
-                              <Clock className="w-3 h-3 mr-1" />
-                              Pending
-                            </Badge>
-                          </div>
-
-                          <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm">
-                            <div>
-                              <span className="font-medium text-slate-600 dark:text-slate-300">Creator:</span>
-                              <span className="ml-2 text-slate-900 dark:text-white">{product.creator}</span>
-                            </div>
-                            <div>
-                              <span className="font-medium text-slate-600 dark:text-slate-300">Category:</span>
-                              <span className="ml-2 text-slate-900 dark:text-white">{product.category}</span>
-                            </div>
-                            <div>
-                              <span className="font-medium text-slate-600 dark:text-slate-300">Price:</span>
-                              <span className="ml-2 text-slate-900 dark:text-white">${product.price}</span>
-                            </div>
-                            <div>
-                              <span className="font-medium text-slate-600 dark:text-slate-300">Submitted:</span>
-                              <span className="ml-2 text-slate-900 dark:text-white">{product.submittedDate}</span>
-                            </div>
-                          </div>
-
-                          <p className="text-slate-700 dark:text-slate-300 mb-4">{product.description}</p>
-
-                          <div className="mb-4">
-                            <h4 className="font-medium text-slate-900 dark:text-white mb-2">Files Included:</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {product.files.map((file, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {file}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col space-y-3 lg:w-48">
-                          <Button size="sm" variant="outline" className="w-full shadow-md rounded-2xl">
-                            <Eye className="w-4 h-4 mr-2" />
-                            Preview Files
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleApprove(product.id)}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md rounded-2xl"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleReject(product.id)}
-                            className="w-full shadow-md rounded-2xl"
-                          >
-                            <XCircle className="w-4 h-4 mr-2" />
-                            Reject
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950 shadow-md rounded-2xl"
-                          >
-                            <Flag className="w-4 h-4 mr-2" />
-                            Flag Issues
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Admin Notes Section */}
-                      <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                        <h4 className="font-medium text-slate-900 dark:text-white mb-2">Admin Notes:</h4>
-                        <Textarea
-                          placeholder="Add notes about this submission..."
-                          className="mb-3 rounded-2xl"
-                          rows={3}
-                        />
-                        <Button size="sm" variant="outline" className="shadow-md rounded-2xl">
-                          Save Notes
-                        </Button>
-                      </div>
+                  {pendingProducts.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      No pending products to review.
                     </div>
-                  ))}
+                  ) : (
+                    pendingProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="glass-morphism border-stone-200/50 dark:border-stone-800/30 rounded-2xl p-6"
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-3">
+                              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{product.title}</h3>
+                              <Badge className={getStatusColor(product.status)}>
+                                <Clock className="w-3 h-3 mr-1" />
+                                {product.status}
+                              </Badge>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm">
+                              <div>
+                                <span className="font-medium text-slate-600 dark:text-slate-300">Creator ID:</span>
+                                <span className="ml-2 text-slate-900 dark:text-white">{product.creator_id}</span>
+                              </div>
+                              <div>
+                                <span className="font-medium text-slate-600 dark:text-slate-300">Category:</span>
+                                <span className="ml-2 text-slate-900 dark:text-white capitalize">{product.category_id}</span>
+                              </div>
+                              <div>
+                                <span className="font-medium text-slate-600 dark:text-slate-300">Price:</span>
+                                <span className="ml-2 text-slate-900 dark:text-white">${product.price}</span>
+                              </div>
+                              <div>
+                                <span className="font-medium text-slate-600 dark:text-slate-300">Views:</span>
+                                <span className="ml-2 text-slate-900 dark:text-white">{product.views}</span>
+                              </div>
+                            </div>
+
+                            <p className="text-slate-700 dark:text-slate-300 mb-4">{product.description}</p>
+                          </div>
+
+                          <div className="flex flex-col space-y-3 lg:w-48">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full shadow-md rounded-2xl"
+                              onClick={() => {
+                                onSelectProduct(product)
+                                onNavigate("product")
+                              }}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Preview
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleProductAction(product.id, "approved")}
+                              className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md rounded-2xl"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleProductAction(product.id, "rejected")}
+                              className="w-full shadow-md rounded-2xl"
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Reject
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="approved" className="mt-6">
+          <TabsContent value="products" className="mt-6">
             <Card className="glass-morphism rounded-2xl">
               <CardHeader>
-                <CardTitle>Recently Approved Products</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  All Products
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search all products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 w-64 rounded-2xl"
+                    />
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentActions
-                    .filter((action) => action.action === "Approved")
-                    .map((action) => (
-                      <div
-                        key={action.id}
-                        className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg"
-                      >
-                        <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">{action.product}</h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            by {action.creator} • Approved by {action.admin}
-                          </p>
-                          <p className="text-xs text-slate-500">{action.date}</p>
-                        </div>
-                        <Badge className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Approved
-                        </Badge>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="rejected" className="mt-6">
-            <Card className="glass-morphism rounded-2xl">
-              <CardHeader>
-                <CardTitle>Recently Rejected Products</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentActions
-                    .filter((action) => action.action === "Rejected")
-                    .map((action) => (
-                      <div
-                        key={action.id}
-                        className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg"
-                      >
-                        <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">{action.product}</h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            by {action.creator} • Rejected by {action.admin}
-                          </p>
-                          <p className="text-xs text-slate-500">{action.date}</p>
-                        </div>
-                        <Badge className="bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
-                          <XCircle className="w-3 h-3 mr-1" />
-                          Rejected
-                        </Badge>
-                      </div>
-                    ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-stone-200 dark:border-stone-800">
+                        <th className="py-4 px-2 font-semibold">Product</th>
+                        <th className="py-4 px-2 font-semibold">Creator</th>
+                        <th className="py-4 px-2 font-semibold">Price</th>
+                        <th className="py-4 px-2 font-semibold">Status</th>
+                        <th className="py-4 px-2 font-semibold">Sales</th>
+                        <th className="py-4 px-2 font-semibold text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products
+                        .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map((product) => (
+                          <tr key={product.id} className="border-b border-stone-100 dark:border-stone-900/50 hover:bg-stone-50/50 dark:hover:bg-stone-800/20 transition-colors">
+                            <td className="py-4 px-2">
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={product.thumbnail_url || ""}
+                                  alt=""
+                                  className="w-10 h-10 rounded-lg object-cover bg-stone-200 dark:bg-stone-800"
+                                />
+                                <div>
+                                  <p className="font-medium text-slate-900 dark:text-white line-clamp-1">{product.title}</p>
+                                  <p className="text-xs text-slate-500 capitalize">{product.category_id}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-2 text-sm text-slate-600 dark:text-slate-300">
+                              {product.creator_id}
+                            </td>
+                            <td className="py-4 px-2 text-sm font-medium">
+                              ${product.price}
+                            </td>
+                            <td className="py-4 px-2">
+                              <Badge className={getStatusColor(product.status)}>
+                                {product.status}
+                              </Badge>
+                            </td>
+                            <td className="py-4 px-2 text-sm">
+                              {product.sales_count || 0}
+                            </td>
+                            <td className="py-4 px-2 text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-xl h-8 w-8 text-stone-600 hover:text-stone-700 hover:bg-stone-100"
+                                  onClick={() => {
+                                    onSelectProduct(product)
+                                    onNavigate("product")
+                                  }}
+                                  title="Preview"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-xl h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  onClick={() => handleEditClick(product)}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-xl h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => handleDeleteProduct(product.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                  {products.length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground">
+                      No products found.
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -409,9 +484,197 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                 </CardContent>
               </Card>
             </div>
+
+          </TabsContent>
+
+          <TabsContent value="users" className="mt-6">
+            <Card className="glass-morphism rounded-2xl">
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {users.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between p-4 border border-stone-200/50 dark:border-stone-800/30 rounded-xl">
+                      <div>
+                        <h4 className="font-semibold text-slate-900 dark:text-white">{user.full_name || "Unknown"}</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">{user.email}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline">{user.role}</Badge>
+                          {user.is_verified && (
+                            <Badge className="bg-blue-100 text-blue-700">Verified</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="rounded-xl">Edit</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sellers" className="mt-6">
+            <Card className="glass-morphism rounded-2xl">
+              <CardHeader>
+                <CardTitle>Seller Applications</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {applications.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">No pending applications.</div>
+                  ) : (
+                    applications.map((app) => (
+                      <div key={app.id} className="flex items-center justify-between p-4 border border-stone-200/50 dark:border-stone-800/30 rounded-xl">
+                        <div>
+                          <h4 className="font-semibold text-slate-900 dark:text-white">{app.businessName}</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">Applicant: {app.fullName} ({app.email})</p>
+                          <p className="text-xs text-slate-500 mb-1">Category: {app.category}</p>
+                          <Badge className={
+                            app.status === "approved" ? "bg-green-100 text-green-700" :
+                              app.status === "rejected" ? "bg-red-100 text-red-700" :
+                                "bg-yellow-100 text-yellow-700"
+                          }>
+                            {app.status}
+                          </Badge>
+                          <p className="mt-2 text-sm text-muted-foreground italic">"{app.bio}"</p>
+                        </div>
+                        <div className="flex gap-2 flex-col sm:flex-row">
+                          {app.status === "pending" && (
+                            <>
+                              <Button onClick={() => handleApplicationAction(app.id, "approved")} size="sm" className="bg-green-600 hover:bg-green-700 text-white rounded-xl">Approve</Button>
+                              <Button onClick={() => handleApplicationAction(app.id, "rejected")} variant="destructive" size="sm" className="rounded-xl">Reject</Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="disputes" className="mt-6">
+            <Card className="glass-morphism rounded-2xl">
+              <CardHeader>
+                <CardTitle>Active Disputes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { id: 1, id_code: "DSP-1023", buyer: "User123", seller: "DevMaster", issue: "Item not working", status: "open" },
+                  ].map((dispute) => (
+                    <div key={dispute.id} className="flex items-center justify-between p-4 border border-stone-200/50 dark:border-stone-800/30 rounded-xl">
+                      <div>
+                        <h4 className="font-semibold text-slate-900 dark:text-white">{dispute.id_code}</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">Issue: {dispute.issue}</p>
+                        <p className="text-xs text-slate-500">Parties: {dispute.buyer} vs {dispute.seller}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => toast.info("Dispute details view under construction")}
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Product</DialogTitle>
+            <DialogDescription>
+              Make changes to the product details as an administrator.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-title">Title</Label>
+              <Input
+                id="edit-title"
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                className="rounded-xl"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-price">Price ($)</Label>
+                <Input
+                  id="edit-price"
+                  type="number"
+                  value={editForm.price}
+                  onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-status">Status</Label>
+                <Select
+                  value={editForm.status}
+                  onValueChange={(value) => setEditForm({ ...editForm, status: value })}
+                >
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-category">Category</Label>
+              <Select
+                value={editForm.category}
+                onValueChange={(value) => setEditForm({ ...editForm, category: value })}
+              >
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ui">UI Kits</SelectItem>
+                  <SelectItem value="templates">Templates</SelectItem>
+                  <SelectItem value="games">Full Games</SelectItem>
+                  <SelectItem value="scripts">Scripts</SelectItem>
+                  <SelectItem value="models">3D Models</SelectItem>
+                  <SelectItem value="audio">Audio</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                rows={4}
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                className="rounded-xl"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="rounded-xl">
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateProduct} className="bg-ambient-600 text-white rounded-xl">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div >
   )
 }
