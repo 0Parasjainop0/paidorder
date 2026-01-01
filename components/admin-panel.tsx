@@ -148,65 +148,65 @@ export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Admin Panel</h1>
-          <p className="text-white/50 font-mono text-sm tracking-wide">Manage product submissions and platform oversight</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Admin Panel</h1>
+          <p className="text-muted-foreground font-mono text-sm tracking-wide">Manage product submissions and platform oversight</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-2xl hover:bg-zinc-900/70 transition-colors">
+          <Card className="bg-card border-border backdrop-blur-sm rounded-2xl hover:bg-muted/50 transition-colors">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-white/40">Pending Products</p>
-                  <p className="text-3xl font-bold text-white">{pendingProducts.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Pending Products</p>
+                  <p className="text-3xl font-bold text-foreground">{pendingProducts.length}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 border border-yellow-500/20">
-                  <Clock className="w-6 h-6 text-yellow-400" />
+                  <Clock className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-2xl hover:bg-zinc-900/70 transition-colors">
+          <Card className="bg-card border-border backdrop-blur-sm rounded-2xl hover:bg-muted/50 transition-colors">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-white/40">Total Products</p>
-                  <p className="text-3xl font-bold text-white">{products.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Products</p>
+                  <p className="text-3xl font-bold text-foreground">{products.length}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-gradient-to-br from-ambient-500/20 to-ambient-600/10 border border-ambient-500/20">
-                  <Package className="w-6 h-6 text-ambient-400" />
+                  <Package className="w-6 h-6 text-ambient-600 dark:text-ambient-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-2xl hover:bg-zinc-900/70 transition-colors">
+          <Card className="bg-card border-border backdrop-blur-sm rounded-2xl hover:bg-muted/50 transition-colors">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-white/40">Active Creators</p>
-                  <p className="text-3xl font-bold text-white">
+                  <p className="text-sm font-medium text-muted-foreground">Active Creators</p>
+                  <p className="text-3xl font-bold text-foreground">
                     {users.filter(u => u.role === 'creator').length}
                   </p>
                 </div>
                 <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20">
-                  <Users className="w-6 h-6 text-green-400" />
+                  <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-2xl hover:bg-zinc-900/70 transition-colors">
+          <Card className="bg-card border-border backdrop-blur-sm rounded-2xl hover:bg-muted/50 transition-colors">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-white/40">System Users</p>
-                  <p className="text-3xl font-bold text-white">{users.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">System Users</p>
+                  <p className="text-3xl font-bold text-foreground">{users.length}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20">
-                  <DollarSign className="w-6 h-6 text-purple-400" />
+                  <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
               </div>
             </CardContent>

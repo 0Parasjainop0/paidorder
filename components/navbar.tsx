@@ -81,16 +81,16 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             {/* Logo */}
             <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => onNavigate("landing")}>
               <div className="relative">
-                <div className="w-14 h-14 bg-zinc-900/80 rounded-2xl flex items-center justify-center shadow-xl shadow-black/30 group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105 overflow-hidden border border-white/10 group-hover:border-ambient-400/30">
+                <div className="w-14 h-14 bg-muted rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105 overflow-hidden border border-border group-hover:border-ambient-400/30">
                   <img src="/logo.png" alt="Digiteria Logo" className="w-full h-full object-contain p-1" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-br from-ambient-400/30 to-ambient-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 -z-10" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-white group-hover:text-ambient-400 transition-all duration-500">
+                <span className="text-xl font-bold text-foreground group-hover:text-ambient-500 transition-all duration-500">
                   Digiteria
                 </span>
-                <span className="text-[10px] text-ambient-500/70 -mt-0.5 font-mono tracking-[0.2em] uppercase group-hover:text-ambient-400/80 transition-colors">Software</span>
+                <span className="text-[10px] text-ambient-600 dark:text-ambient-500/70 -mt-0.5 font-mono tracking-[0.2em] uppercase group-hover:text-ambient-500 transition-colors">Software</span>
               </div>
             </div>
 

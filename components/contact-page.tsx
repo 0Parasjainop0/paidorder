@@ -114,10 +114,10 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
             Get in Touch
           </h1>
-          <p className="text-white/40 max-w-2xl mx-auto font-mono text-sm tracking-wide">
+          <p className="text-muted-foreground max-w-2xl mx-auto font-mono text-sm tracking-wide">
             Have questions about Digiteria? We're here to help. Reach out to our team and we'll get back to you as soon
             as possible.
           </p>

@@ -43,12 +43,12 @@ export function Footer() {
   ]
 
   return (
-    <footer className="relative bg-slate-50 dark:bg-zinc-950 text-foreground overflow-hidden border-t border-border">
+    <footer className="relative bg-slate-100 dark:bg-zinc-950 text-foreground overflow-hidden border-t border-border">
       {/* Ambient Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(59,130,246,0.05),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.05),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
       </div>
 
       {/* Top Ambient Line */}
@@ -61,17 +61,17 @@ export function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-8 group cursor-pointer">
               <div className="relative">
-                <div className="w-14 h-14 bg-zinc-900/80 rounded-2xl flex items-center justify-center overflow-hidden border border-white/10 shadow-xl shadow-black/30 group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105">
+                <div className="w-14 h-14 bg-white dark:bg-zinc-900/80 rounded-2xl flex items-center justify-center overflow-hidden border border-border shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105">
                   <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-1.5" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-br from-ambient-400/20 to-ambient-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-80 transition-opacity duration-500 -z-10" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-white group-hover:text-ambient-400 transition-colors">Digiteria</span>
-                <span className="text-[9px] text-ambient-500/50 font-mono tracking-[0.2em] uppercase">Software Solutions</span>
+                <span className="text-2xl font-bold text-foreground group-hover:text-ambient-500 transition-colors">Digiteria</span>
+                <span className="text-[9px] text-ambient-600 dark:text-ambient-500/50 font-mono tracking-[0.2em] uppercase">Software Solutions</span>
               </div>
             </div>
-            <p className="text-white/40 mb-10 max-w-md leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-10 max-w-md leading-relaxed text-sm">
               The ultimate marketplace for developers, creators, and digital product sellers. Built by creators,
               for creators.
             </p>
@@ -87,7 +87,7 @@ export function Footer() {
               <Button
                 size="sm"
                 variant="outline"
-                className="border-white/10 text-white/60 bg-white/[0.02] hover:bg-white/[0.05] hover:text-white hover:border-white/20 rounded-xl transition-all duration-300 hover:scale-105"
+                className="border-border text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl transition-all duration-300 hover:scale-105"
                 onClick={() => toast.info("Opening Community Hub...")}
               >
                 <Globe className="w-4 h-4 mr-2" />
@@ -99,13 +99,13 @@ export function Footer() {
           {/* Footer Links */}
           {footerLinks.map((section, index) => (
             <div key={index}>
-              <h3 className="font-mono text-[10px] text-white/30 mb-6 uppercase tracking-[0.3em]">{section.title}</h3>
+              <h3 className="font-mono text-[10px] text-muted-foreground mb-6 uppercase tracking-[0.3em]">{section.title}</h3>
               <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
                     <a
                       href={link.href}
-                      className="group flex items-center text-white/40 hover:text-ambient-400 transition-all duration-300 text-sm"
+                      className="group flex items-center text-muted-foreground hover:text-ambient-500 transition-all duration-300 text-sm"
                       onClick={(e) => {
                         e.preventDefault()
                         toast.info(`Navigating to ${link.name}...`)
@@ -121,14 +121,14 @@ export function Footer() {
           ))}
         </div>
 
-        <Separator className="my-12 bg-white/5" />
+        <Separator className="my-12 bg-border" />
 
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center space-x-6 text-sm text-white/30">
+          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
             <span className="font-mono text-[10px] tracking-[0.1em]">© 2026 DIGITERIA</span>
-            <div className="flex items-center space-x-2 text-green-400/70">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50" />
+            <div className="flex items-center space-x-2 text-green-600 dark:text-green-400/70">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
               <span className="text-[10px] font-mono tracking-wider">SYSTEMS ONLINE</span>
             </div>
           </div>
@@ -139,16 +139,16 @@ export function Footer() {
               <button
                 key={social.name}
                 onClick={() => toast.info(`Opening ${social.name}...`)}
-                className="group w-10 h-10 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/5 hover:border-ambient-500/30"
+                className="group w-10 h-10 rounded-xl bg-muted/50 hover:bg-muted flex items-center justify-center transition-all duration-300 hover:scale-110 border border-border hover:border-ambient-500/30"
               >
-                <social.icon className="w-4 h-4 text-white/30 group-hover:text-ambient-400 transition-colors" />
+                <social.icon className="w-4 h-4 text-muted-foreground group-hover:text-ambient-500 transition-colors" />
               </button>
             ))}
           </div>
         </div>
 
         {/* Made with love */}
-        <div className="text-center mt-12 text-[10px] text-white/20 font-mono tracking-[0.2em] flex items-center justify-center gap-2">
+        <div className="text-center mt-12 text-[10px] text-muted-foreground font-mono tracking-[0.2em] flex items-center justify-center gap-2">
           <Sparkles className="w-3 h-3 text-ambient-500/50" />
           <span>CRAFTED FOR THE DIGITERIA COMMUNITY</span>
           <Sparkles className="w-3 h-3 text-ambient-500/50" />

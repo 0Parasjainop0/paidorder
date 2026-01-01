@@ -303,10 +303,10 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-foreground">
               Marketplace Dashboard
             </h1>
-            <p className="text-white/40 font-mono text-sm tracking-wide">Manage your products and track your performance</p>
+            <p className="text-muted-foreground font-mono text-sm tracking-wide">Manage your products and track your performance</p>
           </div>
 
           <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>

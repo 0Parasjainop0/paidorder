@@ -158,10 +158,10 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 animate-fade-in-up">
           <div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-white">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-foreground">
               Marketplace
             </h1>
-            <p className="text-white/40 font-mono text-sm tracking-wide">
+            <p className="text-muted-foreground font-mono text-sm tracking-wide">
               Discover premium digital products created by the Digiteria community
             </p>
           </div>
