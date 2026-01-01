@@ -44,16 +44,11 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const isSeller = profile?.role === "creator" || profile?.role === "admin"
   const navItems = [
     { id: "landing", label: "Home" },
+    { id: "marketplace", label: "Marketplace" },
+    { id: "contact", label: "Contact" },
   ]
-
-  if (isSeller) {
-    navItems.push({ id: "dashboard", label: "Marketplace" })
-  }
-
-  navItems.push({ id: "contact", label: "Contact" })
 
   const handleSignOut = async () => {
     await signOut()
@@ -142,7 +137,24 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                                 <span>{profile?.full_name?.[0] || profile?.email[0].toUpperCase()}</span>
                               )}
                             </div>
-                            <span className="text-sm font-bold text-white tracking-tight">Dashboard</span>
+                            <span className="text-sm font-bold text-white tracking-tight">
+                              {(() => {
+                                const labels: Record<string, string> = {
+                                  landing: "Homepage",
+                                  marketplace: "Marketplace",
+                                  dashboard: "Dashboard",
+                                  admin: "Admin Panel",
+                                  analytics: "Analytics",
+                                  profile: "My Profile",
+                                  cart: "Shopping Cart",
+                                  checkout: "Checkout",
+                                  invoice: "Invoice",
+                                  product: "Product View",
+                                  contact: "Contact Us",
+                                }
+                                return labels[currentPage] || currentPage.charAt(0).toUpperCase() + currentPage.slice(1)
+                              })()}
+                            </span>
                           </div>
                         </Button>
                       </DropdownMenuTrigger>
