@@ -281,15 +281,20 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="absolute inset-0 bg-gradient-to-br from-ambient-50/30 via-transparent to-ambient-100/20 dark:from-ambient-950/20 dark:via-transparent dark:to-ambient-900/10 pointer-events-none" />
+    <div className="min-h-screen py-8 bg-zinc-950 relative overflow-hidden">
+      {/* Ambient Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(59,130,246,0.05),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.03),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Button
           variant="ghost"
           onClick={() => onNavigate("marketplace")}
-          className="mb-6 text-ambient-600 hover:text-ambient-700 dark:text-ambient-400 dark:hover:text-ambient-300"
+          className="mb-6 text-ambient-400 hover:text-ambient-300 hover:bg-white/5"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Marketplace
@@ -298,13 +303,12 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                Marketplace Dashboard
-              </span>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">
+              Marketplace Dashboard
             </h1>
-            <p className="text-muted-foreground">Manage your products and track your performance</p>
+            <p className="text-white/40 font-mono text-sm tracking-wide">Manage your products and track your performance</p>
           </div>
+
           <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
             <DialogTrigger asChild>
               <Button className="mt-4 md:mt-0 bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl shadow-lg shadow-ambient-500/25">

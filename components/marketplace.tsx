@@ -144,20 +144,24 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
   )
 
   return (
-    <div className="min-h-screen py-8 relative overflow-hidden">
+    <div className="min-h-screen py-8 bg-zinc-950 relative overflow-hidden">
       {/* Ambient Background */}
-      <div className="absolute inset-0 mesh-gradient dark:mesh-gradient-dark pointer-events-none" />
-      <div className="absolute top-40 right-[10%] w-72 h-72 bg-gradient-to-br from-ambient-400/20 to-transparent rounded-full blur-3xl animate-float-slow" />
-      <div className="absolute bottom-40 left-[5%] w-96 h-96 bg-gradient-to-br from-purple-400/15 to-transparent rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '-8s' }} />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.05),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.03),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
+      </div>
+      <div className="absolute top-40 right-[10%] w-72 h-72 bg-gradient-to-br from-ambient-500/10 to-transparent rounded-full blur-3xl animate-float-slow" />
+      <div className="absolute bottom-40 left-[5%] w-96 h-96 bg-gradient-to-br from-purple-500/5 to-transparent rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '-8s' }} />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 animate-fade-in-up">
           <div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
-              <span className="gradient-text-animated">Marketplace</span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-white">
+              Marketplace
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-white/40 font-mono text-sm tracking-wide">
               Discover premium digital products created by the Digiteria community
             </p>
           </div>

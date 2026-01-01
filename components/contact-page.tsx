@@ -104,19 +104,20 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
   ]
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 bg-zinc-950 relative overflow-hidden">
       {/* Ambient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-ambient-50/30 via-transparent to-ambient-100/20 dark:from-ambient-950/20 dark:via-transparent dark:to-ambient-900/10 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.05),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-              Get in Touch
-            </span>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+            Get in Touch
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-white/40 max-w-2xl mx-auto font-mono text-sm tracking-wide">
             Have questions about Digiteria? We're here to help. Reach out to our team and we'll get back to you as soon
             as possible.
           </p>
