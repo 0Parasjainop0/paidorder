@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Moon, Sun, Menu, X, Zap, User, Settings, LogOut, ShoppingCart, LayoutDashboard, Shield, Rocket } from "lucide-react"
+import { Moon, Sun, Menu, X, Zap, User, Settings, LogOut, ShoppingCart, LayoutDashboard, Shield, Rocket, LineChart } from "lucide-react"
 import { useTheme } from "next-themes"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
@@ -67,8 +67,8 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
   return (
     <>
       <nav className={`sticky top-4 z-50 mx-auto max-w-[90%] rounded-2xl border transition-all duration-500 ${scrolled
-          ? 'border-border/60 bg-background/90 backdrop-blur-2xl shadow-xl shadow-ambient-500/5'
-          : 'border-border/40 bg-background/70 backdrop-blur-xl shadow-lg shadow-black/5'
+        ? 'border-border/60 bg-background/90 backdrop-blur-2xl shadow-xl shadow-ambient-500/5'
+        : 'border-border/40 bg-background/70 backdrop-blur-xl shadow-lg shadow-black/5'
         }`}>
         {/* Gradient border effect on hover */}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-ambient-500/0 via-ambient-400/0 to-ambient-500/0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ padding: '1px' }} />
@@ -162,6 +162,10 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                             Admin Panel
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuItem onClick={() => onNavigate("analytics")} className="rounded-lg mx-1 cursor-pointer">
+                          <LineChart className="mr-2 h-4 w-4" />
+                          Analytics
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="rounded-lg mx-1 cursor-pointer">
                           <Settings className="mr-2 h-4 w-4" />
                           Settings
@@ -323,6 +327,17 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                             Admin Panel
                           </Button>
                         )}
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            onNavigate("analytics")
+                            setIsMenuOpen(false)
+                          }}
+                          className="justify-start rounded-xl"
+                        >
+                          <LineChart className="w-4 h-4 mr-2" />
+                          Analytics
+                        </Button>
                         <Button
                           variant="ghost"
                           onClick={() => {

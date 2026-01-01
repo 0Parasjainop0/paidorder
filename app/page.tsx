@@ -17,13 +17,14 @@ import { CartPage } from "@/components/cart-page"
 import { CheckoutPage } from "@/components/checkout-page"
 import { Sidebar } from "@/components/sidebar"
 import { InvoicePage, InvoiceData } from "@/components/invoice-page"
+import { AnalyticsPage } from "@/components/analytics-page"
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("landing")
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState<InvoiceData | null>(null)
 
-  const isDashboard = ["admin", "profile", "dashboard"].includes(currentPage)
+  const isDashboard = ["admin", "profile", "dashboard", "analytics"].includes(currentPage)
 
   const renderPage = () => {
     switch (currentPage) {
@@ -47,6 +48,8 @@ export default function App() {
         return <CheckoutPage onNavigate={setCurrentPage} onSelectOrder={setSelectedOrder} />
       case "invoice":
         return <InvoicePage invoiceData={selectedOrder || undefined} onNavigate={setCurrentPage} />
+      case "analytics":
+        return <AnalyticsPage onNavigate={setCurrentPage} />
       default:
         return <LandingPage onNavigate={setCurrentPage} onSelectProduct={setSelectedProduct} />
     }

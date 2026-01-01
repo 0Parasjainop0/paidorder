@@ -11,7 +11,8 @@ import {
     Home,
     ShoppingBag,
     MessageSquare,
-    ChevronRight
+    ChevronRight,
+    LineChart
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -26,6 +27,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     const menuItems = [
         { id: "landing", label: "Home", icon: Home },
         { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+        { id: "analytics", label: "Analytics", icon: LineChart },
         { id: "profile", label: "Profile", icon: User },
         { id: "contact", label: "Contact", icon: MessageSquare },
     ]
