@@ -175,6 +175,10 @@ class MockDatabase {
     }
 
     // --- Orders ---
+    getAllOrders() {
+        return this.data.orders
+    }
+
     getOrdersByUser(userId: string) {
         return this.data.orders.filter(o => o.buyer_id === userId)
     }

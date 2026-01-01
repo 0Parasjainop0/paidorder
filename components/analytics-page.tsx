@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import {
     BarChart,
     Bar,
@@ -35,25 +35,11 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/hooks/use-auth"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
+import { mockDb } from "@/lib/mock-db"
+import { format, subDays, startOfDay, isSameDay } from "date-fns"
+import { Product, Order } from "@/lib/supabase"
 
-const salesData = [
-    { name: "Mon", sales: 40, revenue: 2400 },
-    { name: "Tue", sales: 30, revenue: 1398 },
-    { name: "Wed", sales: 20, revenue: 9800 },
-    { name: "Thu", sales: 27, revenue: 3908 },
-    { name: "Fri", sales: 18, revenue: 4800 },
-    { name: "Sat", sales: 23, revenue: 3800 },
-    { name: "Sun", sales: 34, revenue: 4300 },
-]
-
-const categoryData = [
-    { name: "Templates", value: 400 },
-    { name: "Design", value: 300 },
-    { name: "Code", value: 300 },
-    { name: "Courses", value: 200 },
-]
-
-const COLORS = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981"]
+const COLORS = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6"]
 
 interface AnalyticsPageProps {
     onNavigate: (page: string) => void
@@ -62,7 +48,83 @@ interface AnalyticsPageProps {
 export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
     const { profile, loading } = useAuth()
     const [showSellerModal, setShowSellerModal] = useState(false)
+    const [data, setData] = useState<{ products: Product[], orders: Order[] }>({ products: [], orders: [] })
     const isSeller = profile?.role === "creator" || profile?.role === "admin"
+    const isAdmin = profile?.role === "admin"
+
+    useEffect(() => {
+        if (isSeller) {
+            const products = mockDb.getProducts()
+            const orders = mockDb.getAllOrders()
+            setData({ products, orders })
+
+            const unsubscribe = mockDb.subscribe(() => {
+                setData({ products: mockDb.getProducts(), orders: mockDb.getAllOrders() })
+            })
+            return unsubscribe
+        }
+    }, [isSeller])
+
+    const analytics = useMemo(() => {
+        if (!isSeller) return null
+
+        // STRICTLY PERSONAL: only show the products belonging to the current user
+        const userProducts = data.products.filter(p => p.creator_id === profile?.id)
+
+        const userProductIds = new Set(userProducts.map(p => p.id))
+
+        // STRICTLY PERSONAL: only show orders for the user's products
+        const userOrders = data.orders.filter(o => userProductIds.has(o.product_id))
+
+        // Basic Stats - Always use seller_amount for personal income tracking
+        const totalRevenue = userOrders.reduce((acc, o) => acc + (o.seller_amount || 0), 0)
+        const activeCustomers = new Set(userOrders.map(o => o.buyer_id)).size
+        const totalSales = userOrders.length
+        const totalViews = userProducts.reduce((acc, p) => acc + (p.views || 0), 0)
+
+        // Revenue Chart (Last 7 Days)
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+            const date = subDays(new Date(), 6 - i)
+            const dayOrders = userOrders.filter(o => isSameDay(new Date(o.created_at), date))
+            return {
+                name: format(date, "EEE"),
+                revenue: dayOrders.reduce((acc, o) => acc + (o.seller_amount || 0), 0),
+                sales: dayOrders.length
+            }
+        })
+
+        // Category Distribution
+        const categoryMap = userProducts.reduce((acc: any, p) => {
+            acc[p.category_id || "Uncategorized"] = (acc[p.category_id || "Uncategorized"] || 0) + 1
+            return acc
+        }, {})
+        const categoryData = Object.entries(categoryMap).map(([name, value]) => ({ name, value }))
+
+        // Top Products
+        const topProducts = userProducts
+            .map(p => {
+                const productOrders = userOrders.filter(o => o.product_id === p.id)
+                return {
+                    name: p.title,
+                    category: p.category_id || "Uncategorized",
+                    sales: productOrders.length,
+                    revenue: productOrders.reduce((acc, o) => acc + (o.seller_amount || 0), 0),
+                    status: p.status === "approved" ? "Live" : "Pending"
+                }
+            })
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 5)
+
+        return {
+            totalRevenue,
+            activeCustomers,
+            totalSales,
+            totalViews,
+            revenueData: last7Days,
+            categoryData,
+            topProducts
+        }
+    }, [data, isSeller, profile])
 
     if (loading) {
         return (
@@ -118,13 +180,17 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-8">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight gradient-text">Seller Analytics</h1>
-                    <p className="text-muted-foreground mt-1">Detailed performance tracking for your digital products.</p>
+                    <h1 className="text-4xl font-bold tracking-tight gradient-text">
+                        Shop Analytics
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        Detailed performance tracking for your digital products.
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button variant="outline" className="rounded-xl border-border/50">
                         <Calendar className="w-4 h-4 mr-2" />
-                        Last 30 Days
+                        Last 7 Days
                     </Button>
                     <Button variant="outline" className="rounded-xl border-border/50">
                         <Filter className="w-4 h-4 mr-2" />
@@ -136,10 +202,10 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
             {/* Key Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: "Total Revenue", value: "$24,560", trend: "+12.5%", trendUp: true, icon: TrendingUp },
-                    { label: "Active Customers", value: "1,240", trend: "+5.2%", trendUp: true, icon: Users },
-                    { label: "Total Sales", value: "856", trend: "-2.4%", trendUp: false, icon: ShoppingBag },
-                    { label: "Product Views", value: "45,280", trend: "+18.3%", trendUp: true, icon: Eye },
+                    { label: "Total Revenue", value: `$${analytics?.totalRevenue?.toLocaleString()}`, trend: "+12.5%", trendUp: true, icon: TrendingUp },
+                    { label: "Active Customers", value: analytics?.activeCustomers?.toString(), trend: "+5.2%", trendUp: true, icon: Users },
+                    { label: "Total Sales", value: analytics?.totalSales?.toString(), trend: "-2.4%", trendUp: false, icon: ShoppingBag },
+                    { label: "Product Views", value: analytics?.totalViews?.toLocaleString(), trend: "+18.3%", trendUp: true, icon: Eye },
                 ].map((stat, i) => (
                     <Card key={i} className="relative border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden group hover:border-ambient-400/50 transition-all duration-500 rounded-2xl">
                         <CardContent className="p-6">
@@ -170,7 +236,7 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                                 <LineChart className="w-5 h-5 mr-2 text-ambient-600" />
                                 Revenue Overview
                             </CardTitle>
-                            <CardDescription>Daily revenue performance over time.</CardDescription>
+                            <CardDescription>Daily performance for the past 7 days.</CardDescription>
                         </div>
                         <Tabs defaultValue="revenue" className="w-[200px]">
                             <TabsList className="grid w-full grid-cols-2 rounded-xl h-9">
@@ -182,7 +248,7 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                     <CardContent className="p-8 pt-10">
                         <div className="h-[350px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={salesData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                <AreaChart data={analytics?.revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
@@ -233,16 +299,16 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                     <CardHeader className="border-b border-border/50 py-6">
                         <CardTitle className="flex items-center">
                             <PieChartIcon className="w-5 h-5 mr-2 text-ambient-600" />
-                            Sales Distribution
+                            Inventory Distribution
                         </CardTitle>
-                        <CardDescription>Sales by product category.</CardDescription>
+                        <CardDescription>Products by category.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8 pt-10 flex flex-col items-center">
                         <div className="h-[250px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
-                                        data={categoryData}
+                                        data={analytics?.categoryData}
                                         cx="50%"
                                         cy="50%"
                                         innerRadius={60}
@@ -250,7 +316,7 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                                         paddingAngle={5}
                                         dataKey="value"
                                     >
-                                        {categoryData.map((entry, index) => (
+                                        {(analytics?.categoryData || []).map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
@@ -266,10 +332,10 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                             </ResponsiveContainer>
                         </div>
                         <div className="grid grid-cols-2 gap-4 w-full mt-6">
-                            {categoryData.map((item, i) => (
+                            {(analytics?.categoryData || []).map((item, i) => (
                                 <div key={i} className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                                    <span className="text-sm font-medium">{item.name}</span>
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                    <span className="text-sm font-medium truncate max-w-[80px]">{item.name}</span>
                                 </div>
                             ))}
                         </div>
@@ -284,9 +350,9 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                         <div>
                             <CardTitle className="flex items-center">
                                 <BarChart3 className="w-5 h-5 mr-2 text-ambient-600" />
-                                Top Performing Products
+                                {isAdmin ? "Top Platform Products" : "Your Best Selling Products"}
                             </CardTitle>
-                            <CardDescription>Your most popular digital items.</CardDescription>
+                            <CardDescription>Ranked by revenue generated.</CardDescription>
                         </div>
                         <Button variant="ghost" className="text-ambient-600 hover:text-ambient-700 font-semibold px-4 rounded-xl">View All</Button>
                     </div>
@@ -304,17 +370,12 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/50 text-sm">
-                                {[
-                                    { name: "Modern Dash Dashboard UI", cat: "Templates", sales: 245, rev: "$6,125", status: "Trending" },
-                                    { name: "Full Stack SaaS Starter Kit", cat: "Code", sales: 189, rev: "$9,450", status: "Hot" },
-                                    { name: "Premium Icon Set - 500+", cat: "Design", sales: 156, rev: "$1,560", status: "Stable" },
-                                    { name: "React Component Library", cat: "Code", sales: 132, rev: "$3,300", status: "New" },
-                                ].map((row, i) => (
+                                {(analytics?.topProducts || []).map((row, i) => (
                                     <tr key={i} className="hover:bg-muted/30 transition-colors group cursor-pointer font-medium">
                                         <td className="px-6 py-5 group-hover:text-ambient-600 transition-colors">{row.name}</td>
-                                        <td className="px-6 py-5 text-muted-foreground">{row.cat}</td>
+                                        <td className="px-6 py-5 text-muted-foreground">{row.category}</td>
                                         <td className="px-6 py-5">{row.sales}</td>
-                                        <td className="px-6 py-5 font-bold">{row.rev}</td>
+                                        <td className="px-6 py-5 font-bold">${row.revenue.toLocaleString()}</td>
                                         <td className="px-6 py-5">
                                             <Badge variant="outline" className={`rounded-xl px-3 border-ambient-200/50 text-ambient-600`}>
                                                 {row.status}
@@ -322,6 +383,13 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                                         </td>
                                     </tr>
                                 ))}
+                                {analytics?.topProducts?.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                                            No sales data available yet.
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

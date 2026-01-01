@@ -1,4 +1,5 @@
 import type { Product, Profile, Order, Review } from "./supabase"
+import { subDays } from "date-fns"
 
 // Types
 export interface SellerApplication {
@@ -58,7 +59,7 @@ export const SEED_DATA: MockDB = {
             linkedin_url: "",
         },
         {
-            id: "creator-1",
+            id: "trade-master",
             email: "trade@master.com",
             full_name: "TradeMaster",
             role: "creator",
@@ -102,8 +103,113 @@ export const SEED_DATA: MockDB = {
             linkedin_url: "",
         }
     ],
-    products: [],
-    orders: [],
+    products: [
+        {
+            id: "prod-1",
+            creator_id: "trade-master",
+            title: "Advanced Trading Bot",
+            description: "A professional trading bot for crypto and stocks.",
+            short_description: "Best trading bot in the market.",
+            price: 49.99,
+            compare_price: 99.99,
+            pricing_type: "one_time",
+            subscription_interval: null,
+            category_id: "Code",
+            tags: ["trading", "bot", "crypto"],
+            status: "approved",
+            rejection_reason: null,
+            is_featured: true,
+            views: 1240,
+            downloads: 45,
+            sales_count: 45,
+            rating: 4.8,
+            review_count: 5,
+            thumbnail_url: "https://images.unsplash.com/photo-1611974717482-480928d74ccb?q=80&w=2670&auto=format&fit=crop",
+            gallery_urls: [],
+            slug: "trading-bot",
+            created_at: subDays(new Date(), 10).toISOString(),
+            updated_at: new Date().toISOString(),
+            file_url: null,
+            file_name: null,
+            file_size: null
+        },
+        {
+            id: "prod-2",
+            creator_id: "trade-master",
+            title: "SaaS Dashboard Template",
+            description: "Modern UI kit for SaaS applications.",
+            short_description: "Modern UI kit for SaaS.",
+            price: 29.99,
+            compare_price: 59.99,
+            pricing_type: "one_time",
+            subscription_interval: null,
+            category_id: "Templates",
+            tags: ["saas", "dashboard", "ui"],
+            status: "approved",
+            rejection_reason: null,
+            is_featured: false,
+            views: 850,
+            downloads: 28,
+            sales_count: 28,
+            rating: 4.9,
+            review_count: 3,
+            thumbnail_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop",
+            gallery_urls: [],
+            slug: "saas-dashboard",
+            created_at: subDays(new Date(), 5).toISOString(),
+            updated_at: new Date().toISOString(),
+            file_url: null,
+            file_name: null,
+            file_size: null
+        }
+    ],
+    orders: [
+        {
+            id: "ord-1",
+            order_number: "ORD-001",
+            buyer_id: "user-1",
+            seller_id: "trade-master",
+            product_id: "prod-1",
+            amount: 49.99,
+            platform_fee: 4.99,
+            seller_amount: 45.00,
+            status: "completed",
+            created_at: subDays(new Date(), 1).toISOString(),
+            updated_at: subDays(new Date(), 1).toISOString(),
+            payment_method: "stripe",
+            payment_id: "pi_123"
+        },
+        {
+            id: "ord-2",
+            order_number: "ORD-002",
+            buyer_id: "user-2",
+            seller_id: "trade-master",
+            product_id: "prod-1",
+            amount: 49.99,
+            platform_fee: 4.99,
+            seller_amount: 45.00,
+            status: "completed",
+            created_at: subDays(new Date(), 2).toISOString(),
+            updated_at: subDays(new Date(), 2).toISOString(),
+            payment_method: "stripe",
+            payment_id: "pi_124"
+        },
+        {
+            id: "ord-3",
+            order_number: "ORD-003",
+            buyer_id: "user-3",
+            seller_id: "trade-master",
+            product_id: "prod-2",
+            amount: 29.99,
+            platform_fee: 2.99,
+            seller_amount: 27.00,
+            status: "completed",
+            created_at: subDays(new Date(), 0).toISOString(),
+            updated_at: subDays(new Date(), 0).toISOString(),
+            payment_method: "stripe",
+            payment_id: "pi_125"
+        }
+    ],
     reviews: [],
     applications: [
         {
