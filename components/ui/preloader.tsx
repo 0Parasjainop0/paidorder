@@ -1,119 +1,117 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 export function Preloader() {
     const [isVisible, setIsVisible] = useState(true)
     const [shouldRender, setShouldRender] = useState(true)
     const [progress, setProgress] = useState(0)
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            setMousePos({
-                x: (e.clientX / window.innerWidth - 0.5) * 20,
-                y: (e.clientY / window.innerHeight - 0.5) * 20
-            })
-        }
-        window.addEventListener("mousemove", handleMouseMove)
-
-        // Handle progress increment
+        // Organic progress increment with fewer updates (opt for performance)
         const interval = setInterval(() => {
             setProgress(prev => {
                 if (prev >= 100) {
                     clearInterval(interval)
                     return 100
                 }
-                return prev + Math.random() * 2 // Organic progress
+                const increment = Math.random() * 5 + 2 // Faster increments, fewer renders
+                return Math.min(prev + increment, 100)
             })
-        }, 30)
+        }, 80) // Reduced frequency for smoother UI thread
 
-        // Start exit animation after 1.8s
-        const timer = setTimeout(() => {
-            setIsVisible(false)
-        }, 1800)
-
-        // Completely remove from DOM after 3s
-        const removeTimer = setTimeout(() => {
-            setShouldRender(false)
-        }, 3000)
+        const timer = setTimeout(() => setIsVisible(false), 2200)
+        const removeTimer = setTimeout(() => setShouldRender(false), 3500)
 
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove)
             clearInterval(interval)
             clearTimeout(timer)
             clearTimeout(removeTimer)
         }
     }, [])
 
+    // Memoize particles so they don't re-render/re-randomize on every progress tick
+    const particles = useMemo(() => (
+        [...Array(12)].map((_, i) => (
+            <div
+                key={i}
+                className="absolute bg-white/20 rounded-full animate-float pointer-events-none"
+                style={{
+                    width: (Math.random() * 2 + 1) + 'px',
+                    height: (Math.random() * 2 + 1) + 'px',
+                    top: (Math.random() * 100) + '%',
+                    left: (Math.random() * 100) + '%',
+                    animationDelay: (Math.random() * 5) + 's',
+                    animationDuration: (Math.random() * 10 + 10) + 's',
+                    willChange: 'transform'
+                }}
+            />
+        ))
+    ), [])
+
     if (!shouldRender) return null
 
     return (
         <div
-            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#020203] transition-all duration-1000 ease-in-out ${isVisible ? "opacity-100 visible" : "opacity-0 invisible scale-110 pointer-events-none"
+            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#020202] transition-all duration-1000 ease-linear ${isVisible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
                 }`}
+            style={{ willChange: 'opacity, visibility' }}
         >
-            {/* Advanced Dynamic Environment */}
-            <div
-                className="absolute inset-0 overflow-hidden pointer-events-none transition-transform duration-700 ease-out"
-                style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
-            >
-                {/* 1. Deep Space Mesh Gradient */}
-                <div className="absolute inset-0 opacity-40">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#3b82f615_0%,transparent_50%)]" />
-                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#a855f710_0%,transparent_50%)]" />
+            {/* Optimized Background Environment */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* 1. Static Mesh Gradient (Optimized Blurs) */}
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#3b82f610_0%,transparent_40%)] blur-[80px]" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#a855f708_0%,transparent_40%)] blur-[80px]" />
                 </div>
 
-                {/* 2. Interactive Grid System */}
-                <div
-                    className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:50px_50px]"
-                    style={{ transform: `perspective(1000px) rotateX(10deg)` }}
-                />
+                {/* 2. Low-cost Grid */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:60px_60px] opacity-40" />
 
-                {/* 3. Nebula Glows */}
-                <div className="absolute top-[-30%] left-[-20%] w-[100%] h-[100%] bg-ambient-600/10 rounded-full blur-[180px] animate-pulse-glow" />
-                <div className="absolute bottom-[-30%] right-[-20%] w-[100%] h-[100%] bg-purple-600/10 rounded-full blur-[180px] animate-pulse-glow" style={{ animationDelay: '-2s' }} />
+                {/* 3. Static Particles */}
+                {particles}
 
-                {/* 4. Scanline / Grain Overlay */}
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] contrast-150 brightness-150" />
+                {/* 4. Nebula Glows (Reduced Blur size for perf) */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-ambient-500/5 rounded-full blur-[100px] animate-pulse-glow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 rounded-full blur-[100px] animate-pulse-glow" style={{ animationDelay: '-2s' }} />
 
                 {/* 5. Vignette Overlay */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
             </div>
 
             {/* Center Logo Area */}
             <div className="relative flex flex-col items-center">
                 {/* Animated Digitera Logo Container */}
-                <div className="w-32 h-32 bg-white/5 backdrop-blur-3xl rounded-3xl flex items-center justify-center p-4 border border-white/10 shadow-2xl shadow-ambient-500/20 animate-luxury-entrance">
+                <div className="w-32 h-32 bg-white/[0.03] backdrop-blur-2xl rounded-3xl flex items-center justify-center p-4 border border-white/10 shadow-2xl shadow-ambient-500/10 animate-luxury-entrance">
                     <img
                         src="/logo.png"
                         alt="Digiteria Logo"
-                        className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                        className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                        style={{ transform: 'translateZ(0)' }}
                     />
                 </div>
 
                 {/* Text Reveal */}
-                <div className="mt-8 overflow-hidden flex flex-col items-center">
+                <div className="mt-8 flex flex-col items-center">
                     <h1 className="text-3xl font-bold tracking-[0.2em] text-white animate-reveal opacity-0" style={{ animationDelay: "200ms" }}>
                         DIGITERIA
                     </h1>
-                    <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-ambient-500/50 to-transparent mt-2 animate-reveal opacity-0" style={{ animationDelay: "400ms" }} />
-                    <p className="text-[10px] text-ambient-400 tracking-[0.4em] uppercase mt-3 text-center animate-reveal opacity-0" style={{ animationDelay: "600ms" }}>
+                    <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-ambient-500/30 to-transparent mt-3 animate-reveal opacity-0" style={{ animationDelay: "400ms" }} />
+                    <p className="text-[10px] text-ambient-400/60 tracking-[0.4em] uppercase mt-4 text-center animate-reveal opacity-0" style={{ animationDelay: "600ms" }}>
                         Software Solutions
                     </p>
 
-                    {/* Progress Bar Container */}
-                    <div className="mt-10 w-48 h-[2px] bg-white/5 rounded-full overflow-hidden relative animate-reveal opacity-0" style={{ animationDelay: "800ms" }}>
+                    {/* Highly Optimized Progress Bar */}
+                    <div className="mt-12 w-48 h-[1px] bg-white/5 rounded-full overflow-hidden relative animate-reveal opacity-0" style={{ animationDelay: "800ms" }}>
                         <div
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-ambient-600 to-ambient-400 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300 ease-out"
-                            style={{ width: `${Math.floor(progress)}%` }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-ambient-600 to-ambient-400 transition-all duration-300 ease-out"
+                            style={{ width: `${Math.floor(progress)}%`, willChange: 'width' }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 animate-shimmer" />
                     </div>
 
                     {/* Percentage Counter */}
-                    <div className="mt-3 text-[10px] font-mono text-ambient-500/70 animate-reveal opacity-0 tracking-[0.3em] uppercase" style={{ animationDelay: "900ms" }}>
-                        {Math.floor(progress)}% Loading
+                    <div className="mt-4 text-[9px] font-mono text-ambient-500/40 animate-reveal opacity-0 tracking-[0.3em] uppercase" style={{ animationDelay: "900ms" }}>
+                        {Math.floor(progress)}%
                     </div>
                 </div>
             </div>

@@ -26,14 +26,13 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
     const menuItems = [
         { id: "landing", label: "Home", icon: Home },
-        { id: profile?.role === "creator" || profile?.role === "admin" ? "dashboard" : "marketplace", label: "Marketplace", icon: ShoppingBag },
+        { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
     ]
 
     // Dashboard (Seller/Marketplace Management) is separate for sellers
     if (profile?.role === "creator" || profile?.role === "admin") {
         menuItems.push({ id: "dashboard", label: "Dashboard", icon: LayoutDashboard })
     }
-
     menuItems.push(
         { id: "analytics", label: "Analytics", icon: LineChart },
         { id: "profile", label: "Profile", icon: User },
