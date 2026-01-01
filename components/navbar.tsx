@@ -126,77 +126,33 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               {!loading && (
                 <>
                   {user ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-12 pl-1.5 pr-6 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-xl shadow-ambient-500/20 active:scale-95 border-none">
-                          <div className="flex items-center gap-3.5">
-                            <div className="h-9 w-9 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-lg shadow-sm">
-                              {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} className="h-full w-full rounded-full object-cover" />
-                              ) : (
-                                <span>{profile?.full_name?.[0] || profile?.email[0].toUpperCase()}</span>
-                              )}
-                            </div>
-                            <span className="text-sm font-bold text-white tracking-tight">
-                              {(() => {
-                                const labels: Record<string, string> = {
-                                  landing: "Homepage",
-                                  marketplace: "Marketplace",
-                                  dashboard: "Dashboard",
-                                  admin: "Admin Panel",
-                                  analytics: "Analytics",
-                                  profile: "My Profile",
-                                  cart: "Shopping Cart",
-                                  checkout: "Checkout",
-                                  invoice: "Invoice",
-                                  product: "Product View",
-                                  contact: "Contact Us",
-                                }
-                                return labels[currentPage] || currentPage.charAt(0).toUpperCase() + currentPage.slice(1)
-                              })()}
-                            </span>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => onNavigate("dashboard")}
+                        className="relative h-12 pl-1.5 pr-6 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-xl shadow-ambient-500/20 active:scale-95 border-none"
+                      >
+                        <div className="flex items-center gap-3.5">
+                          <div className="h-9 w-9 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-lg shadow-sm">
+                            {profile?.avatar_url ? (
+                              <img src={profile.avatar_url} className="h-full w-full rounded-full object-cover" />
+                            ) : (
+                              <span>{profile?.full_name?.[0] || profile?.email[0].toUpperCase()}</span>
+                            )}
                           </div>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-56 rounded-xl border-ambient-200/50 dark:border-ambient-800/30 shadow-xl shadow-ambient-500/10" align="end" forceMount>
-                        <div className="flex items-center justify-start gap-2 p-3">
-                          <div className="flex flex-col space-y-1 leading-none">
-                            <p className="font-medium">{profile?.full_name || "User"}</p>
-                            <p className="w-[200px] truncate text-sm text-muted-foreground">{profile?.email}</p>
-                          </div>
+                          <span className="text-sm font-bold text-white tracking-tight">Dashboard</span>
                         </div>
-                        <DropdownMenuSeparator className="bg-border/50" />
-                        <DropdownMenuItem onClick={() => onNavigate("profile")} className="rounded-lg mx-1 cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </DropdownMenuItem>
-                        {profile?.role === "creator" && (
-                          <DropdownMenuItem onClick={() => onNavigate("dashboard")} className="rounded-lg mx-1 cursor-pointer">
-                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                            Dashboard
-                          </DropdownMenuItem>
-                        )}
-                        {profile?.role === "admin" && (
-                          <DropdownMenuItem onClick={() => onNavigate("admin")} className="rounded-lg mx-1 cursor-pointer">
-                            <Shield className="mr-2 h-4 w-4" />
-                            Admin Panel
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => onNavigate("analytics")} className="rounded-lg mx-1 cursor-pointer">
-                          <LineChart className="mr-2 h-4 w-4" />
-                          Analytics
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="rounded-lg mx-1 cursor-pointer">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-border/50" />
-                        <DropdownMenuItem onClick={handleSignOut} className="rounded-lg mx-1 cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-950/20">
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Sign out
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSignOut}
+                        className="text-muted-foreground hover:text-red-500 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">Sign out</span>
+                      </Button>
+                    </div>
                   ) : (
                     <>
                       <Button

@@ -26,7 +26,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
     const menuItems = [
         { id: "landing", label: "Home", icon: Home },
-        { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+        { id: profile?.role === "creator" || profile?.role === "admin" ? "dashboard" : "marketplace", label: "Marketplace", icon: ShoppingBag },
     ]
 
     // Dashboard (Seller/Marketplace Management) is separate for sellers
