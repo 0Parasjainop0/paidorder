@@ -200,6 +200,18 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" }
         },
+        "scan": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(200%)" }
+        },
+        "reverse-spin": {
+          from: { transform: "rotate(360deg)" },
+          to: { transform: "rotate(0deg)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "0.1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -226,6 +238,9 @@ const config: Config = {
         "scroll": "scroll 40s linear infinite",
         "luxury-entrance": "luxury-entrance 1s cubic-bezier(0.23, 1, 0.32, 1) forwards",
         "reveal": "reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+        "scan-slow": "scan 3s linear infinite",
+        "reverse-spin": "reverse-spin 12s linear infinite",
+        "pulse-slow": "pulse-slow 4s ease-in-out infinite",
       },
       transitionDuration: {
         "400": "400ms",
