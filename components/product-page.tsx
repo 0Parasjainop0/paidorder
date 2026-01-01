@@ -22,6 +22,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
   const [reviews, setReviews] = useState<any[]>([])
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" })
   const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
 
   useEffect(() => {
     if (product) {
@@ -134,7 +135,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
             {/* Product Header */}
             <div className="mb-8">
               <div className="flex flex-wrap gap-2 mb-4">
-                {product.badges.map((badge: string, index: number) => (
+                {product.badges?.map((badge: string, index: number) => (
                   <Badge key={index} className={getBadgeColor(badge)}>
                     {badge}
                   </Badge>
@@ -145,9 +146,9 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                 <div className="flex items-center space-x-2">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>{product.creator[0]}</AvatarFallback>
+                    <AvatarFallback>{product.creator?.[0] || '?'}</AvatarFallback>
                   </Avatar>
-                  <span>by {product.creator}</span>
+                  <span>by {product.creator || 'Unknown Creator'}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -309,10 +310,10 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4 mb-4">
                       <Avatar className="w-16 h-16">
-                        <AvatarFallback className="text-lg">{product.creator[0]}</AvatarFallback>
+                        <AvatarFallback className="text-lg">{product.creator?.[0] || '?'}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{product.creator}</h3>
+                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{product.creator || 'Unknown Creator'}</h3>
                         <p className="text-slate-600 dark:text-slate-300">Professional Roblox Developer</p>
                         <div className="flex items-center space-x-4 mt-2 text-sm text-slate-500">
                           <span>156 Products</span>
@@ -334,6 +335,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
+              {/* Purchase Card */}
               {/* Purchase Card */}
               <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
@@ -365,19 +367,22 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                   <Button
                     size="lg"
                     onClick={() => {
+                      if (isInCart(String(product.id))) {
+                        onNavigate("cart")
+                        return
+                      }
+
                       const selectedPrice = licenses.find((l) => l.id === selectedLicense)?.price || product.price
                       const cartProduct: CartProduct = {
                         id: String(product.id),
                         title: `${product.title} (${licenses.find((l) => l.id === selectedLicense)?.name})`,
                         price: selectedPrice,
                         thumbnail_url: product.thumbnail,
-                        creator: product.creator,
-                        creator_id: String(product.id),
+                        creator: product.creator || 'Unknown Creator',
+                        creator_id: String(product.creator_id || product.id),
                       }
                       addToCart(cartProduct)
-                      if (!isInCart(String(product.id))) {
-                        // Optional: Navigate to cart or show success toast
-                      }
+                      toast.success("Added to cart successfully!")
                     }}
                     className={`w-full mb-3 rounded-2xl shadow-lg transition-all duration-300 ${isInCart(String(product.id))
                       ? "bg-green-500 hover:bg-green-600 text-white"
@@ -387,7 +392,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     {isInCart(String(product.id)) ? (
                       <>
                         <Check className="w-5 h-5 mr-2" />
-                        Added to Cart
+                        View in Cart
                       </>
                     ) : (
                       <>
@@ -405,8 +410,8 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                           title: `${product.title} (${licenses.find((l) => l.id === selectedLicense)?.name})`,
                           price: selectedPrice,
                           thumbnail_url: product.thumbnail,
-                          creator: product.creator,
-                          creator_id: String(product.id),
+                          creator: product.creator || 'Unknown Creator',
+                          creator_id: String(product.creator_id || product.id),
                         }
                         addToCart(cartProduct)
                       }
@@ -421,11 +426,14 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1"
-                      onClick={() => toast.success("Added to Wishlist!")}
+                      className={`flex-1 ${isSaved ? "bg-red-50 text-red-500 border-red-200 dark:bg-red-950/20 dark:border-red-900" : ""}`}
+                      onClick={() => {
+                        setIsSaved(!isSaved)
+                        toast.success(isSaved ? "Removed from Wishlist" : "Added to Wishlist")
+                      }}
                     >
-                      <Heart className="w-4 h-4 mr-2" />
-                      Save
+                      <Heart className={`w-4 h-4 mr-2 ${isSaved ? "fill-current" : ""}`} />
+                      {isSaved ? "Saved" : "Save"}
                     </Button>
                     <Button
                       variant="outline"
@@ -444,7 +452,10 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                   <Button
                     variant="outline"
                     className="w-full border-ambient-200 text-ambient-600 hover:bg-ambient-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950"
-                    onClick={() => toast.success("Customization request sent to creator!")}
+                    onClick={() => {
+                      window.location.href = `mailto:support@digiteria.com?subject=Customization Request for ${product.title}`
+                      toast.success("Opening email client...")
+                    }}
                   >
                     Request Customization
                   </Button>
@@ -456,10 +467,10 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3 mb-4">
                     <Avatar>
-                      <AvatarFallback>{product.creator[0]}</AvatarFallback>
+                      <AvatarFallback>{product.creator?.[0] || '?'}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white">{product.creator}</h4>
+                      <h4 className="font-semibold text-slate-900 dark:text-white">{product.creator || 'Unknown Creator'}</h4>
                       <p className="text-sm text-slate-600 dark:text-slate-300">Verified Creator</p>
                     </div>
                   </div>
@@ -467,7 +478,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => toast.info("Creator profile view coming soon!")}
+                    onClick={() => onNavigate("profile")}
                   >
                     View Profile
                   </Button>

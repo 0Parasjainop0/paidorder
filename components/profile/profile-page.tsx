@@ -66,6 +66,8 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
   const [reviewData, setReviewData] = useState({ rating: 5, comment: "" })
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
 
+  const [activeTab, setActiveTab] = useState("overview")
+
   const handleOpenReview = (product: any) => {
     setSelectedProduct(product)
     setIsReviewOpen(true)
@@ -352,7 +354,10 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
               <div className="flex gap-2">
                 {!isEditing ? (
                   <Button
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setIsEditing(true)
+                      setActiveTab("settings")
+                    }}
                     className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
                   >
                     <Edit3 className="w-4 h-4 mr-2" />
@@ -402,7 +407,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>

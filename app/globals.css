@@ -48,8 +48,8 @@
     --ring: 224.3 76.3% 94.1%;
   }
 
-  /* Ambient Color Variables */
-  [data-ambient="blue"] {
+  /* Ambient Color Variables - Enforced Blue */
+  :root {
     --ambient-50: 239 246 255;
     --ambient-100: 219 234 254;
     --ambient-200: 191 219 254;
@@ -62,64 +62,7 @@
     --ambient-900: 30 58 138;
     --ambient-950: 23 37 84;
   }
-
-  [data-ambient="orange"] {
-    --ambient-50: 255 247 237;
-    --ambient-100: 255 237 213;
-    --ambient-200: 254 215 170;
-    --ambient-300: 253 186 116;
-    --ambient-400: 251 146 60;
-    --ambient-500: 249 115 22;
-    --ambient-600: 234 88 12;
-    --ambient-700: 194 65 12;
-    --ambient-800: 154 52 18;
-    --ambient-900: 124 45 18;
-    --ambient-950: 67 20 7;
-  }
-
-  [data-ambient="purple"] {
-    --ambient-50: 250 245 255;
-    --ambient-100: 243 232 255;
-    --ambient-200: 233 213 255;
-    --ambient-300: 216 180 254;
-    --ambient-400: 196 181 253;
-    --ambient-500: 168 85 247;
-    --ambient-600: 147 51 234;
-    --ambient-700: 126 34 206;
-    --ambient-800: 107 33 168;
-    --ambient-900: 88 28 135;
-    --ambient-950: 59 7 100;
-  }
-
-  [data-ambient="green"] {
-    --ambient-50: 240 253 244;
-    --ambient-100: 220 252 231;
-    --ambient-200: 187 247 208;
-    --ambient-300: 134 239 172;
-    --ambient-400: 74 222 128;
-    --ambient-500: 34 197 94;
-    --ambient-600: 22 163 74;
-    --ambient-700: 21 128 61;
-    --ambient-800: 22 101 52;
-    --ambient-900: 20 83 45;
-    --ambient-950: 5 46 22;
-  }
-
-  [data-ambient="red"] {
-    --ambient-50: 254 242 242;
-    --ambient-100: 254 226 226;
-    --ambient-200: 254 202 202;
-    --ambient-300: 252 165 165;
-    --ambient-400: 248 113 113;
-    --ambient-500: 239 68 68;
-    --ambient-600: 220 38 38;
-    --ambient-700: 185 28 28;
-    --ambient-800: 153 27 27;
-    --ambient-900: 127 29 29;
-    --ambient-950: 69 10 10;
-  }
 }
-
 @layer base {
   * {
     @apply border-border;

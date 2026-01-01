@@ -379,6 +379,11 @@ class MockDatabase {
         }
     }
 
+    deleteUser(id: string) {
+        this.data.users = this.data.users.filter(u => u.id !== id)
+        this.saveData()
+    }
+
     // --- Applications ---
     getApplications() {
         return this.data.applications

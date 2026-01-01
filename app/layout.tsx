@@ -4,7 +4,10 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Digiteria',
   description: 'The ultimate marketplace for digital creators',
-  generator: 'v0.dev',
+  generator: 'Digiteria',
+  icons: {
+    icon: '/logo.png',
+  },
 }
 
 export default function RootLayout({
@@ -13,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   )
 }

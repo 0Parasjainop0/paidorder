@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Moon, Sun, Menu, X, Zap, User, Settings, LogOut, ShoppingCart, LayoutDashboard, Shield, Rocket } from "lucide-react"
 import { useTheme } from "next-themes"
-import { AmbientColorPicker } from "@/components/ambient-color-picker"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
 import { useAuth } from "@/hooks/use-auth"
@@ -65,16 +64,16 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             {/* Logo */}
             <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => onNavigate("landing")}>
               <div className="relative">
-                <div className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-lg shadow-black/5 group-hover:shadow-ambient-500/20 transition-all duration-300 group-hover:scale-105 overflow-hidden border border-border/50">
+                <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-lg shadow-black/5 group-hover:shadow-ambient-500/20 transition-all duration-300 group-hover:scale-105 overflow-hidden border border-border/50">
                   <img src="/logo.png" alt="Digiteria Logo" className="w-full h-full object-contain p-0.5" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-br from-ambient-400 to-ambient-500 rounded-xl blur-sm opacity-30 group-hover:opacity-50 transition-opacity duration-300" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
                   Digiteria
                 </span>
-                <span className="text-xs text-ambient-600 dark:text-ambient-400 -mt-1 font-medium">Software</span>
+                <span className="text-xs text-ambient-600 dark:text-ambient-400 -mt-1 font-medium">Software Solutions</span>
               </div>
             </div>
 
@@ -192,7 +191,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               </Button>
 
               <div className="flex items-center space-x-1 ml-2 pl-2 border-l border-border/60">
-                <AmbientColorPicker />
+
                 <Button
                   variant="ghost"
                   size="icon"
@@ -219,7 +218,6 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   </span>
                 )}
               </Button>
-              <AmbientColorPicker />
               <Button
                 variant="ghost"
                 size="icon"
@@ -339,7 +337,12 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
         </div>
       </nav>
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab={authModalTab} />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab={authModalTab}
+        onSuccess={() => onNavigate("profile")}
+      />
       <SellerApplicationModal isOpen={showSellerModal} onClose={() => setShowSellerModal(false)} />
     </>
   )

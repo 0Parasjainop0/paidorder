@@ -207,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // STRICT ADMIN AUTH CHECK FOR EXISTING USER
         if (dbUser.role === "admin") {
-          if (email !== "shourya-admin.digitera@gmail.com" || password !== "shourya91mcSparkWorke") {
+          if (email !== "shourya-admin.digiteria@gmail.com" || password !== "shourya91mcDigiteria") {
             return { error: { message: "Invalid admin credentials" } }
           }
         }
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Determine role based on strict admin check
         let role: "user" | "creator" | "admin" = "user"
-        if (email === "shourya-admin.digitera@gmail.com" && password === "shourya91mcSparkWorke") {
+        if (email === "shourya-admin.digiteria@gmail.com" && password === "shourya91mcDigiteria") {
           role = "admin"
         } else if (email.includes("creator")) {
           role = "creator"

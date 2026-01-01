@@ -15,9 +15,10 @@ interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   defaultTab?: "signin" | "signup"
+  onSuccess?: () => void
 }
 
-export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, defaultTab = "signin", onSuccess }: AuthModalProps) {
   const { signIn, signUp } = useAuth()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -46,6 +47,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     if (error) {
       setError(error.message)
     } else {
+      onSuccess?.()
       onClose()
       setSignInData({ email: "", password: "" })
     }
@@ -78,6 +80,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     if (error) {
       setError(error.message)
     } else {
+      onSuccess?.()
       onClose()
       setSignUpData({
         email: "",
@@ -96,7 +99,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            Welcome to <span className="gradient-text">SparkWorke</span>
+            Welcome to <span className="gradient-text">Digiteria</span>
           </DialogTitle>
         </DialogHeader>
 

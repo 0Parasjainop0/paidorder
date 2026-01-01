@@ -289,7 +289,12 @@ export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
                               variant="outline"
                               className="w-full shadow-md rounded-2xl"
                               onClick={() => {
-                                onSelectProduct(product)
+                                const fullProduct = {
+                                  ...product,
+                                  badges: [product.status === 'approved' ? 'Verified' : 'Pending', 'Admin Preview'],
+                                  creator: mockDb.getUser(product.creator_id)?.full_name || 'Creator'
+                                }
+                                onSelectProduct(fullProduct)
                                 onNavigate("product")
                               }}
                             >
@@ -507,7 +512,35 @@ export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="rounded-xl">Edit</Button>
+                        <Select
+                          value={user.role}
+                          onValueChange={(value: any) => {
+                            mockDb.updateUser(user.id, { role: value })
+                            toast.success("User role updated")
+                          }}
+                        >
+                          <SelectTrigger className="w-[120px] rounded-xl h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="creator">Creator</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => {
+                            if (window.confirm(`Delete user ${user.email}?`)) {
+                              mockDb.deleteUser(user.id)
+                              toast.success("User deleted")
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}

@@ -1,2 +1,2 @@
-# SparkWorke
+# Digiteria
 A Software Company

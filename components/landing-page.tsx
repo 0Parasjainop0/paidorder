@@ -19,6 +19,16 @@ import {
   DollarSign,
   CheckCircle,
   Play,
+  ChevronLeft,
+  ChevronRight,
+  Monitor,
+  Layout,
+  HardDrive,
+  MessageCircle,
+  BarChart3,
+  Search,
+  Download,
+  ShieldCheck,
 } from "lucide-react"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
@@ -116,31 +126,41 @@ const featuredProducts = [
   },
 ]
 
-const testimonials = [
+
+
+const showcaseData = [
   {
-    name: "Alex Chen",
-    role: "UI Designer",
-    avatar: "/placeholder.svg?height=60&width=60",
-    content:
-      "Digiteria transformed my side projects into a profitable business. The platform is incredibly easy to use!",
-    earnings: "$15,000+",
+    id: "01",
+    title: "Creator Insights",
+    description: "Get a comprehensive view of your digital business. Track revenue, monitor active users, and analyze conversion rates with our advanced analytics dashboard.",
+    image: "/showcase/dashboard.png",
+    features: ["Revenue Charts", "Active Users", "Conversion Rates", "Top Products"],
+    icon: BarChart3
   },
   {
-    name: "Sarah Miller",
-    role: "Full-Stack Developer",
-    avatar: "/placeholder.svg?height=60&width=60",
-    content:
-      "I've tried many platforms, but Digiteria offers the best combination of features and fair commission rates.",
-    earnings: "$42,000+",
+    id: "02",
+    title: "Global Marketplace",
+    description: "Discover high-quality digital assets from creators worldwide. Our optimized marketplace makes finding UI kits, 3D models, and plugins effortless.",
+    image: "/showcase/marketplace.png",
+    features: ["Smart Search", "Category Grid", "Asset Preview", "Creator Profiles"],
+    icon: Search
   },
   {
-    name: "Marcus Johnson",
-    role: "Course Creator",
-    avatar: "/placeholder.svg?height=60&width=60",
-    content:
-      "The analytics dashboard helps me understand my customers better. My sales have tripled since joining!",
-    earnings: "$28,000+",
+    id: "03",
+    title: "Secure Delivery",
+    description: "Instant, worry-free digital fulfillment. Every purchase is verified and delivered securely with automated license management for your peace of mind.",
+    image: "/showcase/delivery.png",
+    features: ["Instant Downloads", "Verified Badge", "License Keys", "Multiple Formats"],
+    icon: Download
   },
+  {
+    id: "04",
+    title: "Smart Administration",
+    description: "Total platform control at your fingertips. Manage users, approve products, and monitor system health from a single, sophisticated administrative interface.",
+    image: "/showcase/admin.png",
+    features: ["User Management", "Approval Workflow", "Health Monitoring", "System Audit"],
+    icon: ShieldCheck
+  }
 ]
 
 export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
@@ -149,6 +169,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
   const [showSellerModal, setShowSellerModal] = useState(false)
   const [landingStats, setLandingStats] = useState(stats)
   const [featured, setFeatured] = useState<any[]>([])
+  const [currentShowcase, setCurrentShowcase] = useState(0)
 
   useEffect(() => {
     const fetchData = () => {
@@ -274,7 +295,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => onNavigate("dashboard")}
+                onClick={handleStartSelling}
                 className="border-2 border-ambient-300 dark:border-ambient-700 text-ambient-700 dark:text-ambient-300 hover:bg-ambient-50 dark:hover:bg-ambient-950/50 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-300 hover:scale-105"
               >
                 Start Selling
@@ -322,40 +343,105 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24">
+      {/* Showcase Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-ambient-950/20 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="bg-ambient-100 text-ambient-700 dark:bg-ambient-900/50 dark:text-ambient-300 mb-4">
-              Why Choose Digiteria
+            <Badge className="bg-ambient-500/10 text-ambient-500 mb-4 border-ambient-500/20">
+              Showcase
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Everything you need to{" "}
-              <span className="bg-gradient-to-r from-ambient-500 to-ambient-600 bg-clip-text text-transparent">
-                succeed
-              </span>
+              Making Management{" "}
+              <span className="text-purple-500">Easy</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We provide the tools, platform, and support to help you build a thriving digital
-              business.
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Advanced control panels with terminal access, file management, and real-time monitoring.
+              Built for developers, designed for everyone.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature) => (
-              <Card
-                key={feature.title}
-                className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl hover:shadow-xl hover:shadow-ambient-500/10 transition-all duration-500 hover:scale-105 group"
-              >
-                <CardContent className="p-8">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-ambient-500 to-ambient-600 flex items-center justify-center mb-6 shadow-lg shadow-ambient-500/25 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="w-7 h-7 text-white" />
+          <div className="relative group">
+            <Card className="border-ambient-800/30 bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-[2rem] overflow-hidden shadow-2xl shadow-ambient-500/5">
+              <CardContent className="p-0">
+                <div className="flex flex-col lg:flex-row min-h-[500px]">
+                  {/* Content Area */}
+                  <div className="flex-1 p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-ambient-500/10 flex items-center justify-center mb-6">
+                      {(() => {
+                        const Icon = showcaseData[currentShowcase].icon
+                        return <Icon className="w-6 h-6 text-ambient-500" />
+                      })()}
+                    </div>
+                    <h3 className="text-3xl font-bold mb-4">{showcaseData[currentShowcase].title}</h3>
+                    <p className="text-muted-foreground text-lg mb-8 leading-relaxed max-w-md">
+                      {showcaseData[currentShowcase].description}
+                    </p>
+                    <div className="flex flex-wrap gap-3 mb-8">
+                      {showcaseData[currentShowcase].features.map((feature) => (
+                        <Badge key={feature} variant="secondary" className="bg-stone-900 text-stone-300 border-stone-800 hover:bg-stone-800 py-1 px-3">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
+
+                  {/* Image Area */}
+                  <div className="flex-1 relative bg-stone-900/20 border-l border-white/5 p-4 lg:p-8 flex items-center justify-center">
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-[1.02] transition-transform duration-700">
+                      <img
+                        src={showcaseData[currentShowcase].image}
+                        alt={showcaseData[currentShowcase].title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-transparent pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Controls */}
+                <div className="border-t border-white/5 px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white/[0.02]">
+                  <div className="flex items-center gap-12 order-2 sm:order-1">
+                    <button
+                      onClick={() => setCurrentShowcase((prev) => (prev === 0 ? showcaseData.length - 1 : prev - 1))}
+                      className="flex items-center gap-2 text-sm font-medium text-stone-400 hover:text-white transition-colors group/btn"
+                    >
+                      <ChevronLeft className="w-4 h-4 group-hover/btn:-translate-x-1 transition-transform" />
+                      Previous
+                    </button>
+                    <div className="hidden md:flex items-center gap-4">
+                      {showcaseData.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentShowcase(i)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 border ${currentShowcase === i
+                            ? "bg-ambient-500 border-ambient-500 text-white shadow-lg shadow-ambient-500/20 scale-110"
+                            : "border-stone-800 text-stone-500 hover:border-stone-600 hover:text-stone-300"
+                            }`}
+                        >
+                          {String(i + 1).padStart(2, '0')}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setCurrentShowcase((prev) => (prev === showcaseData.length - 1 ? 0 : prev + 1))}
+                      className="flex items-center gap-2 text-sm font-medium text-stone-400 hover:text-white transition-colors group/btn"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-4 order-1 sm:order-2">
+                    <span className="text-xs font-mono text-stone-600">Panel {currentShowcase + 1} of 4</span>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-ambient-500/10 border border-ambient-500/20">
+                      <div className="w-1.5 h-1.5 rounded-full bg-ambient-500 animate-pulse" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-ambient-500">Live System Preview</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -465,51 +551,6 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-br from-ambient-50 to-ambient-100/50 dark:from-ambient-950/50 dark:to-ambient-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="bg-white dark:bg-ambient-900 text-ambient-700 dark:text-ambient-300 mb-4">
-              Success Stories
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Creators{" "}
-              <span className="bg-gradient-to-r from-ambient-500 to-ambient-600 bg-clip-text text-transparent">
-                love
-              </span>{" "}
-              Digiteria
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <Card
-                key={testimonial.name}
-                className="border-ambient-200/50 dark:border-ambient-800/30 bg-white dark:bg-card rounded-2xl"
-              >
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-4 mb-6">
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-14 h-14 rounded-full object-cover"
-                    />
-                    <div>
-                      <h4 className="font-semibold">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground mb-6 italic">"{testimonial.content}"</p>
-                  <div className="flex items-center gap-2 text-ambient-600 dark:text-ambient-400 font-semibold">
-                    <DollarSign className="w-5 h-5" />
-                    <span>Earned {testimonial.earnings}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-24">

@@ -15,10 +15,13 @@ import { ContactPage } from "@/components/contact-page"
 import { ProfilePage } from "@/components/profile/profile-page"
 import { CartPage } from "@/components/cart-page"
 import { CheckoutPage } from "@/components/checkout-page"
+import { Sidebar } from "@/components/sidebar"
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("landing")
   const [selectedProduct, setSelectedProduct] = useState(null)
+
+  const isDashboard = ["admin", "profile", "dashboard"].includes(currentPage)
 
   const renderPage = () => {
     switch (currentPage) {
@@ -50,13 +53,15 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <div className="min-h-screen bg-gradient-to-br from-background via-background to-ambient-50/30 dark:to-ambient-950/20">
-            <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
-            <main className="min-h-screen">{renderPage()}</main>
-            <Footer />
+            {!isDashboard && <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />}
+            {isDashboard && <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />}
+            <main className={`min-h-screen ${isDashboard ? "pl-64" : ""}`}>
+              {renderPage()}
+            </main>
+            {!isDashboard && <Footer />}
           </div>
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>
   )
 }
-

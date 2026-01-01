@@ -48,7 +48,7 @@ export function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold">Digiteria</span>
-                <span className="text-xs text-ambient-400 -mt-1">Software</span>
+                <span className="text-xs text-ambient-400 -mt-1">Software Solutions</span>
               </div>
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
