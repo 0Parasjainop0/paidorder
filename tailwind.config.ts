@@ -192,6 +192,14 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(calc(-50% - 1.5rem))" }
         },
+        "luxury-entrance": {
+          "0%": { opacity: "0", filter: "blur(10px)", transform: "scale(0.8) translateY(30px)" },
+          "100%": { opacity: "1", filter: "blur(0px)", transform: "scale(1) translateY(0px)" }
+        },
+        "reveal": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -216,6 +224,8 @@ const config: Config = {
         "ping-slow": "ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite",
         "text-gradient": "text-gradient 4s ease infinite",
         "scroll": "scroll 40s linear infinite",
+        "luxury-entrance": "luxury-entrance 1s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+        "reveal": "reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
       },
       transitionDuration: {
         "400": "400ms",

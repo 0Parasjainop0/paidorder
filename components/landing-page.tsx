@@ -317,32 +317,32 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
             {/* Text Content */}
             <div className="text-center lg:text-left">
               {/* Badge */}
-              <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/60 dark:to-ambient-950/40 text-ambient-700 dark:text-ambient-300 text-sm font-medium mb-8 animate-fade-in shadow-lg shadow-ambient-500/10 border border-ambient-200/50 dark:border-ambient-700/30">
+              <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/60 dark:to-ambient-950/40 text-ambient-700 dark:text-ambient-300 text-sm font-medium mb-8 animate-reveal opacity-0 shadow-lg shadow-ambient-500/10 border border-ambient-200/50 dark:border-ambient-700/30" style={{ animationDelay: '1.6s' }}>
                 <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                 The #1 Digital Marketplace for Creators
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-fade-in-up whitespace-nowrap">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-reveal opacity-0 whitespace-nowrap" style={{ animationDelay: '1.7s' }}>
                 <span className="gradient-text-animated inline-block">
                   Build.
                 </span>{" "}
-                <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent inline-block" style={{ animationDelay: '100ms' }}>
+                <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent inline-block">
                   Sell.
                 </span>{" "}
-                <span className="gradient-text-animated inline-block" style={{ animationDelay: '200ms' }}>
+                <span className="gradient-text-animated inline-block">
                   Grow.
                 </span>
               </h1>
 
               {/* Subheadline */}
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed animate-reveal opacity-0" style={{ animationDelay: '1.8s' }}>
                 The ultimate marketplace for digital creators. Sell templates, courses, software,
                 designs, and more. Turn your expertise into income.
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-10 animate-reveal opacity-0" style={{ animationDelay: '1.9s' }}>
                 <Button
                   size="lg"
                   onClick={() => onNavigate("marketplace")}
@@ -365,9 +365,9 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
               </div>
 
               {/* Trust Badges */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-muted-foreground animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-muted-foreground animate-reveal opacity-0" style={{ animationDelay: '2.0s' }}>
                 {["No monthly fees", "Low commission", "Instant payouts", "24/7 Support"].map((text, i) => (
-                  <div key={text} className="flex items-center gap-2 group" style={{ animationDelay: `${600 + i * 100}ms` }}>
+                  <div key={text} className="flex items-center gap-2 group" style={{ animationDelay: `${2.1 + i * 0.1}s` }}>
                     <CheckCircle className="w-5 h-5 text-green-500 group-hover:scale-110 transition-transform" />
                     <span className="group-hover:text-foreground transition-colors">{text}</span>
                   </div>
@@ -376,7 +376,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
             </div>
 
             {/* Animated Tech Illustration */}
-            <div className="hidden lg:flex items-center justify-center animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <div className="hidden lg:flex items-center justify-center animate-reveal opacity-0" style={{ animationDelay: '2.2s' }}>
               <AnimatedTechCubes />
             </div>
           </div>

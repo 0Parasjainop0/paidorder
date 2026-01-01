@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { Preloader } from '@/components/ui/preloader'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,7 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <Preloader />
+        {children}
+      </body>
     </html>
   )
 }
