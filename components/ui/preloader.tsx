@@ -5,8 +5,20 @@ import { useEffect, useState } from "react"
 export function Preloader() {
     const [isVisible, setIsVisible] = useState(true)
     const [shouldRender, setShouldRender] = useState(true)
+    const [progress, setProgress] = useState(0)
 
     useEffect(() => {
+        // Handle progress increment
+        const interval = setInterval(() => {
+            setProgress(prev => {
+                if (prev >= 100) {
+                    clearInterval(interval)
+                    return 100
+                }
+                return prev + 1
+            })
+        }, 12) // Approx 100 steps over 1.2s
+
         // Start exit animation after 1.5s
         const timer = setTimeout(() => {
             setIsVisible(false)
@@ -18,6 +30,7 @@ export function Preloader() {
         }, 2500)
 
         return () => {
+            clearInterval(interval)
             clearTimeout(timer)
             clearTimeout(removeTimer)
         }
@@ -49,14 +62,28 @@ export function Preloader() {
                 </div>
 
                 {/* Text Reveal */}
-                <div className="mt-8 overflow-hidden">
+                <div className="mt-8 overflow-hidden flex flex-col items-center">
                     <h1 className="text-3xl font-bold tracking-[0.2em] text-white animate-reveal opacity-0" style={{ animationDelay: "200ms" }}>
                         DIGITERIA
                     </h1>
-                    <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-ambient-500/50 to-transparent mt-2 animate-reveal opacity-0" style={{ animationDelay: "400ms" }} />
+                    <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-ambient-500/50 to-transparent mt-2 animate-reveal opacity-0" style={{ animationDelay: "400ms" }} />
                     <p className="text-[10px] text-ambient-400 tracking-[0.4em] uppercase mt-3 text-center animate-reveal opacity-0" style={{ animationDelay: "600ms" }}>
                         Software Solutions
                     </p>
+
+                    {/* Progress Bar Container */}
+                    <div className="mt-10 w-48 h-[2px] bg-white/5 rounded-full overflow-hidden relative animate-reveal opacity-0" style={{ animationDelay: "800ms" }}>
+                        <div
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-ambient-600 to-ambient-400 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 animate-shimmer" />
+                    </div>
+
+                    {/* Percentage Counter */}
+                    <div className="mt-3 text-[10px] font-mono text-ambient-500/70 animate-reveal opacity-0 tracking-[0.3em] uppercase" style={{ animationDelay: "900ms" }}>
+                        {progress}% Loading
+                    </div>
                 </div>
             </div>
         </div>
