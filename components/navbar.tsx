@@ -44,11 +44,16 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const isSeller = profile?.role === "creator" || profile?.role === "admin"
   const navItems = [
     { id: "landing", label: "Home" },
-    { id: "marketplace", label: "Marketplace" },
-    { id: "contact", label: "Contact" },
   ]
+
+  if (isSeller) {
+    navItems.push({ id: "dashboard", label: "Marketplace" })
+  }
+
+  navItems.push({ id: "contact", label: "Contact" })
 
   const handleSignOut = async () => {
     await signOut()

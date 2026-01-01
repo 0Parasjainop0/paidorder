@@ -24,20 +24,24 @@ interface SidebarProps {
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     const { profile, signOut } = useAuth()
 
+    const isSeller = profile?.role === "creator" || profile?.role === "admin"
     const menuItems = [
         { id: "landing", label: "Home", icon: Home },
-        { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+    ]
+
+    // Marketplace is only visible to sellers and points to the dashboard id
+    if (isSeller) {
+        menuItems.push({ id: "dashboard", label: "Marketplace", icon: ShoppingBag })
+    }
+
+    menuItems.push(
         { id: "analytics", label: "Analytics", icon: LineChart },
         { id: "profile", label: "Profile", icon: User },
         { id: "contact", label: "Contact", icon: MessageSquare },
-    ]
+    )
 
     if (profile?.role === "admin") {
         menuItems.push({ id: "admin", label: "Admin Panel", icon: Shield })
-    }
-
-    if (profile?.role === "creator") {
-        menuItems.push({ id: "dashboard", label: "Creator Dashboard", icon: LayoutDashboard })
     }
 
     const handleSignOut = async () => {
