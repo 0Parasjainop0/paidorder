@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
-import { mockDb } from "@/lib/mock-db"
+import { SEED_DATA } from "@/lib/seed-data"
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -24,15 +24,20 @@ export async function POST(req: Request) {
                 continue
             }
 
-            // Fetch product from mock DB (server-side safe via SEED_DATA fallback)
-            const product = mockDb.getProduct(item.id)
+            // Fetch product from seed data (server-side safe)
+            const product = SEED_DATA.products.find(p => p.id === item.id)
+            let price = 0
 
-            if (!product) {
-                console.warn(`Product not found: ${item.id}`)
+            if (product) {
+                price = product.price
+            } else if (item.price) {
+                // Fallback to client price for dynamically created items
+                price = Number(item.price)
+            } else {
+                console.warn(`Product not found and no price provided: ${item.id}`)
                 continue
             }
 
-            const price = product.price
             const quantity = item.quantity
 
             // Add to total
@@ -53,10 +58,8 @@ export async function POST(req: Request) {
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount: amountInCents,
-            currency: "usd",
-            automatic_payment_methods: {
-                enabled: true,
-            },
+            currency: "inr",
+            payment_method_types: ["card"],
         })
 
         return NextResponse.json({
@@ -64,8 +67,8 @@ export async function POST(req: Request) {
             amount: finalTotal, // Return formulated total for UI verification if needed
         })
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("[PAYMENT_INTENT_ERROR]", error)
-        return new NextResponse("Internal Error", { status: 500 })
+        return new NextResponse(`Internal Error: ${error.message}`, { status: 500 })
     }
 }

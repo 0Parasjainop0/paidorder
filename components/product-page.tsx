@@ -353,7 +353,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-semibold text-slate-900 dark:text-white">{license.name}</h4>
-                        <span className="text-xl font-bold text-blue-600 dark:text-blue-400">${license.price}</span>
+                        <span className="text-xl font-bold text-blue-600 dark:text-blue-400">₹{license.price}</span>
                       </div>
                       <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">{license.description}</p>
                       <ul className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
@@ -397,7 +397,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     ) : (
                       <>
                         <ShoppingCart className="w-5 h-5 mr-2" />
-                        Add to Cart - ${licenses.find((l) => l.id === selectedLicense)?.price}
+                        Add to Cart - ₹{licenses.find((l) => l.id === selectedLicense)?.price}
                       </>
                     )}
                   </Button>

@@ -124,6 +124,10 @@ export type Database = {
           review_count: number
           created_at: string
           updated_at: string
+          // Product file fields
+          file_url: string | null
+          file_name: string | null
+          file_size: number | null
         }
         Insert: {
           id?: string
@@ -142,6 +146,10 @@ export type Database = {
           gallery_urls?: string[]
           status?: "draft" | "pending" | "approved" | "rejected" | "archived"
           is_featured?: boolean
+          // Product file fields
+          file_url?: string | null
+          file_name?: string | null
+          file_size?: number | null
         }
         Update: {
           title?: string
@@ -164,6 +172,10 @@ export type Database = {
           sales_count?: number
           rating?: number
           review_count?: number
+          // Product file fields
+          file_url?: string | null
+          file_name?: string | null
+          file_size?: number | null
         }
       }
       digital_files: {

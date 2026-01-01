@@ -19,6 +19,8 @@ import {
   Trash2,
   ArrowLeft,
   Upload,
+  FileArchive,
+  AlertCircle,
 } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -60,6 +62,8 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
     category: "ui",
   })
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number; dataUrl: string } | null>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
 
   const [products, setProducts] = useState<Product[]>([])
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -77,7 +81,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
     return mockDb.subscribe(refreshData)
   }, [user])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
@@ -88,10 +92,47 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
     }
   }
 
+  const handleProductFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    setFileError(null)
+    if (file) {
+      // Max 100MB limit
+      if (file.size > 100 * 1024 * 1024) {
+        setFileError("File size must be less than 100MB")
+        return
+      }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setUploadedFile({
+          name: file.name,
+          size: file.size,
+          dataUrl: reader.result as string
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSaveProduct = () => {
     if (!user) return
 
+    // Validation for new products (require file)
+    if (!editingProduct && !uploadedFile) {
+      setFileError("Product file is required")
+      toast.error("Please upload a product file")
+      return
+    }
+
+    if (!newProduct.title.trim()) {
+      toast.error("Please enter a product title")
+      return
+    }
+
     const price = Number.parseFloat(newProduct.price) || 0
+    if (price <= 0) {
+      toast.error("Please enter a valid price")
+      return
+    }
 
     if (editingProduct) {
       mockDb.updateProduct(editingProduct.id, {
@@ -100,6 +141,10 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
         price: price,
         category_id: newProduct.category,
         thumbnail_url: uploadedImage || editingProduct.thumbnail_url,
+        // Store file info if updated
+        file_url: uploadedFile?.dataUrl || editingProduct.file_url,
+        file_name: uploadedFile?.name || editingProduct.file_name,
+        file_size: uploadedFile?.size || editingProduct.file_size,
         updated_at: new Date().toISOString()
       })
       toast.success("Product updated successfully")
@@ -113,7 +158,11 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
         creator_id: user.id,
         status: "pending",
         tags: [newProduct.category, "new"],
-        thumbnail_url: uploadedImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
+        thumbnail_url: uploadedImage || "/placeholder.svg?height=400&width=600",
+        // Store product file
+        file_url: uploadedFile!.dataUrl,
+        file_name: uploadedFile!.name,
+        file_size: uploadedFile!.size,
       }
       mockDb.addProduct(productData)
       toast.success("Product submitted for review!")
@@ -124,6 +173,8 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
     setEditingProduct(null)
     setNewProduct({ title: "", price: "", description: "", category: "ui" })
     setUploadedImage(null)
+    setUploadedFile(null)
+    setFileError(null)
     setActiveTab("products")
   }
 
@@ -137,6 +188,14 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
     })
     setIsAddProductOpen(true)
     setUploadedImage(product.thumbnail_url || null)
+    // Set file info if editing existing product
+    if (product.file_name) {
+      setUploadedFile({
+        name: product.file_name,
+        size: product.file_size || 0,
+        dataUrl: product.file_url || ""
+      })
+    }
   }
 
   const handleDeleteProduct = (productId: string) => {
@@ -155,7 +214,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
   const stats = [
     {
       title: "Total Earnings",
-      value: `$${totalEarnings.toFixed(2)}`,
+      value: `₹${totalEarnings.toFixed(2)}`,
       change: "+0%", // Placeholder for real trend
       icon: DollarSign,
       color: "text-green-600",
@@ -291,7 +350,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($)</Label>
+                  <Label htmlFor="price">Price (₹)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -334,11 +393,64 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                         id="image"
                         type="file"
                         accept="image/*"
-                        onChange={handleFileChange}
+                        onChange={handleImageChange}
                         className="rounded-xl"
                       />
                       <p className="text-[10px] text-muted-foreground mt-1">Recommended: 800x600px. Max: 2MB.</p>
                     </div>
+                  </div>
+                </div>
+                {/* Product File Upload - MANDATORY */}
+                <div className="grid gap-2">
+                  <Label htmlFor="productFile" className="flex items-center gap-2">
+                    Product File <span className="text-red-500">*</span>
+                    <span className="text-xs text-muted-foreground font-normal">(Required)</span>
+                  </Label>
+                  <div className="border-2 border-dashed border-ambient-200 dark:border-ambient-800 rounded-xl p-4 bg-ambient-50/30 dark:bg-ambient-900/20">
+                    {uploadedFile ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-ambient-500 to-ambient-600 flex items-center justify-center">
+                            <FileArchive className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm truncate max-w-[200px]">{uploadedFile.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(uploadedFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setUploadedFile(null)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <FileArchive className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground mb-2">Upload your product file</p>
+                        <Input
+                          id="productFile"
+                          type="file"
+                          accept=".zip,.rar,.7z,.tar,.gz,.pdf,.psd,.ai,.sketch,.fig,.xd"
+                          onChange={handleProductFileChange}
+                          className="rounded-xl"
+                        />
+                        <p className="text-[10px] text-muted-foreground mt-2">
+                          Supported: .zip, .rar, .7z, .pdf, .psd, .ai, .sketch, .fig, .xd • Max: 100MB
+                        </p>
+                      </div>
+                    )}
+                    {fileError && (
+                      <div className="flex items-center gap-2 mt-2 text-red-500 text-sm">
+                        <AlertCircle className="w-4 h-4" />
+                        {fileError}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -458,13 +570,13 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm text-muted-foreground">
                             <div>
-                              <span className="font-medium">Price:</span> ${product.price}
+                              <span className="font-medium">Price:</span> ₹{product.price}
                             </div>
                             <div>
                               <span className="font-medium">Sales:</span> {product.sales_count}
                             </div>
                             <div>
-                              <span className="font-medium">Revenue:</span> ${(product.sales_count || 0) * product.price}
+                              <span className="font-medium">Revenue:</span> ₹{(product.sales_count || 0) * product.price}
                             </div>
                             <div>
                               <span className="font-medium">Views:</span> {product.views}
@@ -523,7 +635,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                           <div>
                             <p className="font-medium">{product.title}</p>
                             <p className="text-sm text-muted-foreground">
-                              {product.sales_count} sales • ${(product.sales_count || 0) * product.price}
+                              {product.sales_count} sales • ₹{(product.sales_count || 0) * product.price}
                             </p>
                           </div>
                           <Badge variant="secondary">#{index + 1}</Badge>
@@ -541,15 +653,15 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>Total Revenue</span>
-                      <span className="font-semibold">${totalEarnings.toFixed(2)}</span>
+                      <span className="font-semibold">₹{totalEarnings.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Platform Fee (10%)</span>
-                      <span className="text-red-600">-${(totalEarnings * 0.1).toFixed(2)}</span>
+                      <span className="text-red-600">-₹{(totalEarnings * 0.1).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Your Earnings (90%)</span>
-                      <span className="font-semibold text-green-600">${(totalEarnings * 0.9).toFixed(2)}</span>
+                      <span className="font-semibold text-green-600">₹{(totalEarnings * 0.9).toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
