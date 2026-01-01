@@ -3,10 +3,11 @@
 import { useEffect, useState, useMemo } from "react"
 
 const LOADING_STATUSES = [
-    "INITIALIZING CORE...",
-    "LOADING ASSETS...",
-    "VIRTUALIZING UI...",
-    "SYSTEM READY"
+    "SYNCING NEURAL LINK...",
+    "DECRYPTING CORE ASSETS...",
+    "VIRTUALIZING ENVIRONMENT...",
+    "BYPASSING FIREWALL...",
+    "SYSTEM BREACH SUCCESSFUL"
 ]
 
 export function Preloader() {
@@ -17,35 +18,35 @@ export function Preloader() {
     const [statusIndex, setStatusIndex] = useState(0)
 
     useEffect(() => {
-        // High-end mouse tracking (optimized with RequestAnimationFrame style)
         const handleMouseMove = (e: MouseEvent) => {
-            setMousePos({
-                x: (e.clientX / window.innerWidth - 0.5) * 15,
-                y: (e.clientY / window.innerHeight - 0.5) * 15
+            // Smoothly interpolate the target position
+            requestAnimationFrame(() => {
+                setMousePos({
+                    x: (e.clientX / window.innerWidth - 0.5) * 30,
+                    y: (e.clientY / window.innerHeight - 0.5) * 30
+                })
             })
         }
         window.addEventListener("mousemove", handleMouseMove)
 
-        // Progress & Status Logic
         const startTime = Date.now()
-        const duration = 2500 // 2.5s total load
+        const duration = 2800 // Slightly longer for the new effects
 
         const interval = setInterval(() => {
             const elapsed = Date.now() - startTime
             const newProgress = Math.min((elapsed / duration) * 100, 100)
             setProgress(newProgress)
 
-            // Dynamic Status Scaling
             const currentStatus = Math.floor((newProgress / 100) * (LOADING_STATUSES.length - 1))
             setStatusIndex(currentStatus)
 
             if (newProgress >= 100) {
                 clearInterval(interval)
-                setTimeout(() => setIsVisible(false), 500)
+                setTimeout(() => setIsVisible(false), 800)
             }
         }, 16)
 
-        const removeTimer = setTimeout(() => setShouldRender(false), 4500)
+        const removeTimer = setTimeout(() => setShouldRender(false), 5000)
 
         return () => {
             window.removeEventListener("mousemove", handleMouseMove)
@@ -54,144 +55,181 @@ export function Preloader() {
         }
     }, [])
 
-    const particles = useMemo(() => (
-        [...Array(25)].map((_, i) => (
-            <div
-                key={i}
-                className="absolute bg-white/10 rounded-full animate-pulse pointer-events-none"
-                style={{
-                    width: (Math.random() * 2 + 0.5) + 'px',
-                    height: (Math.random() * 2 + 0.5) + 'px',
-                    top: (Math.random() * 100) + '%',
-                    left: (Math.random() * 100) + '%',
-                    animationDelay: (Math.random() * 5) + 's',
-                    animationDuration: (Math.random() * 3 + 2) + 's',
-                }}
-            />
-        ))
+    // Memoize layers for performance
+    const bgElements = useMemo(() => (
+        <>
+            {/* Deep Space Stars - Deep Layer (Slowest) */}
+            <div className="absolute inset-0">
+                {[...Array(40)].map((_, i) => (
+                    <div
+                        key={`star-d-${i}`}
+                        className="absolute bg-white/10 rounded-full animate-pulse"
+                        style={{
+                            width: '1px',
+                            height: '1px',
+                            top: Math.random() * 100 + '%',
+                            left: Math.random() * 100 + '%',
+                            animationDuration: (Math.random() * 3 + 2) + 's',
+                            animationDelay: Math.random() * 5 + 's'
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Glowing Tech Nodes - Mid Layer */}
+            <div className="absolute inset-0">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={`node-${i}`}
+                        className="absolute w-1 h-1 bg-ambient-500/20 rounded-full blur-[2px] animate-float"
+                        style={{
+                            top: Math.random() * 100 + '%',
+                            left: Math.random() * 100 + '%',
+                            animationDelay: i * 0.5 + 's',
+                            animationDuration: '6s'
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-ambient-400 rounded-full animate-ping opacity-40" />
+                    </div>
+                ))}
+            </div>
+        </>
     ), [])
 
     if (!shouldRender) return null
 
     return (
         <div
-            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#020202] transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-110 pointer-events-none"
+            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#010102] transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${isVisible ? "opacity-100" : "opacity-0 invisible pointer-events-none"
                 }`}
         >
-            {/* 🌌 MAX LEVEL BACKGROUND ENVIRONMENT */}
-            <div
-                className="absolute inset-0 overflow-hidden pointer-events-none transition-transform duration-1000 ease-out"
-                style={{ transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)` }}
-            >
-                {/* Nebula Core */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-ambient-500/5 rounded-full blur-[120px] animate-pulse-slow" />
-                    <div className="absolute bottom-[20%] right-[20%] w-[60%] h-[60%] bg-purple-500/5 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '-3s' }} />
+            {/* 🌌 ULTIMATE PARALLAX BACKGROUND */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+
+                {/* Layer 1: Deep Nebula (Slow Parallax) */}
+                <div
+                    className="absolute inset-[-10%] transition-transform duration-1000 ease-out opacity-40"
+                    style={{ transform: `translate3d(${mousePos.x * 0.3}px, ${mousePos.y * 0.3}px, 0) scale(1.1)` }}
+                >
+                    <div className="absolute top-[10%] left-[10%] w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,#3b82f608_0%,transparent_70%)] blur-[120px]" />
+                    <div className="absolute bottom-[10%] right-[10%] w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,#a855f705_0%,transparent_70%)] blur-[120px]" />
                 </div>
 
-                {/* Cyber Grid */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+                {/* Layer 2: Starfield & Grid (Medium Parallax) */}
+                <div
+                    className="absolute inset-[-5%] transition-transform duration-700 ease-out"
+                    style={{ transform: `translate3d(${mousePos.x * 0.6}px, ${mousePos.y * 0.6}px, 0)` }}
+                >
+                    {bgElements}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(circle_at_center,#000_30%,transparent_100%)] opacity-40" />
+                </div>
 
-                {/* Floating Tech Debris / Particles */}
-                {particles}
+                {/* Layer 3: Interactive Lens Flares (Fast Parallax) */}
+                <div
+                    className="absolute inset-0 transition-transform duration-500 ease-out"
+                    style={{ transform: `translate3d(${mousePos.x * 1.2}px, ${mousePos.y * 1.2}px, 0)` }}
+                >
+                    <div className="absolute top-[30%] left-[20%] w-px h-64 bg-gradient-to-b from-transparent via-ambient-500/10 to-transparent rotate-[30deg] blur-md" />
+                    <div className="absolute bottom-[20%] right-[30%] w-px h-64 bg-gradient-to-b from-transparent via-purple-500/10 to-transparent rotate-[30deg] blur-md" />
+                </div>
 
-                {/* Grainy Noise Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] contrast-150 brightness-150" />
+                {/* Layer 4: Floating "Data Streams" */}
+                <div className="absolute inset-0 opacity-20">
+                    {[...Array(3)].map((_, i) => (
+                        <div
+                            key={`stream-${i}`}
+                            className="absolute h-px w-full bg-gradient-to-r from-transparent via-ambient-500/20 to-transparent animate-shimmer"
+                            style={{ top: (25 + i * 25) + '%', animationDuration: (3 + i) + 's' }}
+                        />
+                    ))}
+                </div>
+
+                {/* Post-Processing */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] contrast-150 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,1,2,0.9)_100%)]" />
             </div>
 
-            {/* 🏗️ CORE INTERFACE */}
-            <div className="relative flex flex-col items-center">
+            {/* 🏗️ MAIN INTERFACE UNIT */}
+            <div
+                className="relative flex flex-col items-center transition-transform duration-500"
+                style={{ transform: `perspective(1000px) rotateX(${mousePos.y * -0.1}deg) rotateY(${mousePos.x * 0.1}deg)` }}
+            >
 
-                {/* LOGO HUD */}
-                <div className="relative group p-8">
-                    {/* Rotating Rings */}
-                    <div className="absolute inset-0 border border-white/5 rounded-full animate-spin-slow opacity-20" />
-                    <div className="absolute inset-2 border border-ambient-500/10 rounded-full animate-reverse-spin opacity-20" />
+                {/* HUD LOGO CONTAINER */}
+                <div className="relative group p-10">
+                    {/* Multi-Ring Tech System */}
+                    <div className="absolute inset-0 border-[0.5px] border-white/5 rounded-full animate-spin-slow opacity-10" />
+                    <div className="absolute inset-4 border border-ambient-500/10 rounded-full animate-reverse-spin opacity-20" />
+                    <div className="absolute inset-8 border border-white/5 rounded-full animate-spin-slow opacity-10" style={{ animationDuration: '15s' }} />
 
-                    {/* Main Container */}
-                    <div className="relative w-32 h-32 bg-zinc-900/50 backdrop-blur-3xl rounded-[2.5rem] flex items-center justify-center border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-luxury-entrance overflow-hidden">
-                        {/* Scanning Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ambient-500/10 to-transparent h-1/2 w-full -translate-y-full animate-scan-slow pointer-events-none select-none" />
+                    {/* Glowing Core */}
+                    <div className="absolute inset-0 bg-ambient-500/5 rounded-full blur-3xl animate-pulse" />
+
+                    <div className="relative w-36 h-36 bg-[#030304]/80 backdrop-blur-3xl rounded-[2.75rem] flex items-center justify-center border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-luxury-entrance overflow-hidden">
+                        {/* Vertical Scanning Pulse */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ambient-400/20 to-transparent h-1/3 w-full -translate-y-full animate-scan-slow" />
 
                         <img
                             src="/logo.png"
                             alt="Digiteria Logo"
-                            className="w-16 h-16 object-contain filter drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-transform duration-500 group-hover:scale-110"
+                            className="w-16 h-16 object-contain filter drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-700 group-hover:scale-110 group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)]"
                         />
                     </div>
 
-                    {/* Corner Brackets */}
-                    <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-ambient-500/30 rounded-tl-sm" />
-                    <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/10 rounded-tr-sm" />
-                    <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/10 rounded-bl-sm" />
-                    <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-ambient-500/30 rounded-br-sm" />
+                    {/* Cybernetic Accents */}
+                    <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-ambient-500/40 rounded-tl-lg" />
+                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-ambient-500/40 rounded-br-lg" />
                 </div>
 
-                {/* BRAND REVEAL */}
-                <div className="mt-10 flex flex-col items-center">
-                    <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-ambient-500/50" />
-                        <span className="text-[10px] font-mono tracking-[0.5em] text-ambient-500/80 animate-pulse">SYSTEM CORE</span>
-                        <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-ambient-500/50" />
+                {/* BRAND ARCHITECTURE */}
+                <div className="mt-8 flex flex-col items-center">
+                    <div className="flex items-center space-x-3 mb-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-ambient-500 animate-ping" />
+                        <span className="text-[9px] font-mono tracking-[0.6em] text-ambient-400/80 font-bold">DIGITAL CORE ONLINE</span>
                     </div>
 
-                    {/* Staggered Letter Reveal */}
-                    <h1 className="text-4xl font-black tracking-[0.25em] text-white flex items-center select-none">
+                    <h1 className="text-5xl font-black tracking-[0.3em] text-white flex items-center select-none drop-shadow-2xl">
                         {"DIGITERIA".split("").map((char, i) => (
                             <span
                                 key={i}
                                 className="animate-reveal inline-block opacity-0"
-                                style={{ animationDelay: `${400 + (i * 60)}ms` }}
+                                style={{ animationDelay: `${500 + (i * 70)}ms` }}
                             >
                                 {char}
                             </span>
                         ))}
                     </h1>
 
-                    {/* Dynamic Subtext */}
-                    <div className="mt-4 flex flex-col items-center">
-                        <div className="h-4 overflow-hidden">
-                            <p className="text-[9px] font-mono text-ambient-400/40 tracking-[0.4em] uppercase animate-reveal opacity-0" style={{ animationDelay: "1200ms" }}>
-                                {LOADING_STATUSES[statusIndex]}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* MAX LEVEL PROGRESS UNIT */}
-                    <div className="mt-10 relative w-64">
-                        {/* Progress Label */}
-                        <div className="flex justify-between items-end mb-2 px-1">
-                            <span className="text-[8px] font-mono text-white/20 tracking-tighter">DATA LINK STABLE</span>
-                            <span className="text-[10px] font-mono text-ambient-400 leading-none">{Math.floor(progress)}%</span>
+                    {/* HUD Status Bar */}
+                    <div className="mt-6 flex flex-col items-center w-full max-w-[280px]">
+                        <div className="flex justify-between w-full text-[8px] font-mono text-white/30 uppercase tracking-[0.2em] mb-3">
+                            <span>Status: {LOADING_STATUSES[statusIndex]}</span>
+                            <span>{Math.floor(progress)}%</span>
                         </div>
 
-                        {/* Outer Track */}
-                        <div className="h-[2px] w-full bg-white/[0.03] rounded-full overflow-hidden relative">
-                            {/* Inner Lead */}
+                        {/* High-Precision Progress Bar */}
+                        <div className="h-[1px] w-full bg-white/5 rounded-full overflow-hidden relative">
                             <div
-                                className="absolute h-full left-0 bg-gradient-to-r from-ambient-600 via-ambient-400 to-white shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-200 ease-out"
+                                className="absolute h-full left-0 bg-gradient-to-r from-ambient-600 via-ambient-400 to-white shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all duration-300 ease-out"
                                 style={{ width: `${progress}%` }}
-                            >
-                                {/* Glow Cap */}
-                                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-white/40 blur-sm" />
-                            </div>
+                            />
                         </div>
 
-                        {/* Binary Rain (Decoration) */}
-                        <div className="mt-2 flex justify-center space-x-1 opacity-10 font-mono text-[7px] text-white">
-                            <span>{Math.random() > 0.5 ? '1' : '0'}</span>
-                            <span>{Math.random() > 0.5 ? '1' : '0'}</span>
-                            <span>{Math.random() > 0.5 ? '1' : '0'}</span>
-                            <span>{Math.random() > 0.5 ? '1' : '0'}</span>
-                            <span>{Math.random() > 0.5 ? '1' : '0'}</span>
+                        {/* Decorative HUD Metrics */}
+                        <div className="mt-4 flex justify-between w-full opacity-20 font-mono text-[7px] text-white">
+                            <div className="flex space-x-2">
+                                <span>SEC_LINK: ACTIVE</span>
+                                <span>LATENCY: 12ms</span>
+                            </div>
+                            <div className="animate-pulse">BOOTING...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Aesthetic Borders */}
-            <div className="fixed inset-8 border border-white/5 rounded-[3rem] pointer-events-none opacity-20" />
-            <div className="fixed inset-[2.5rem] border border-white/[0.02] rounded-[3.5rem] pointer-events-none opacity-10" />
+            {/* Ambient Perimeter HUD */}
+            <div className="fixed inset-6 border border-white/5 rounded-[4rem] pointer-events-none opacity-20 border-dashed" />
+            <div className="fixed inset-4 border border-white/[0.02] rounded-[4.5rem] pointer-events-none opacity-10" />
         </div>
     )
 }
