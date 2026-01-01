@@ -43,11 +43,24 @@ export function Preloader() {
             className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#030303] transition-all duration-1000 ease-in-out ${isVisible ? "opacity-100 visible" : "opacity-0 invisible scale-110 pointer-events-none"
                 }`}
         >
-            {/* Background Grid & Glows */}
+            {/* Dynamic Background Environment */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]" />
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-ambient-500/10 rounded-full blur-[120px] animate-float-slow" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] animate-float" />
+                {/* Background Grid */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px] opacity-50" />
+
+                {/* Moving Particles (Stars) */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.15] animate-float-slow" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.1] animate-float" style={{ animationDelay: '-2s' }} />
+
+                {/* Animated Atmosphere Glows */}
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-ambient-500/10 rounded-full blur-[150px] animate-pulse-glow" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 rounded-full blur-[150px] animate-pulse-glow" style={{ animationDelay: '-1.5s' }} />
+
+                {/* Central Moving Spark */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] h-[100px] bg-ambient-400/20 rounded-full blur-[60px] animate-spin-slow" />
+
+                {/* Vignette Overlay */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_80%)]" />
             </div>
 
             {/* Center Logo Area */}
