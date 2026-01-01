@@ -49,7 +49,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     }
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-zinc-950 backdrop-blur-3xl border-r border-white/5 flex flex-col z-50 shadow-2xl shadow-black/50">
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-background backdrop-blur-3xl border-r border-border/50 flex flex-col z-50 shadow-2xl">
             {/* Ambient Nebula Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-ambient-500/5 to-transparent" />

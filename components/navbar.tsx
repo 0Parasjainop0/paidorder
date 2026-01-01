@@ -67,8 +67,8 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
   return (
     <>
       <nav className={`sticky top-4 z-50 mx-auto max-w-[90%] rounded-3xl border transition-all duration-700 ${scrolled
-        ? 'border-white/10 bg-zinc-950/80 backdrop-blur-3xl shadow-2xl shadow-ambient-500/5'
-        : 'border-white/5 bg-zinc-950/60 backdrop-blur-2xl shadow-xl shadow-black/10'
+        ? 'border-border/60 bg-background/90 backdrop-blur-3xl shadow-2xl shadow-ambient-500/5'
+        : 'border-border/40 bg-background/80 backdrop-blur-2xl shadow-xl shadow-black/10'
         }`}>
         {/* Animated gradient border */}
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-ambient-500/0 via-ambient-400/10 to-purple-500/0 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none" />

@@ -43,7 +43,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="relative bg-zinc-950 text-white overflow-hidden border-t border-white/5">
+    <footer className="relative bg-slate-50 dark:bg-zinc-950 text-foreground overflow-hidden border-t border-border">
       {/* Ambient Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(59,130,246,0.05),transparent_50%)]" />

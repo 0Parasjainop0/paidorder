@@ -281,7 +281,7 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen py-8 bg-zinc-950 relative overflow-hidden">
+    <div className="min-h-screen py-8 bg-background relative overflow-hidden">
       {/* Ambient Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(59,130,246,0.05),transparent_50%)]" />
