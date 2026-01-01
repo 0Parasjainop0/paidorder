@@ -66,28 +66,31 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
 
   return (
     <>
-      <nav className={`sticky top-4 z-50 mx-auto max-w-[90%] rounded-2xl border transition-all duration-500 ${scrolled
-        ? 'border-border/60 bg-background/90 backdrop-blur-2xl shadow-xl shadow-ambient-500/5'
-        : 'border-border/40 bg-background/70 backdrop-blur-xl shadow-lg shadow-black/5'
+      <nav className={`sticky top-4 z-50 mx-auto max-w-[90%] rounded-3xl border transition-all duration-700 ${scrolled
+        ? 'border-white/10 bg-zinc-950/80 backdrop-blur-3xl shadow-2xl shadow-ambient-500/5'
+        : 'border-white/5 bg-zinc-950/60 backdrop-blur-2xl shadow-xl shadow-black/10'
         }`}>
-        {/* Gradient border effect on hover */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-ambient-500/0 via-ambient-400/0 to-ambient-500/0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ padding: '1px' }} />
+        {/* Animated gradient border */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-ambient-500/0 via-ambient-400/10 to-purple-500/0 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+        {/* Ambient glow behind navbar */}
+        <div className={`absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-ambient-500/30 to-transparent transition-opacity duration-500 ${scrolled ? 'opacity-100' : 'opacity-0'}`} />
 
         <div className="px-6 sm:px-8 lg:px-10">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-18">
             {/* Logo */}
             <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => onNavigate("landing")}>
               <div className="relative">
-                <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-lg shadow-ambient-500/10 group-hover:shadow-ambient-500/25 transition-all duration-500 group-hover:scale-105 overflow-hidden border border-border/50 group-hover:border-ambient-400/50">
-                  <img src="/logo.png" alt="Digiteria Logo" className="w-full h-full object-contain p-0.5" />
+                <div className="w-14 h-14 bg-zinc-900/80 rounded-2xl flex items-center justify-center shadow-xl shadow-black/30 group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105 overflow-hidden border border-white/10 group-hover:border-ambient-400/30">
+                  <img src="/logo.png" alt="Digiteria Logo" className="w-full h-full object-contain p-1" />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-ambient-400 to-ambient-600 rounded-xl blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-500 -z-10" />
+                <div className="absolute inset-0 bg-gradient-to-br from-ambient-400/30 to-ambient-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 -z-10" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-ambient-600 group-hover:to-ambient-500 transition-all duration-500">
+                <span className="text-xl font-bold text-white group-hover:text-ambient-400 transition-all duration-500">
                   Digiteria
                 </span>
-                <span className="text-xs text-ambient-600 dark:text-ambient-400 -mt-1 font-medium opacity-80 group-hover:opacity-100 transition-opacity">Software Solutions</span>
+                <span className="text-[10px] text-ambient-500/70 -mt-0.5 font-mono tracking-[0.2em] uppercase group-hover:text-ambient-400/80 transition-colors">Software</span>
               </div>
             </div>
 
