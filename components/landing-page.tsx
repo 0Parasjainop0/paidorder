@@ -34,6 +34,7 @@ import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
 import { AnimatedTechCubes } from "@/components/ui/animated-tech-cubes"
 import { useAuth } from "@/hooks/use-auth"
+import { TestimonialCarousel } from "@/components/ui/testimonial-carousel"
 import { useState, useEffect, useRef } from "react"
 import { mockDb } from "@/lib/mock-db"
 
@@ -634,6 +635,8 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
           </div>
         </div>
       </section>
+
+      <TestimonialCarousel />
 
 
       {/* CTA Section */}

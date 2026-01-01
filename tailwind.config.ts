@@ -188,6 +188,10 @@ const config: Config = {
           "0%, 100%": { backgroundPosition: "0% center" },
           "50%": { backgroundPosition: "100% center" },
         },
+        "scroll": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(calc(-50% - 1.5rem))" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -211,6 +215,7 @@ const config: Config = {
         "bounce-soft": "bounce-soft 2s ease-in-out infinite",
         "ping-slow": "ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite",
         "text-gradient": "text-gradient 4s ease infinite",
+        "scroll": "scroll 40s linear infinite",
       },
       transitionDuration: {
         "400": "400ms",
