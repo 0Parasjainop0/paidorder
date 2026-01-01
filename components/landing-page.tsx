@@ -670,7 +670,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
                     size="lg"
                     variant="outline"
                     onClick={() => onNavigate("marketplace")}
-                    className="group border-2 border-white/80 text-white hover:bg-white/10 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 hover:border-white"
+                    className="group bg-white/10 border-2 border-white/80 text-white hover:bg-white/20 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 hover:border-white shadow-lg"
                   >
                     Browse Products
                   </Button>
