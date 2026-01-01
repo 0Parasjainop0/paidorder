@@ -6,8 +6,17 @@ export function Preloader() {
     const [isVisible, setIsVisible] = useState(true)
     const [shouldRender, setShouldRender] = useState(true)
     const [progress, setProgress] = useState(0)
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
     useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            setMousePos({
+                x: (e.clientX / window.innerWidth - 0.5) * 20,
+                y: (e.clientY / window.innerHeight - 0.5) * 20
+            })
+        }
+        window.addEventListener("mousemove", handleMouseMove)
+
         // Handle progress increment
         const interval = setInterval(() => {
             setProgress(prev => {
@@ -15,21 +24,22 @@ export function Preloader() {
                     clearInterval(interval)
                     return 100
                 }
-                return prev + 1
+                return prev + Math.random() * 2 // Organic progress
             })
-        }, 12) // Approx 100 steps over 1.2s
+        }, 30)
 
-        // Start exit animation after 1.5s
+        // Start exit animation after 1.8s
         const timer = setTimeout(() => {
             setIsVisible(false)
-        }, 1500)
+        }, 1800)
 
-        // Completely remove from DOM after 2.5s (timer + transition)
+        // Completely remove from DOM after 3s
         const removeTimer = setTimeout(() => {
             setShouldRender(false)
-        }, 2500)
+        }, 3000)
 
         return () => {
+            window.removeEventListener("mousemove", handleMouseMove)
             clearInterval(interval)
             clearTimeout(timer)
             clearTimeout(removeTimer)
@@ -40,27 +50,35 @@ export function Preloader() {
 
     return (
         <div
-            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#030303] transition-all duration-1000 ease-in-out ${isVisible ? "opacity-100 visible" : "opacity-0 invisible scale-110 pointer-events-none"
+            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#020203] transition-all duration-1000 ease-in-out ${isVisible ? "opacity-100 visible" : "opacity-0 invisible scale-110 pointer-events-none"
                 }`}
         >
-            {/* Dynamic Background Environment */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {/* Background Grid */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px] opacity-50" />
+            {/* Advanced Dynamic Environment */}
+            <div
+                className="absolute inset-0 overflow-hidden pointer-events-none transition-transform duration-700 ease-out"
+                style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
+            >
+                {/* 1. Deep Space Mesh Gradient */}
+                <div className="absolute inset-0 opacity-40">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#3b82f615_0%,transparent_50%)]" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#a855f710_0%,transparent_50%)]" />
+                </div>
 
-                {/* Moving Particles (Stars) */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.15] animate-float-slow" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.1] animate-float" style={{ animationDelay: '-2s' }} />
+                {/* 2. Interactive Grid System */}
+                <div
+                    className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:50px_50px]"
+                    style={{ transform: `perspective(1000px) rotateX(10deg)` }}
+                />
 
-                {/* Animated Atmosphere Glows */}
-                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-ambient-500/10 rounded-full blur-[150px] animate-pulse-glow" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 rounded-full blur-[150px] animate-pulse-glow" style={{ animationDelay: '-1.5s' }} />
+                {/* 3. Nebula Glows */}
+                <div className="absolute top-[-30%] left-[-20%] w-[100%] h-[100%] bg-ambient-600/10 rounded-full blur-[180px] animate-pulse-glow" />
+                <div className="absolute bottom-[-30%] right-[-20%] w-[100%] h-[100%] bg-purple-600/10 rounded-full blur-[180px] animate-pulse-glow" style={{ animationDelay: '-2s' }} />
 
-                {/* Central Moving Spark */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] h-[100px] bg-ambient-400/20 rounded-full blur-[60px] animate-spin-slow" />
+                {/* 4. Scanline / Grain Overlay */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] contrast-150 brightness-150" />
 
-                {/* Vignette Overlay */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_80%)]" />
+                {/* 5. Vignette Overlay */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)]" />
             </div>
 
             {/* Center Logo Area */}
@@ -88,14 +106,14 @@ export function Preloader() {
                     <div className="mt-10 w-48 h-[2px] bg-white/5 rounded-full overflow-hidden relative animate-reveal opacity-0" style={{ animationDelay: "800ms" }}>
                         <div
                             className="absolute inset-y-0 left-0 bg-gradient-to-r from-ambient-600 to-ambient-400 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300 ease-out"
-                            style={{ width: `${progress}%` }}
+                            style={{ width: `${Math.floor(progress)}%` }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 animate-shimmer" />
                     </div>
 
                     {/* Percentage Counter */}
                     <div className="mt-3 text-[10px] font-mono text-ambient-500/70 animate-reveal opacity-0 tracking-[0.3em] uppercase" style={{ animationDelay: "900ms" }}>
-                        {progress}% Loading
+                        {Math.floor(progress)}% Loading
                     </div>
                 </div>
             </div>
