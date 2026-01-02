@@ -34,7 +34,7 @@ import {
 } from "lucide-react"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
-import { AnimatedTechCubes } from "@/components/ui/animated-tech-cubes"
+import { HeroLottie } from "@/components/hero-lottie"
 import { useAuth } from "@/hooks/use-auth"
 import { TestimonialCarousel } from "@/components/ui/testimonial-carousel"
 import { useState, useEffect, useRef } from "react"
@@ -376,7 +376,7 @@ export function LandingPage() {
 
             {/* Animated Tech Illustration */}
             <div className="hidden lg:flex items-center justify-center animate-reveal opacity-0" style={{ animationDelay: '0.3s' }}>
-              <AnimatedTechCubes />
+              <HeroLottie />
             </div>
           </div>
         </div>

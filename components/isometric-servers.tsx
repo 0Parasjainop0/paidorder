@@ -4,157 +4,179 @@ import React from "react"
 
 export function IsometricServers() {
     return (
-        <div className="w-full h-full min-h-[400px] flex items-center justify-center relative perspective-container">
+        <div className="w-full h-full min-h-[400px] flex items-center justify-center relative perspective-container select-none pointer-events-none">
             <style jsx global>{`
         .perspective-container {
           perspective: 1000px;
         }
         .isometric-scene {
-          transform: rotateX(60deg) rotateZ(-45deg);
+          transform: rotateX(60deg) rotateZ(45deg);
           transform-style: preserve-3d;
         }
-        .cube {
-          transform-style: preserve-3d;
-          position: absolute;
+        
+        /* 3D Space Setup */
+        .cube-container {
+            transform-style: preserve-3d;
+            position: absolute;
+            transition: transform 0.3s ease;
         }
+
+        /* Server Dimensions: 70px x 70px Width, 100px Height */
+        
         .face {
-          position: absolute;
-          backface-visibility: hidden;
+            position: absolute;
+            transform-origin: center;
+            backface-visibility: hidden;
+            /* Use a tiny border to prevent sub-pixel gaps */
+            outline: 1px solid transparent; 
+        }
+
+        /* -- Server Faces -- */
+        .s-face { width: 70px; }
+        
+        /* Side Faces (Vertical), 70x100 */
+        .s-side {
+            height: 100px;
+            top: -50px; /* Center vert */
+            left: -35px; /* Center horz */
         }
         
-        /* Server Cube Dimensions: 60x60x100 (w,d,h) for example */
-        .server-cube {
-          width: 80px;
-          height: 80px;
+        /* Top/Bottom Faces (Horizontal), 70x70 */
+        .s-cap {
+            height: 70px;
+            top: -35px;
+            left: -35px;
         }
-        .server-face-front { transform: rotateY(0deg) translateZ(40px); width: 80px; height: 120px; }
-        .server-face-back  { transform: rotateY(180deg) translateZ(40px); width: 80px; height: 120px; }
-        .server-face-right { transform: rotateY(90deg) translateZ(40px); width: 80px; height: 120px; }
-        .server-face-left  { transform: rotateY(-90deg) translateZ(40px); width: 80px; height: 120px; }
-        .server-face-top   { transform: rotateX(90deg) translateZ(60px); width: 80px; height: 80px; }
-        .server-face-bottom{ transform: rotateX(-90deg) translateZ(60px); width: 80px; height: 80px; }
 
-        /* Small Cube Dimensions: 60x60x60 */
-        .small-cube {
-          width: 60px;
-          height: 60px;
-        }
-        .small-face-front { transform: rotateY(0deg) translateZ(30px); width: 60px; height: 60px; }
-        .small-face-back  { transform: rotateY(180deg) translateZ(30px); width: 60px; height: 60px; }
-        .small-face-right { transform: rotateY(90deg) translateZ(30px); width: 60px; height: 60px; }
-        .small-face-left  { transform: rotateY(-90deg) translateZ(30px); width: 60px; height: 60px; }
-        .small-face-top   { transform: rotateX(90deg) translateZ(30px); width: 60px; height: 60px; }
+        /* Transforms */
+        /* Z-translate = Half dimension */
+        .s-f-front { transform: rotateY(0deg) translateZ(35px); }
+        .s-f-back  { transform: rotateY(180deg) translateZ(35px); }
+        .s-f-right { transform: rotateY(90deg) translateZ(35px); }
+        .s-f-left  { transform: rotateY(-90deg) translateZ(35px); }
+        .s-f-top   { transform: rotateX(90deg) translateZ(50px); } /* Half height */
+        .s-f-bottom{ transform: rotateX(-90deg) translateZ(50px); }
 
-        .neon-glow {
-          box-shadow: 0 0 10px rgba(6,182,212,0.5), inset 0 0 20px rgba(6,182,212,0.2);
-        }
+        /* -- Power Cube Faces -- */
+        /* 50x50x50 */
+        .p-face { width: 50px; height: 50px; top: -25px; left: -25px; }
         
-        @keyframes float {
+        .p-f-front { transform: rotateY(0deg) translateZ(25px); }
+        .p-f-back  { transform: rotateY(180deg) translateZ(25px); }
+        .p-f-right { transform: rotateY(90deg) translateZ(25px); }
+        .p-f-left  { transform: rotateY(-90deg) translateZ(25px); }
+        .p-f-top   { transform: rotateX(90deg) translateZ(25px); }
+        .p-f-bottom{ transform: rotateX(-90deg) translateZ(25px); }
+
+        /* Animation */
+        @keyframes float-server {
           0%, 100% { transform: translateZ(0px); }
           50% { transform: translateZ(10px); }
         }
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
+        .animate-float-s { animation: float-server 4s ease-in-out infinite; }
       `}</style>
 
-            {/* Scene Container */}
-            <div className="isometric-scene relative w-[300px] h-[300px]">
-                {/* Base Platform */}
-                <div className="absolute inset-0 bg-gray-900/90 border-2 border-cyan-500 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.3)] transform translate-z-[-10px]"
-                    style={{ transform: 'translateZ(-20px)', borderRadius: '40px' }}>
-                    <div className="absolute inset-2 border border-cyan-500/30 rounded-[32px]" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-[40px]" />
+            {/* Main Scene Container */}
+            <div className="isometric-scene relative w-0 h-0">
+
+                {/* 1. Base Platform */}
+                <div className="absolute top-1/2 left-1/2" style={{ transform: 'translate(-50%, -50%) translateZ(-40px)' }}>
+                    <div className="w-[260px] h-[260px] bg-[#050b14] rounded-[50px] border-4 border-cyan-500/30 shadow-[0_0_80px_rgba(6,182,212,0.15)] relative overflow-hidden">
+                        {/* Inner detail */}
+                        <div className="absolute inset-4 border border-cyan-500/20 rounded-[40px] opacity-50" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/20 via-transparent to-cyan-500/10" />
+                        {/* Glow Center */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-500/20 blur-[50px] rounded-full" />
+                    </div>
                 </div>
 
-                {/* Server 1 (Back) */}
-                <div className="cube server-cube absolute top-10 left-10 animate-float" style={{ animationDelay: '0s' }}>
-                    <ServerCube color="purple" />
+                {/* Back Server */}
+                <div className="cube-container animate-float-s" style={{ top: '-60px', left: '-60px', zIndex: 10 }}>
+                    <ServerCube />
                 </div>
 
-                {/* Server 2 (Right) */}
-                <div className="cube server-cube absolute top-10 right-10 animate-float" style={{ animationDelay: '1s' }}>
-                    <ServerCube color="purple" />
+                {/* Right Server */}
+                <div className="cube-container animate-float-s" style={{ top: '-60px', left: '60px', zIndex: 20, animationDelay: '1s' }}>
+                    <ServerCube />
                 </div>
 
-                {/* Server 3 (Left) */}
-                <div className="cube server-cube absolute bottom-10 left-10 animate-float" style={{ animationDelay: '2s' }}>
-                    <ServerCube color="purple" />
+                {/* Left Server */}
+                <div className="cube-container animate-float-s" style={{ top: '60px', left: '-60px', zIndex: 20, animationDelay: '1.5s' }}>
+                    <ServerCube />
                 </div>
 
-                {/* Center Power Cube */}
-                <div className="cube small-cube absolute bottom-10 right-10 z-10 animate-float" style={{ animationDelay: '0.5s', transform: 'translate3d(0,0,20px)' }}>
+                {/* Power Cube (Front) */}
+                <div className="cube-container animate-float-s" style={{ top: '60px', left: '60px', zIndex: 30, animationDelay: '0.5s' }}>
                     <PowerCube />
                 </div>
+
             </div>
         </div>
     )
 }
 
-function ServerCube({ color }: { color: string }) {
-    // Gradients matching the reference image's purple/pink/cyan aesthetic
-    const sideGradient = "bg-gradient-to-b from-[#A855F7] to-[#7C3AED]" // Lighter to Darker Purple
-    const topGradient = "bg-[#C084FC]" // Top face lighter
-    const glow = "shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-
+function ServerCube() {
     return (
         <>
-            <div className={`face server-face-front ${sideGradient} border border-white/10 ${glow} flex flex-col items-center justify-center gap-2 p-2`}>
-                {/* Server Racks / Lights */}
-                <div className="w-full h-1 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)]" />
-                <div className="w-full h-1 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)] opacity-50" />
-                <div className="w-3/4 h-1 bg-yellow-400 rounded-full shadow-[0_0_5px_rgba(250,204,21,0.8)] self-start" />
-                <div className="flex gap-1 w-full mt-4">
-                    <div className="w-1 h-8 bg-black/20 rounded-full" />
-                    <div className="w-1 h-8 bg-black/20 rounded-full" />
-                    <div className="w-1 h-8 bg-black/20 rounded-full" />
+            <div className="face s-face s-side s-f-front bg-[#8B5CF6] border-2 border-[#7C3AED]/50 flex flex-col items-center justify-center p-3 gap-3 overflow-hidden shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
+                {/* Details */}
+                <div className="w-full h-1 bg-cyan-300 rounded-full shadow-[0_0_8px_cyan]" />
+                <div className="w-2/3 self-start h-1 bg-purple-300 rounded-full opacity-50" />
+                <div className="mt-auto w-full grid grid-cols-3 gap-1">
+                    <div className="h-6 w-full bg-black/20 rounded" />
+                    <div className="h-6 w-full bg-black/20 rounded" />
+                    <div className="h-6 w-full bg-black/20 rounded" />
                 </div>
             </div>
-            <div className={`face server-face-back ${sideGradient}`} />
-            <div className={`face server-face-right ${sideGradient} brightness-90 border-l border-white/10 flex flex-col pt-4 px-3 gap-3`}>
-                {/* Side details */}
-                <div className="w-full h-2 bg-black/20 rounded-full" />
-                <div className="w-2/3 h-2 bg-black/20 rounded-full" />
-                <div className="grid grid-cols-2 gap-2 mt-auto mb-4">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,1)]" />
-                    <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,1)]" />
-                </div>
+
+            <div className="face s-face s-side s-f-back bg-[#5B21B6]" />
+
+            <div className="face s-face s-side s-f-right bg-[#6D28D9] border-l border-black/20 flex flex-col p-4 gap-2">
+                <div className="w-full h-1.5 bg-black/30 rounded-full" />
+                <div className="w-3/4 h-1.5 bg-black/30 rounded-full" />
+                <div className="w-1/2 h-1.5 bg-black/30 rounded-full" />
             </div>
-            <div className={`face server-face-left ${sideGradient} brightness-110`} />
-            <div className={`face server-face-top ${topGradient} border border-white/20 grid place-items-center`}>
-                <div className="w-12 h-12 bg-cyan-300/20 rounded-lg shadow-[inset_0_0_10px_rgba(34,211,238,0.5)] box-border border border-cyan-200/50" />
+
+            <div className="face s-face s-side s-f-left bg-[#7C3AED]" />
+
+            <div className="face s-face s-cap s-f-top bg-[#A78BFA] border border-white/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-cyan-400/20 border border-cyan-300/40 shadow-[inset_0_0_10px_rgba(34,211,238,0.5)]" />
             </div>
-            <div className={`face server-face-bottom ${sideGradient}`} />
+
+            <div className="face s-face s-cap s-f-bottom bg-[#4C1D95] shadow-xl" />
         </>
     )
 }
 
 function PowerCube() {
-    const baseBlack = "bg-[#111827]"
-    const border = "border border-cyan-500/50"
-    const glow = "shadow-[0_0_30px_rgba(6,182,212,0.4)]"
-
     return (
         <>
-            <div className={`face small-face-front ${baseBlack} ${border} ${glow} flex items-center justify-center`}>
+            <div className="face p-face p-f-front bg-slate-900 border border-cyan-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <BoltIcon mini />
+            </div>
+            <div className="face p-face p-f-back bg-slate-900" />
+
+            <div className="face p-face p-f-right bg-slate-900 border-l border-cyan-500/50 flex items-center justify-center">
+                <BoltIcon mini />
+            </div>
+
+            <div className="face p-face p-f-left bg-slate-900" />
+
+            <div className="face p-face p-f-top bg-slate-900 border border-cyan-500/50 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-cyan-500/10 animate-pulse" />
                 <BoltIcon />
             </div>
-            <div className={`face small-face-back ${baseBlack}`} />
-            <div className={`face small-face-right ${baseBlack} ${border} flex items-center justify-center`}>
-                <BoltIcon />
-            </div>
-            <div className={`face small-face-left ${baseBlack}`} />
-            <div className={`face small-face-top ${baseBlack} ${border} flex items-center justify-center`}>
-                <BoltIcon />
-            </div>
+
+            <div className="face p-face p-f-bottom bg-slate-900 shadow-xl" />
         </>
     )
 }
 
-function BoltIcon() {
+function BoltIcon({ mini }: { mini?: boolean }) {
+    const size = mini ? "w-4 h-4" : "w-6 h-6"
     return (
-        <div className="w-8 h-8 rounded-full border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,1)]">
+        <div className={`${mini ? 'p-1' : 'p-1.5'} rounded-full border border-cyan-400/50 flex items-center justify-center bg-cyan-400/10`}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${size} text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,1)]`}>
                 <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clipRule="evenodd" />
             </svg>
         </div>
