@@ -250,6 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           linkedin_url: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
+          stripe_account_id: null,
         }
 
         // Save to DB
@@ -303,6 +304,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         github_url: null,
         twitter_url: null,
         linkedin_url: null,
+        stripe_account_id: null,
       }
 
       mockDb.ensureUserExists(mockProfile)

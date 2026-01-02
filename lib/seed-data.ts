@@ -38,7 +38,7 @@ export const SEED_DATA: MockDB = {
     users: [
         {
             id: "admin-user",
-            email: "shourya-admin.digitera@gmail.com",
+            email: "shourya-admin.digiteria@gmail.com",
             full_name: "Shourya Admin",
             role: "admin",
             is_verified: true,
@@ -49,9 +49,9 @@ export const SEED_DATA: MockDB = {
             total_sales: 0,
             rating: 5,
             bio: "Platform Administrator",
-            company: "Digitera",
+            company: "Digiteria",
             location: "San Francisco, CA",
-            website: "https://digitera.com",
+            website: "https://digiteria.com",
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             github_url: "",

@@ -306,7 +306,7 @@ export function ContactPage() {
                   </Button>
                 </Link>
                 <Button variant="ghost" className="w-full justify-start rounded-xl" asChild>
-                  <a href="mailto:support@digitera.com">Technical Support</a>
+                  <a href="mailto:support@digiteria.com">Technical Support</a>
                 </Button>
               </CardContent>
             </Card>

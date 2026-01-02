@@ -18,7 +18,7 @@ class MockDatabase {
     private setupStorageListener() {
         if (typeof window !== "undefined") {
             window.addEventListener('storage', (e) => {
-                if (e.key === 'digitera_mock_db') {
+                if (e.key === 'digiteria_mock_db') {
                     this.data = this.loadData()
                     this.notifyListeners()
                 }
@@ -29,7 +29,7 @@ class MockDatabase {
     private loadData(): MockDB {
         if (typeof window === "undefined") return SEED_DATA
 
-        const stored = localStorage.getItem("digitera_mock_db")
+        const stored = localStorage.getItem("digiteria_mock_db")
         if (stored) {
             try {
                 return JSON.parse(stored)
@@ -40,13 +40,13 @@ class MockDatabase {
         }
 
         // Initialize persistence
-        localStorage.setItem("digitera_mock_db", JSON.stringify(SEED_DATA))
+        localStorage.setItem("digiteria_mock_db", JSON.stringify(SEED_DATA))
         return SEED_DATA
     }
 
     private saveData() {
         if (typeof window !== "undefined") {
-            localStorage.setItem("digitera_mock_db", JSON.stringify(this.data))
+            localStorage.setItem("digiteria_mock_db", JSON.stringify(this.data))
             this.notifyListeners()
         }
     }
