@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import Link from "next/link"
 import {
     BarChart,
     Bar,
@@ -41,11 +42,7 @@ import { Product, Order } from "@/lib/supabase"
 
 const COLORS = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6"]
 
-interface AnalyticsPageProps {
-    onNavigate: (page: string) => void
-}
-
-export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
+export function AnalyticsPage() {
     const { profile, loading } = useAuth()
     const [showSellerModal, setShowSellerModal] = useState(false)
     const [data, setData] = useState<{ products: Product[], orders: Order[] }>({ products: [], orders: [] })
@@ -163,10 +160,12 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                onClick={() => onNavigate("marketplace")}
+                                asChild
                                 className="border-2 border-ambient-200 dark:border-ambient-800 rounded-2xl px-10 py-8 text-xl font-semibold hover:bg-ambient-50 dark:hover:bg-ambient-950/30 transition-all duration-300"
                             >
-                                Browse Products
+                                <Link href="/marketplace">
+                                    Browse Products
+                                </Link>
                             </Button>
                         </div>
                     </Card>

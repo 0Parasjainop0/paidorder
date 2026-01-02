@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -24,14 +26,8 @@ import {
 import { toast } from "sonner"
 import { InvoiceData } from "./invoice-page"
 
-interface CheckoutPageProps {
-    onNavigate: (page: string) => void
-    onSelectOrder?: (data: InvoiceData) => void
-}
-
 // Inner form component that has access to Stripe Elements context
-function CheckoutForm({ onNavigate, orderNumber, setOrderNumber, setIsComplete }: {
-    onNavigate: (page: string) => void
+function CheckoutForm({ orderNumber, setOrderNumber, setIsComplete }: {
     orderNumber: string
     setOrderNumber: (n: string) => void
     setIsComplete: (b: boolean) => void
@@ -351,7 +347,8 @@ function CheckoutForm({ onNavigate, orderNumber, setOrderNumber, setIsComplete }
     )
 }
 
-export function CheckoutPage({ onNavigate, onSelectOrder }: CheckoutPageProps) {
+export function CheckoutPage() {
+    const router = useRouter()
     const { items, subtotal } = useCart()
     const { profile } = useAuth()
     const [clientSecret, setClientSecret] = useState("")
@@ -400,12 +397,13 @@ export function CheckoutPage({ onNavigate, onSelectOrder }: CheckoutPageProps) {
                     <p className="text-muted-foreground mb-8">
                         Add some products to your cart before checking out.
                     </p>
-                    <Button
-                        onClick={() => onNavigate("marketplace")}
-                        className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl px-8 py-6 text-lg"
-                    >
-                        Browse Marketplace
-                    </Button>
+                    <Link href="/marketplace">
+                        <Button
+                            className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl px-8 py-6 text-lg"
+                        >
+                            Browse Marketplace
+                        </Button>
+                    </Link>
                 </div>
             </div>
         )
@@ -439,45 +437,29 @@ export function CheckoutPage({ onNavigate, onSelectOrder }: CheckoutPageProps) {
                     </Card>
 
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button
-                            onClick={() => {
-                                // Construct invoice data
-                                const invoiceData: InvoiceData = {
-                                    orderNumber,
-                                    dateIssued: new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }),
-                                    dateDue: new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }),
-                                    billTo: profile?.full_name || "Guest Customer",
-                                    amountDue: 0, // Paid in full
-                                    subtotal,
-                                    total: subtotal + (subtotal * 0.05), // Recalculate total with fee
-                                    items: items.map(item => ({
-                                        description: item.product.title,
-                                        quantity: item.quantity,
-                                        unitPrice: item.product.price,
-                                        amount: item.product.price * item.quantity
-                                    }))
-                                }
-                                onSelectOrder?.(invoiceData)
-                                onNavigate("invoice")
-                            }}
-                            variant="default"
-                            className="bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl"
-                        >
-                            View Invoice
-                        </Button>
-                        <Button
-                            onClick={() => onNavigate("profile")}
-                            variant="outline"
-                            className="rounded-xl"
-                        >
-                            View My Purchases
-                        </Button>
-                        <Button
-                            onClick={() => onNavigate("marketplace")}
-                            className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
-                        >
-                            Continue Shopping
-                        </Button>
+                        <Link href="/invoice">
+                            <Button
+                                variant="default"
+                                className="bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl"
+                            >
+                                View Invoice
+                            </Button>
+                        </Link>
+                        <Link href="/dashboard/profile">
+                            <Button
+                                variant="outline"
+                                className="rounded-xl"
+                            >
+                                View My Purchases
+                            </Button>
+                        </Link>
+                        <Link href="/marketplace">
+                            <Button
+                                className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
+                            >
+                                Continue Shopping
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -496,20 +478,20 @@ export function CheckoutPage({ onNavigate, onSelectOrder }: CheckoutPageProps) {
                         <h1 className="text-3xl font-bold mb-2">Checkout</h1>
                         <p className="text-muted-foreground">Complete your purchase</p>
                     </div>
-                    <Button
-                        variant="ghost"
-                        onClick={() => onNavigate("cart")}
-                        className="text-muted-foreground hover:text-foreground"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Cart
-                    </Button>
+                    <Link href="/cart">
+                        <Button
+                            variant="ghost"
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            Back to Cart
+                        </Button>
+                    </Link>
                 </div>
 
                 {clientSecret ? (
                     <Elements options={{ clientSecret, appearance: { theme: 'night' } }} stripe={stripePromise}>
                         <CheckoutForm
-                            onNavigate={onNavigate}
                             orderNumber={orderNumber}
                             setOrderNumber={setOrderNumber}
                             setIsComplete={setIsComplete}

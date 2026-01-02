@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -47,11 +48,7 @@ import { mockDb } from "@/lib/mock-db"
 import { Product } from "@/lib/supabase"
 import { toast } from "sonner"
 
-interface CreatorDashboardProps {
-  onNavigate: (page: string) => void
-}
-
-export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
+export function CreatorDashboard() {
   const { user, profile } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
@@ -291,14 +288,15 @@ export function CreatorDashboard({ onNavigate }: CreatorDashboardProps) {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => onNavigate("marketplace")}
-          className="mb-6 text-ambient-400 hover:text-ambient-300 hover:bg-white/5"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Marketplace
-        </Button>
+        <Link href="/marketplace">
+          <Button
+            variant="ghost"
+            className="mb-6 text-ambient-400 hover:text-ambient-300 hover:bg-white/5"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Marketplace
+          </Button>
+        </Link>
 
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">

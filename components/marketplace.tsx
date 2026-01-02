@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,12 +13,8 @@ import { useAuth } from "@/hooks/use-auth"
 import { mockDb } from "@/lib/mock-db"
 import { useCart, type CartProduct } from "@/hooks/use-cart"
 
-interface MarketplaceProps {
-  onNavigate: (page: string) => void
-  onSelectProduct: (product: any) => void
-}
-
-export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
+export function Marketplace() {
+  const router = useRouter()
   const { user, profile } = useAuth()
   const { addToCart, isInCart } = useCart()
   const [viewMode, setViewMode] = useState("grid")
@@ -26,7 +24,15 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   const handleAddToCart = (product: any, e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
+
+    // If product is already in cart, redirect to cart page
+    if (isInCart(String(product.id))) {
+      router.push("/cart")
+      return
+    }
+
     const cartProduct: CartProduct = {
       id: String(product.id),
       title: product.title,
@@ -144,7 +150,7 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
   )
 
   return (
-    <div className="min-h-screen py-8 bg-background relative overflow-hidden">
+    <div className="min-h-screen pt-20 pb-8 bg-background relative overflow-hidden">
       {/* Ambient Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.05),transparent_50%)]" />
@@ -166,15 +172,16 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
             </p>
           </div>
 
-          {/* Dashboard Button - Only show for logged in users */}
-          {user && (
-            <Button
-              onClick={() => onNavigate("dashboard")}
-              className="group mt-4 md:mt-0 bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 transition-all duration-300 hover:scale-105 btn-shine"
-            >
-              <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-500" />
-              Marketplace Dashboard
-            </Button>
+          {/* Dashboard Button - Only show for creators */}
+          {user && profile?.role === "creator" && (
+            <Link href="/dashboard">
+              <Button
+                className="group mt-4 md:mt-0 bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 transition-all duration-300 hover:scale-105 btn-shine"
+              >
+                <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-500" />
+                Creator Dashboard
+              </Button>
+            </Link>
           )}
         </div>
 
@@ -284,86 +291,83 @@ export function Marketplace({ onNavigate, onSelectProduct }: MarketplaceProps) {
             </>
           ) : (
             sortedProducts.map((product, index) => (
-              <Card
-                key={product.id}
-                className="group border-ambient-200/50 dark:border-ambient-800/30 hover:shadow-2xl hover:shadow-ambient-500/15 dark:hover:shadow-ambient-500/10 transition-all duration-700 cursor-pointer bg-card/60 backdrop-blur-sm rounded-2xl hover:scale-[1.02] hover:-translate-y-1 animate-fade-in-up overflow-hidden"
-                style={{ animationDelay: `${index * 50}ms` }}
-                onClick={() => {
-                  onSelectProduct(product)
-                  onNavigate("product")
-                }}
-              >
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={product.thumbnail || "/placeholder.svg"}
-                      alt={product.title}
-                      className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-                      {product.badges.map((badge: string, i: number) => (
-                        <Badge key={i} className={`text-xs rounded-full border ${getBadgeColor(badge)}`}>
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
-                      ₹{product.price}
-                    </div>
+              <Link key={product.id} href={`/product/${product.id}`}>
+                <Card
+                  className="group border-ambient-200/50 dark:border-ambient-800/30 hover:shadow-2xl hover:shadow-ambient-500/15 dark:hover:shadow-ambient-500/10 transition-all duration-700 cursor-pointer bg-card/60 backdrop-blur-sm rounded-2xl hover:scale-[1.02] hover:-translate-y-1 animate-fade-in-up overflow-hidden"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <CardContent className="p-0">
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={product.thumbnail || "/placeholder.svg"}
+                        alt={product.title}
+                        className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+                        {product.badges.map((badge: string, i: number) => (
+                          <Badge key={i} className={`text-xs rounded-full border ${getBadgeColor(badge)}`}>
+                            {badge}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
+                        ₹{product.price}
+                      </div>
 
-                    {/* Hover overlay */}
-                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                      <p className="text-white text-sm font-medium bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
-                        View Details →
-                      </p>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-semibold text-lg mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors duration-300 line-clamp-1">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-2">by {product.creator}</p>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-1.5">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="text-sm font-medium">{product.rating}</span>
-                        <span className="text-sm text-muted-foreground">({product.reviews})</span>
-                      </div>
-                      <div className="flex items-center space-x-3 text-xs text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>{product.views}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Download className="w-3.5 h-3.5" />
-                          <span>{product.downloads}</span>
-                        </div>
+                      {/* Hover overlay */}
+                      <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                        <p className="text-white text-sm font-medium bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
+                          View Details →
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      onClick={(e) => handleAddToCart(product, e)}
-                      className={`w-full rounded-xl transition-all duration-500 font-medium ${isInCart(String(product.id))
-                        ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg shadow-green-500/25"
-                        : "bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 hover:scale-[1.02]"
-                        }`}
-                    >
-                      {isInCart(String(product.id)) ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Added to Cart
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="w-4 h-4 mr-2 group-hover:animate-wiggle" />
-                          Add to Cart
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="p-6">
+                      <h3 className="font-semibold text-lg mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors duration-300 line-clamp-1">
+                        {product.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-2">by {product.creator}</p>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-1.5">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-sm font-medium">{product.rating}</span>
+                          <span className="text-sm text-muted-foreground">({product.reviews})</span>
+                        </div>
+                        <div className="flex items-center space-x-3 text-xs text-muted-foreground">
+                          <div className="flex items-center space-x-1">
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{product.views}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Download className="w-3.5 h-3.5" />
+                            <span>{product.downloads}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={(e) => handleAddToCart(product, e)}
+                        className={`w-full rounded-xl transition-all duration-500 font-medium ${isInCart(String(product.id))
+                          ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg shadow-green-500/25"
+                          : "bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 hover:scale-[1.02]"
+                          }`}
+                      >
+                        {isInCart(String(product.id)) ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Added to Cart
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-4 h-4 mr-2 group-hover:animate-wiggle" />
+                            Add to Cart
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           )}
         </div>

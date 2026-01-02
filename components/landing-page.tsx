@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -37,11 +39,6 @@ import { useAuth } from "@/hooks/use-auth"
 import { TestimonialCarousel } from "@/components/ui/testimonial-carousel"
 import { useState, useEffect, useRef } from "react"
 import { mockDb } from "@/lib/mock-db"
-
-interface LandingPageProps {
-  onNavigate: (page: string) => void
-  onSelectProduct: (product: any) => void
-}
 
 const stats = [
   {
@@ -212,8 +209,9 @@ function AnimatedCounter({ value, suffix = "" }: { value: string; suffix?: strin
   return <div ref={ref}>{displayValue}{suffix}</div>
 }
 
-export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
+export function LandingPage() {
   const { user, profile } = useAuth()
+  const router = useRouter()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showSellerModal, setShowSellerModal] = useState(false)
   const [landingStats, setLandingStats] = useState(stats)
@@ -289,7 +287,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
     if (!user) {
       setShowAuthModal(true)
     } else if (profile?.role === "creator") {
-      onNavigate("dashboard")
+      router.push("/dashboard")
     } else {
       setShowSellerModal(true)
     }
@@ -317,13 +315,13 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
             {/* Text Content */}
             <div className="text-center lg:text-left">
               {/* Badge */}
-              <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/60 dark:to-ambient-950/40 text-ambient-700 dark:text-ambient-300 text-sm font-medium mb-8 animate-reveal opacity-0 shadow-lg shadow-ambient-500/10 border border-ambient-200/50 dark:border-ambient-700/30" style={{ animationDelay: '3.0s' }}>
+              <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/60 dark:to-ambient-950/40 text-ambient-700 dark:text-ambient-300 text-sm font-medium mb-8 animate-reveal opacity-0 shadow-lg shadow-ambient-500/10 border border-ambient-200/50 dark:border-ambient-700/30" style={{ animationDelay: '0.1s' }}>
                 <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                 The #1 Digital Marketplace for Creators
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-reveal opacity-0 whitespace-nowrap" style={{ animationDelay: '3.1s' }}>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-reveal opacity-0 whitespace-nowrap" style={{ animationDelay: '0.2s' }}>
                 <span className="gradient-text-animated inline-block">
                   Build.
                 </span>{" "}
@@ -336,23 +334,24 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
               </h1>
 
               {/* Subheadline */}
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed animate-reveal opacity-0" style={{ animationDelay: '3.2s' }}>
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed animate-reveal opacity-0" style={{ animationDelay: '0.3s' }}>
                 The ultimate marketplace for digital creators. Sell templates, courses, software,
                 designs, and more. Turn your expertise into income.
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-10 animate-reveal opacity-0" style={{ animationDelay: '3.3s' }}>
-                <Button
-                  size="lg"
-                  onClick={() => onNavigate("marketplace")}
-                  className="group relative bg-gradient-to-r from-ambient-500 via-ambient-600 to-ambient-500 hover:from-ambient-600 hover:via-ambient-700 hover:to-ambient-600 text-white rounded-2xl px-8 py-6 text-lg font-semibold shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-105 btn-shine overflow-hidden"
-                >
-                  <span className="relative z-10 flex items-center">
-                    Explore Marketplace
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Button>
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-10 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
+                <Link href="/marketplace">
+                  <Button
+                    size="lg"
+                    className="group relative bg-gradient-to-r from-ambient-500 via-ambient-600 to-ambient-500 hover:from-ambient-600 hover:via-ambient-700 hover:to-ambient-600 text-white rounded-2xl px-8 py-6 text-lg font-semibold shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-105 btn-shine overflow-hidden"
+                  >
+                    <span className="relative z-10 flex items-center">
+                      Explore Marketplace
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Button>
+                </Link>
                 <Button
                   size="lg"
                   variant="outline"
@@ -365,9 +364,9 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
               </div>
 
               {/* Trust Badges */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-muted-foreground animate-reveal opacity-0" style={{ animationDelay: '3.4s' }}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-muted-foreground animate-reveal opacity-0" style={{ animationDelay: '0.5s' }}>
                 {["No monthly fees", "Low commission", "Instant payouts", "24/7 Support"].map((text, i) => (
-                  <div key={text} className="flex items-center gap-2 group" style={{ animationDelay: `${3.5 + i * 0.1}s` }}>
+                  <div key={text} className="flex items-center gap-2 group" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
                     <CheckCircle className="w-5 h-5 text-green-500 group-hover:scale-110 transition-transform" />
                     <span className="group-hover:text-foreground transition-colors">{text}</span>
                   </div>
@@ -376,7 +375,7 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
             </div>
 
             {/* Animated Tech Illustration */}
-            <div className="hidden lg:flex items-center justify-center animate-reveal opacity-0" style={{ animationDelay: '3.6s' }}>
+            <div className="hidden lg:flex items-center justify-center animate-reveal opacity-0" style={{ animationDelay: '0.3s' }}>
               <AnimatedTechCubes />
             </div>
           </div>
@@ -541,21 +540,21 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((category, index) => (
-              <Card
-                key={category.name}
-                onClick={() => onNavigate("marketplace")}
-                className="group border-ambient-200/50 dark:border-ambient-800/30 bg-card/80 backdrop-blur-sm rounded-2xl cursor-pointer hover:shadow-xl hover:shadow-ambient-500/15 transition-all duration-500 hover:scale-105 hover:-translate-y-1 card-hover-lift animate-fade-in-up overflow-hidden"
-                style={{ animationDelay: `${index * 80}ms` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-ambient-500/0 to-ambient-600/0 group-hover:from-ambient-500/5 group-hover:to-ambient-600/10 transition-all duration-500" />
-                <CardContent className="relative p-6 text-center">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-ambient-100 to-ambient-50 dark:from-ambient-900/50 dark:to-ambient-950/30 flex items-center justify-center mx-auto mb-4 group-hover:bg-gradient-to-br group-hover:from-ambient-500 group-hover:to-ambient-600 transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-ambient-500/30 border border-ambient-200/50 dark:border-ambient-700/30 group-hover:border-ambient-400">
-                    <category.icon className="w-7 h-7 text-ambient-600 dark:text-ambient-400 group-hover:text-white transition-colors duration-500" />
-                  </div>
-                  <h3 className="font-semibold mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.count.toLocaleString()} items</p>
-                </CardContent>
-              </Card>
+              <Link key={category.name} href="/marketplace">
+                <Card
+                  className="group border-ambient-200/50 dark:border-ambient-800/30 bg-card/80 backdrop-blur-sm rounded-2xl cursor-pointer hover:shadow-xl hover:shadow-ambient-500/15 transition-all duration-500 hover:scale-105 hover:-translate-y-1 card-hover-lift animate-fade-in-up overflow-hidden"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-ambient-500/0 to-ambient-600/0 group-hover:from-ambient-500/5 group-hover:to-ambient-600/10 transition-all duration-500" />
+                  <CardContent className="relative p-6 text-center">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-ambient-100 to-ambient-50 dark:from-ambient-900/50 dark:to-ambient-950/30 flex items-center justify-center mx-auto mb-4 group-hover:bg-gradient-to-br group-hover:from-ambient-500 group-hover:to-ambient-600 transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-ambient-500/30 border border-ambient-200/50 dark:border-ambient-700/30 group-hover:border-ambient-400">
+                      <category.icon className="w-7 h-7 text-ambient-600 dark:text-ambient-400 group-hover:text-white transition-colors duration-500" />
+                    </div>
+                    <h3 className="font-semibold mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground">{category.count.toLocaleString()} items</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -573,62 +572,55 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
               </Badge>
               <h2 className="text-4xl md:text-5xl font-bold">Trending Now</h2>
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => onNavigate("marketplace")}
-              className="group text-ambient-600 dark:text-ambient-400 mt-4 md:mt-0 hover:bg-ambient-100/50 dark:hover:bg-ambient-900/30"
-            >
-              View All Products
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href="/marketplace">
+              <Button
+                variant="ghost"
+                className="group text-ambient-600 dark:text-ambient-400 mt-4 md:mt-0 hover:bg-ambient-100/50 dark:hover:bg-ambient-900/30"
+              >
+                View All Products
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {featured.length > 0 ? featured.map((product, index) => (
-              <Card
-                key={product.id}
-                onClick={() => {
-                  onSelectProduct({
-                    ...product,
-                    badges: ["Featured"], // Add badge for display 
-                    longDescription: product.description, // Ensure full description is available
-                    reviews: product.rating * 12 + 4 // Mock review count for now or fetch real
-                  })
-                  onNavigate("product")
-                }}
-                className="group border-ambient-200/50 dark:border-ambient-800/30 bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-ambient-500/15 transition-all duration-700 cursor-pointer hover:scale-[1.03] hover:-translate-y-2 animate-fade-in-up"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={product.thumbnail}
-                    alt={product.title}
-                    className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <Badge className="absolute top-3 right-3 bg-gradient-to-r from-ambient-500 to-ambient-600 text-white border-0 shadow-lg shadow-ambient-500/30 group-hover:scale-110 transition-transform">
-                    Featured
-                  </Badge>
-                  <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                    <p className="text-white text-sm font-medium">View Details →</p>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold text-lg mb-2 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors duration-300">
-                    {product.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">by {product.creator}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold gradient-text">${product.price}</span>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span>{product.rating}</span>
-                      <span className="opacity-50">•</span>
-                      <span>{product.sales.toLocaleString()} sales</span>
+              <Link key={product.id} href={`/product/${product.id}`}>
+                <Card
+                  className="group border-ambient-200/50 dark:border-ambient-800/30 bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-ambient-500/15 transition-all duration-700 cursor-pointer hover:scale-[1.03] hover:-translate-y-2 animate-fade-in-up"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={product.thumbnail}
+                      alt={product.title}
+                      className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <Badge className="absolute top-3 right-3 bg-gradient-to-r from-ambient-500 to-ambient-600 text-white border-0 shadow-lg shadow-ambient-500/30 group-hover:scale-110 transition-transform">
+                      Featured
+                    </Badge>
+                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                      <p className="text-white text-sm font-medium">View Details →</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-lg mb-2 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors duration-300">
+                      {product.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">by {product.creator}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold gradient-text">${product.price}</span>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span>{product.rating}</span>
+                        <span className="opacity-50">•</span>
+                        <span>{product.sales.toLocaleString()} sales</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             )) : (
               <p className="col-span-3 text-center text-muted-foreground py-8">No featured products available at the moment.</p>
             )}
@@ -661,22 +653,24 @@ export function LandingPage({ onNavigate, onSelectProduct }: LandingPageProps) {
                   selling today – it's free to get started!
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Button
-                    size="lg"
-                    onClick={() => onNavigate("dashboard")}
-                    className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
-                  >
-                    Create Your Store
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={() => onNavigate("marketplace")}
-                    className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
-                  >
-                    Browse Products
-                    <ShoppingBag className="w-5 h-5 ml-2 group-hover:rotate-12 transition-transform" />
-                  </Button>
+                  <Link href="/dashboard">
+                    <Button
+                      size="lg"
+                      className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
+                    >
+                      Create Your Store
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                  <Link href="/marketplace">
+                    <Button
+                      size="lg"
+                      className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
+                    >
+                      Browse Products
+                      <ShoppingBag className="w-5 h-5 ml-2 group-hover:rotate-12 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

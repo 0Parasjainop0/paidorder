@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { MessageCircle, Globe, Twitter, Github, Linkedin, Instagram, ArrowUpRight, Sparkles } from "lucide-react"
@@ -9,8 +10,8 @@ export function Footer() {
     {
       title: "Platform",
       links: [
-        { name: "Browse Marketplace", href: "#" },
-        { name: "List Your Product", href: "#" },
+        { name: "Browse Marketplace", href: "/marketplace" },
+        { name: "List Your Product", href: "/dashboard" },
         { name: "Creator Guidelines", href: "#" },
         { name: "Quality Standards", href: "#" },
       ],
@@ -19,7 +20,7 @@ export function Footer() {
       title: "Support",
       links: [
         { name: "Help Center", href: "#" },
-        { name: "Contact Support", href: "#" },
+        { name: "Contact Support", href: "/contact" },
         { name: "Report Issues", href: "#" },
         { name: "Feature Requests", href: "#" },
       ],
@@ -59,7 +60,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-8 group cursor-pointer">
+            <Link href="/" className="flex items-center space-x-3 mb-8 group cursor-pointer">
               <div className="relative">
                 <div className="w-14 h-14 bg-white dark:bg-zinc-900/80 rounded-2xl flex items-center justify-center overflow-hidden border border-border shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105">
                   <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-1.5" />
@@ -70,7 +71,7 @@ export function Footer() {
                 <span className="text-2xl font-bold text-foreground group-hover:text-ambient-500 transition-colors">Digiteria</span>
                 <span className="text-[9px] text-ambient-600 dark:text-ambient-500/50 font-mono tracking-[0.2em] uppercase">Software Solutions</span>
               </div>
-            </div>
+            </Link>
             <p className="text-muted-foreground mb-10 max-w-md leading-relaxed text-sm">
               The ultimate marketplace for developers, creators, and digital product sellers. Built by creators,
               for creators.
@@ -103,17 +104,27 @@ export function Footer() {
               <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <a
-                      href={link.href}
-                      className="group flex items-center text-muted-foreground hover:text-ambient-500 transition-all duration-300 text-sm"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        toast.info(`Navigating to ${link.name}...`)
-                      }}
-                    >
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
-                      <ArrowUpRight className="w-3 h-3 ml-1.5 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300 text-ambient-500" />
-                    </a>
+                    {link.href.startsWith("/") ? (
+                      <Link
+                        href={link.href}
+                        className="group flex items-center text-muted-foreground hover:text-ambient-500 transition-all duration-300 text-sm"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
+                        <ArrowUpRight className="w-3 h-3 ml-1.5 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300 text-ambient-500" />
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="group flex items-center text-muted-foreground hover:text-ambient-500 transition-all duration-300 text-sm"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          toast.info(`Navigating to ${link.name}...`)
+                        }}
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
+                        <ArrowUpRight className="w-3 h-3 ml-1.5 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300 text-ambient-500" />
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

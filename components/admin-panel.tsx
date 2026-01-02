@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -43,12 +45,8 @@ import { mockDb, SellerApplication } from "@/lib/mock-db"
 import { Product, Profile } from "@/lib/supabase"
 import { toast } from "sonner"
 
-interface AdminPanelProps {
-  onNavigate: (page: string) => void
-  onSelectProduct: (product: any) => void
-}
-
-export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
+export function AdminPanel() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("pending")
   const [searchQuery, setSearchQuery] = useState("")
   const [products, setProducts] = useState<Product[]>([])
@@ -295,13 +293,7 @@ export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
                               variant="outline"
                               className="w-full shadow-md rounded-2xl"
                               onClick={() => {
-                                const fullProduct = {
-                                  ...product,
-                                  badges: [product.status === 'approved' ? 'Verified' : 'Pending', 'Admin Preview'],
-                                  creator: mockDb.getUser(product.creator_id)?.full_name || 'Creator'
-                                }
-                                onSelectProduct(fullProduct)
-                                onNavigate("product")
+                                router.push(`/product/${product.id}`)
                               }}
                             >
                               <Eye className="w-4 h-4 mr-2" />
@@ -402,8 +394,7 @@ export function AdminPanel({ onNavigate, onSelectProduct }: AdminPanelProps) {
                                   size="icon"
                                   className="rounded-xl h-8 w-8 text-stone-600 hover:text-stone-700 hover:bg-stone-100"
                                   onClick={() => {
-                                    onSelectProduct(product)
-                                    onNavigate("product")
+                                    router.push(`/product/${product.id}`)
                                   }}
                                   title="Preview"
                                 >

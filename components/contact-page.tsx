@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,11 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Headphones, Bug } from "lucide-react"
 import { mockDb } from "@/lib/mock-db"
 
-interface ContactPageProps {
-  onNavigate: (page: string) => void
-}
-
-export function ContactPage({ onNavigate }: ContactPageProps) {
+export function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,9 +27,10 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
     e.preventDefault()
     setLoading(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Simulate form processing
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
+    // Store in mockDb for admin to see
     mockDb.addMessage({
       name: formData.name,
       email: formData.email,
@@ -40,6 +38,16 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
       category: formData.category,
       message: formData.message
     })
+
+    // Open mailto link to actually send the email
+    const subject = encodeURIComponent(`[${formData.category || 'General'}] ${formData.subject}`)
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Category: ${formData.category}\n\n` +
+      `Message:\n${formData.message}`
+    )
+    window.open(`mailto:shouryachair@gmail.com?subject=${subject}&body=${body}`, '_blank')
 
     // Reset form
     setFormData({
@@ -51,7 +59,7 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
     })
 
     setLoading(false)
-    alert("Message sent successfully! We'll get back to you soon.")
+    alert("Your email client will open to send the message. If it doesn't open, please email us directly at shouryachair@gmail.com")
   }
 
   const contactInfo = [
@@ -59,8 +67,8 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
       icon: Mail,
       title: "Email Us",
       description: "Send us an email anytime",
-      value: "hello@digitera.com",
-      action: "mailto:hello@digitera.com",
+      value: "shouryachair@gmail.com",
+      action: "mailto:shouryachair@gmail.com",
     },
     {
       icon: Phone,
@@ -281,20 +289,22 @@ export function ContactPage({ onNavigate }: ContactPageProps) {
                 <CardTitle>Quick Links</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start rounded-xl"
-                  onClick={() => onNavigate("marketplace")}
-                >
-                  Browse Marketplace
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start rounded-xl"
-                  onClick={() => onNavigate("landing")}
-                >
-                  About Digiteria
-                </Button>
+                <Link href="/marketplace">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start rounded-xl"
+                  >
+                    Browse Marketplace
+                  </Button>
+                </Link>
+                <Link href="/">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start rounded-xl"
+                  >
+                    About Digiteria
+                  </Button>
+                </Link>
                 <Button variant="ghost" className="w-full justify-start rounded-xl" asChild>
                   <a href="mailto:support@digitera.com">Technical Support</a>
                 </Button>

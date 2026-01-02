@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Printer } from "lucide-react"
@@ -24,16 +25,17 @@ export interface InvoiceData {
 
 interface InvoicePageProps {
     invoiceData?: InvoiceData
-    onNavigate: (page: string) => void
 }
 
-export function InvoicePage({ invoiceData, onNavigate }: InvoicePageProps) {
+export function InvoicePage({ invoiceData }: InvoicePageProps) {
     if (!invoiceData) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold mb-4">Invoice Not Found</h1>
-                    <Button onClick={() => onNavigate("landing")}>Return Home</Button>
+                    <Link href="/">
+                        <Button>Return Home</Button>
+                    </Link>
                 </div>
             </div>
         )
@@ -47,10 +49,12 @@ export function InvoicePage({ invoiceData, onNavigate }: InvoicePageProps) {
         <div className="min-h-screen bg-white text-zinc-900 py-12 print:py-0 print:bg-white">
             {/* Non-printable controls */}
             <div className="max-w-4xl mx-auto px-8 mb-8 flex justify-between print:hidden">
-                <Button variant="outline" onClick={() => onNavigate("landing")}>
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Home
-                </Button>
+                <Link href="/">
+                    <Button variant="outline">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Home
+                    </Button>
+                </Link>
                 <Button onClick={handlePrint} className="bg-black text-white hover:bg-zinc-800">
                     <Printer className="w-4 h-4 mr-2" />
                     Print Invoice

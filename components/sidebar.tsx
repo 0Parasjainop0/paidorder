@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -18,34 +20,44 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 
 interface SidebarProps {
-    currentPage: string
-    onNavigate: (page: string) => void
+    currentPage?: string
 }
 
-export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
+export function Sidebar({ currentPage }: SidebarProps) {
     const { profile, signOut } = useAuth()
+    const router = useRouter()
+    const pathname = usePathname()
+
+    // Use pathname to determine active page
+    const activePage = currentPage || pathname
 
     const menuItems = [
-        { id: "landing", label: "Home", icon: Home },
-        { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+        { id: "/", label: "Home", icon: Home },
+        { id: "/marketplace", label: "Marketplace", icon: ShoppingBag },
     ]
 
     if (profile?.role === "creator" || profile?.role === "admin") {
-        menuItems.push({ id: "dashboard", label: "Dashboard", icon: LayoutDashboard })
+        menuItems.push({ id: "/dashboard", label: "Dashboard", icon: LayoutDashboard })
     }
     menuItems.push(
-        { id: "analytics", label: "Analytics", icon: LineChart },
-        { id: "profile", label: "Profile", icon: User },
-        { id: "contact", label: "Contact", icon: MessageSquare },
+        { id: "/dashboard/analytics", label: "Analytics", icon: LineChart },
+        { id: "/dashboard/profile", label: "Profile", icon: User },
+        { id: "/contact", label: "Contact", icon: MessageSquare },
     )
 
     if (profile?.role === "admin") {
-        menuItems.push({ id: "admin", label: "Admin Panel", icon: Shield })
+        menuItems.push({ id: "/dashboard/admin", label: "Admin Panel", icon: Shield })
     }
 
     const handleSignOut = async () => {
         await signOut()
-        onNavigate("landing")
+        router.push("/")
+    }
+
+    const isActive = (path: string) => {
+        if (path === "/") return activePage === "/" || activePage === "landing"
+        if (path === "/dashboard") return activePage === "/dashboard" || activePage === "dashboard"
+        return activePage === path || activePage === path.replace("/dashboard/", "")
     }
 
     return (
@@ -58,7 +70,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             </div>
 
             {/* Logo */}
-            <div className="relative p-6 flex items-center space-x-3 cursor-pointer group border-b border-border" onClick={() => onNavigate("landing")}>
+            <Link href="/" className="relative p-6 flex items-center space-x-3 cursor-pointer group border-b border-border">
                 <div className="relative">
                     <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center border border-border shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105 overflow-hidden">
                         <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
@@ -69,7 +81,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                     <span className="text-xl font-bold text-foreground group-hover:text-ambient-500 transition-colors">Digiteria</span>
                     <span className="text-[9px] text-ambient-600 dark:text-ambient-500/50 font-mono tracking-[0.2em] uppercase">Dashboard</span>
                 </div>
-            </div>
+            </Link>
 
             {/* Navigation */}
             <nav className="flex-1 px-3 space-y-1 mt-6 relative">
@@ -80,31 +92,30 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
                 {menuItems.map((item, index) => {
                     const Icon = item.icon
-                    const isActive = currentPage === item.id
+                    const active = isActive(item.id)
                     return (
-                        <Button
+                        <Link
                             key={item.id}
-                            variant="ghost"
-                            onClick={() => onNavigate(item.id)}
-                            className={`group w-full justify-start rounded-xl px-4 py-5 text-sm font-medium transition-all duration-300 relative overflow-hidden ${isActive
+                            href={item.id}
+                            className={`group w-full flex items-center justify-start rounded-xl px-4 py-5 text-sm font-medium transition-all duration-300 relative overflow-hidden ${active
                                 ? "bg-ambient-500/10 text-foreground shadow-lg shadow-ambient-500/10"
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                 }`}
                             style={{ animationDelay: `${index * 50}ms` }}
                         >
                             {/* Active Indicator */}
-                            {isActive && (
+                            {active && (
                                 <>
                                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-gradient-to-b from-ambient-400 to-ambient-600 rounded-r-full shadow-lg shadow-ambient-500/50" />
                                     <div className="absolute inset-0 bg-gradient-to-r from-ambient-500/5 to-transparent" />
                                 </>
                             )}
 
-                            <Icon className={`w-4 h-4 mr-3 transition-all duration-300 ${isActive ? 'text-ambient-400' : 'group-hover:text-ambient-400 group-hover:scale-110'}`} />
+                            <Icon className={`w-4 h-4 mr-3 transition-all duration-300 ${active ? 'text-ambient-400' : 'group-hover:text-ambient-400 group-hover:scale-110'}`} />
                             <span className="flex-1">{item.label}</span>
 
-                            <ChevronRight className={`w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-300 ${isActive ? 'opacity-100 translate-x-0 text-ambient-400' : ''}`} />
-                        </Button>
+                            <ChevronRight className={`w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-300 ${active ? 'opacity-100 translate-x-0 text-ambient-400' : ''}`} />
+                        </Link>
                     )
                 })}
             </nav>

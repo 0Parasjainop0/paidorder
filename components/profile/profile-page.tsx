@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -41,11 +42,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-interface ProfilePageProps {
-  onNavigate: (page: string) => void
-}
-
-export function ProfilePage({ onNavigate }: ProfilePageProps) {
+export function ProfilePage() {
   const { profile, updateProfile, user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -250,7 +247,9 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Profile not found</h2>
-          <Button onClick={() => onNavigate("landing")}>Go Home</Button>
+          <Link href="/">
+            <Button>Go Home</Button>
+          </Link>
         </div>
       </div>
     )
@@ -426,13 +425,14 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button
-                    onClick={() => onNavigate("marketplace")}
-                    className="w-full justify-start bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
-                  >
-                    <Package className="w-4 h-4 mr-2" />
-                    Browse Marketplace
-                  </Button>
+                  <Link href="/marketplace">
+                    <Button
+                      className="w-full justify-start bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
+                    >
+                      <Package className="w-4 h-4 mr-2" />
+                      Browse Marketplace
+                    </Button>
+                  </Link>
                   {profile.role === "creator" && (
                     <Button variant="outline" className="w-full justify-start rounded-xl">
                       <Plus className="w-4 h-4 mr-2" />
@@ -496,9 +496,11 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                     <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-medium mb-2">No products yet</h3>
                     <p className="text-muted-foreground mb-4">Start creating and selling your digital products</p>
-                    <Button onClick={() => onNavigate("dashboard")} className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
-                      Submit Your First Product
-                    </Button>
+                    <Link href="/dashboard">
+                      <Button className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
+                        Submit Your First Product
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </CardContent>

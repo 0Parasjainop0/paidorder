@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,22 +13,43 @@ import { useCart, type CartProduct } from "@/hooks/use-cart"
 import { mockDb } from "@/lib/mock-db"
 import { toast } from "sonner"
 
-interface ProductPageProps {
-  product: any
-  onNavigate: (page: string) => void
-}
+export function ProductPage() {
+  const router = useRouter()
+  const params = useParams()
+  const productId = params?.id as string
 
-export function ProductPage({ product, onNavigate }: ProductPageProps) {
+  const [product, setProduct] = useState<any>(null)
   const [selectedLicense, setSelectedLicense] = useState("standard")
   const { addToCart, isInCart } = useCart()
   const [reviews, setReviews] = useState<any[]>([])
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" })
   const [isSubmittingReview, setIsSubmittingReview] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Fetch product from mockDb based on URL params
   useEffect(() => {
-    if (product) {
-      // 1. Fetch Reviews
+    if (productId) {
+      const fetchedProduct = mockDb.getProduct(productId)
+      if (fetchedProduct) {
+        const creatorData = mockDb.getUser(fetchedProduct.creator_id)
+        setProduct({
+          ...fetchedProduct,
+          creator: creatorData?.full_name || "Unknown Creator",
+          thumbnail: fetchedProduct.thumbnail_url || "/placeholder.svg?height=200&width=300",
+          badges: fetchedProduct.tags?.includes("verified") ? ["Verified"] : [],
+          views: fetchedProduct.views || 0,
+          downloads: fetchedProduct.sales_count || 0,
+          reviews: fetchedProduct.review_count || 0
+        })
+      }
+      setIsLoading(false)
+    }
+  }, [productId])
+
+  // Fetch reviews
+  useEffect(() => {
+    if (product?.id) {
       const productReviews = mockDb.getReviewsByProduct(product.id)
 
       if (productReviews.length > 0) {
@@ -40,14 +63,10 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
         }))
         setReviews(mappedReviews)
       } else {
-        // Fallback to static if none found (so page doesn't look empty for demo)
-        // But ideally, we want to show "No reviews yet"
-        // For now, let's keep the static ones if database is empty for this product, OR just show empty.
-        // Let's show empty/real behavior to be "functional".
         setReviews([])
       }
     }
-  }, [product, isSubmittingReview])
+  }, [product?.id, isSubmittingReview])
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,12 +91,25 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
     setIsSubmittingReview(false)
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-ambient-500/20 border-t-ambient-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading product...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Product not found</h2>
-          <Button onClick={() => onNavigate("marketplace")}>Back to Marketplace</Button>
+          <Link href="/marketplace">
+            <Button>Back to Marketplace</Button>
+          </Link>
         </div>
       </div>
     )
@@ -124,14 +156,15 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => onNavigate("marketplace")}
-          className="mb-6 text-ambient-400 hover:text-ambient-300 hover:bg-white/5"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Marketplace
-        </Button>
+        <Link href="/marketplace">
+          <Button
+            variant="ghost"
+            className="mb-6 text-ambient-400 hover:text-ambient-300 hover:bg-white/5"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Marketplace
+          </Button>
+        </Link>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -372,7 +405,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                     size="lg"
                     onClick={() => {
                       if (isInCart(String(product.id))) {
-                        onNavigate("cart")
+                        router.push("/cart")
                         return
                       }
 
@@ -419,7 +452,7 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                         }
                         addToCart(cartProduct)
                       }
-                      onNavigate("checkout")
+                      router.push("/checkout")
                     }}
                     className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 rounded-2xl mb-4"
                   >
@@ -478,14 +511,15 @@ export function ProductPage({ product, onNavigate }: ProductPageProps) {
                       <p className="text-sm text-slate-600 dark:text-slate-300">Verified Creator</p>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => onNavigate("profile")}
-                  >
-                    View Profile
-                  </Button>
+                  <Link href="/dashboard/profile">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                    >
+                      View Profile
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>

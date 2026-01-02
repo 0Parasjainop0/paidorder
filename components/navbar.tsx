@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -16,13 +18,13 @@ import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
 import { useAuth } from "@/hooks/use-auth"
 import { useCart } from "@/hooks/use-cart"
+import { toast } from "sonner"
 
 interface NavbarProps {
-  currentPage: string
-  onNavigate: (page: string) => void
+  currentPage?: string
 }
 
-export function Navbar({ currentPage, onNavigate }: NavbarProps) {
+export function Navbar({ currentPage }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -32,6 +34,11 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
   const { theme, setTheme } = useTheme()
   const { user, profile, signOut, loading } = useAuth()
   const { itemCount } = useCart()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Use pathname to determine active page
+  const activePage = currentPage || pathname
 
   useEffect(() => {
     setMounted(true)
@@ -45,19 +52,33 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
   }, [])
 
   const navItems = [
-    { id: "landing", label: "Home" },
-    { id: "marketplace", label: "Marketplace" },
-    { id: "contact", label: "Contact" },
+    { id: "/", label: "Home" },
+    { id: "/marketplace", label: "Marketplace" },
+    { id: "/contact", label: "Contact" },
+    { id: "/terms", label: "Terms & Policy" },
   ]
 
   const handleSignOut = async () => {
-    await signOut()
-    onNavigate("landing")
+    if (window.confirm("Are you sure you want to sign out?")) {
+      try {
+        await signOut()
+        toast.success("Signed out successfully")
+        router.push("/")
+      } catch (error) {
+        console.error("Sign out error:", error)
+        toast.error("Failed to sign out")
+      }
+    }
   }
 
   const openAuthModal = (tab: "signin" | "signup") => {
     setAuthModalTab(tab)
     setShowAuthModal(true)
+  }
+
+  const isActive = (path: string) => {
+    if (path === "/") return activePage === "/" || activePage === "landing"
+    return activePage === path || activePage === path.replace("/", "")
   }
 
   if (!mounted) {
@@ -79,38 +100,35 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
         <div className="px-6 sm:px-8 lg:px-10">
           <div className="flex justify-between items-center h-18">
             {/* Logo */}
-            <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => onNavigate("landing")}>
+            <Link href="/" className="flex items-center space-x-3 cursor-pointer group">
               <div className="relative">
-                <div className="w-14 h-14 bg-muted rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 group-hover:scale-105 overflow-hidden border border-border group-hover:border-ambient-400/30">
-                  <img src="/logo.png" alt="Digiteria Logo" className="w-full h-full object-contain p-1" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-ambient-400/30 to-ambient-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 -z-10" />
+                <img src="/logo.png" alt="Digiteria Logo" className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-ambient-400/30 to-ambient-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 -z-10" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground group-hover:text-ambient-500 transition-all duration-500">
+                <span className="text-xl font-bold text-foreground group-hover:text-ambient-500 dark:group-hover:text-white transition-all duration-500">
                   Digiteria
                 </span>
-                <span className="text-[10px] text-ambient-600 dark:text-ambient-500/70 -mt-0.5 font-mono tracking-[0.2em] uppercase group-hover:text-ambient-500 transition-colors">Software</span>
+                <span className="text-[10px] text-ambient-600 dark:text-ambient-500/70 -mt-0.5 font-mono tracking-[0.2em] uppercase group-hover:text-ambient-500 dark:group-hover:text-white/70 transition-colors">Software</span>
               </div>
-            </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1 relative">
               {navItems.map((item) => (
-                <Button
+                <Link
                   key={item.id}
-                  variant="ghost"
-                  onClick={() => onNavigate(item.id)}
-                  className={`relative text-sm font-medium transition-all duration-300 rounded-xl px-4 py-2 overflow-hidden group ${currentPage === item.id
+                  href={item.id}
+                  className={`relative text-sm font-medium transition-all duration-300 rounded-xl px-4 py-2 overflow-hidden group ${isActive(item.id)
                     ? "bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/60 dark:to-ambient-950/40 text-ambient-700 dark:text-ambient-300 shadow-sm"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                 >
                   <span className="relative z-10">{item.label}</span>
-                  {currentPage === item.id && (
+                  {isActive(item.id) && (
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-ambient-400 to-ambient-600 rounded-full" />
                   )}
-                </Button>
+                </Link>
               ))}
             </div>
 
@@ -130,22 +148,21 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                 <>
                   {user ? (
                     <div className="flex items-center gap-4">
-                      <Button
-                        variant="ghost"
-                        onClick={() => onNavigate("dashboard")}
-                        className="relative h-12 pl-1.5 pr-6 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-xl shadow-ambient-500/20 active:scale-95 border-none"
+                      <Link
+                        href="/dashboard/profile"
+                        className="relative h-9 pl-1 pr-4 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-lg shadow-ambient-500/20 active:scale-95 border-none flex items-center"
                       >
-                        <div className="flex items-center gap-3.5">
-                          <div className="h-9 w-9 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-lg shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="h-7 w-7 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-sm shadow-sm">
                             {profile?.avatar_url ? (
                               <img src={profile.avatar_url} className="h-full w-full rounded-full object-cover" />
                             ) : (
                               <span>{profile?.full_name?.[0] || profile?.email[0].toUpperCase()}</span>
                             )}
                           </div>
-                          <span className="text-sm font-bold text-white tracking-tight">Dashboard</span>
+                          <span className="text-xs font-bold text-white tracking-tight">Dashboard</span>
                         </div>
-                      </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -177,11 +194,9 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               )}
 
               {/* Cart Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onNavigate("cart")}
-                className="relative rounded-xl hover:bg-muted/50 group transition-all duration-300"
+              <Link
+                href="/cart"
+                className="relative rounded-xl hover:bg-muted/50 group transition-all duration-300 p-2"
               >
                 <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 {itemCount > 0 && (
@@ -189,7 +204,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                     {itemCount > 9 ? "9+" : itemCount}
                   </span>
                 )}
-              </Button>
+              </Link>
 
               <div className="flex items-center space-x-1 ml-2 pl-2 border-l border-border/60">
                 <Button
@@ -208,11 +223,9 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onNavigate("cart")}
-                className="relative rounded-xl"
+              <Link
+                href="/cart"
+                className="relative rounded-xl p-2"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {itemCount > 0 && (
@@ -220,7 +233,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                     {itemCount > 9 ? "9+" : itemCount}
                   </span>
                 )}
-              </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"
@@ -248,75 +261,60 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             <div className="py-4 border-t border-border/40">
               <div className="flex flex-col space-y-2">
                 {navItems.map((item, index) => (
-                  <Button
+                  <Link
                     key={item.id}
-                    variant="ghost"
-                    onClick={() => {
-                      onNavigate(item.id)
-                      setIsMenuOpen(false)
-                    }}
-                    className={`justify-start text-sm font-medium rounded-xl animate-fade-in-up ${currentPage === item.id
+                    href={item.id}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`justify-start text-sm font-medium rounded-xl px-4 py-2 animate-fade-in-up ${isActive(item.id)
                       ? "bg-gradient-to-r from-ambient-100 to-ambient-50 dark:from-ambient-900/50 dark:to-ambient-950/30 text-ambient-700 dark:text-ambient-300"
                       : "text-muted-foreground hover:text-foreground"
                       }`}
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     {item.label}
-                  </Button>
+                  </Link>
                 ))}
 
                 {!loading && (
                   <div className="flex flex-col space-y-2 pt-2 mt-2 border-t border-border/40">
                     {user ? (
                       <>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            onNavigate("profile")
-                            setIsMenuOpen(false)
-                          }}
-                          className="justify-start rounded-xl"
+                        <Link
+                          href="/dashboard/profile"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                         >
                           <User className="w-4 h-4 mr-2" />
                           Profile
-                        </Button>
-                        {profile?.role === "creator" && (
-                          <Button
-                            variant="ghost"
-                            onClick={() => {
-                              onNavigate("dashboard")
-                              setIsMenuOpen(false)
-                            }}
-                            className="justify-start rounded-xl"
+                        </Link>
+                        {(profile?.role === "creator" || profile?.role === "admin") && (
+                          <Link
+                            href="/dashboard"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                           >
                             <LayoutDashboard className="w-4 h-4 mr-2" />
                             Dashboard
-                          </Button>
+                          </Link>
                         )}
                         {profile?.role === "admin" && (
-                          <Button
-                            variant="ghost"
-                            onClick={() => {
-                              onNavigate("admin")
-                              setIsMenuOpen(false)
-                            }}
-                            className="justify-start rounded-xl"
+                          <Link
+                            href="/dashboard/admin"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                           >
                             <Shield className="w-4 h-4 mr-2" />
                             Admin Panel
-                          </Button>
+                          </Link>
                         )}
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            onNavigate("analytics")
-                            setIsMenuOpen(false)
-                          }}
-                          className="justify-start rounded-xl"
+                        <Link
+                          href="/dashboard/analytics"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                         >
                           <LineChart className="w-4 h-4 mr-2" />
                           Analytics
-                        </Button>
+                        </Link>
                         <Button
                           variant="ghost"
                           onClick={() => {
@@ -364,7 +362,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab={authModalTab}
-        onSuccess={() => onNavigate("profile")}
+        onSuccess={() => router.push("/dashboard/profile")}
       />
       <SellerApplicationModal isOpen={showSellerModal} onClose={() => setShowSellerModal(false)} />
     </>

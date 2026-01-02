@@ -1,16 +1,13 @@
 "use client"
 
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/hooks/use-cart"
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, Sparkles, Shield, Zap } from "lucide-react"
 
-interface CartPageProps {
-    onNavigate: (page: string) => void
-}
-
-export function CartPage({ onNavigate }: CartPageProps) {
+export function CartPage() {
     const { items, itemCount, subtotal, removeFromCart, updateQuantity, clearCart } = useCart()
 
     const platformFee = subtotal * 0.05 // 5% platform fee
@@ -33,13 +30,14 @@ export function CartPage({ onNavigate }: CartPageProps) {
                         Looks like you haven't added any products yet. Explore our marketplace to find amazing
                         digital products!
                     </p>
-                    <Button
-                        onClick={() => onNavigate("marketplace")}
-                        className="group bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl px-8 py-6 text-lg shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-105 btn-shine"
-                    >
-                        <ShoppingBag className="w-5 h-5 mr-2 group-hover:animate-wiggle" />
-                        Browse Marketplace
-                    </Button>
+                    <Link href="/marketplace">
+                        <Button
+                            className="group bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl px-8 py-6 text-lg shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-105 btn-shine"
+                        >
+                            <ShoppingBag className="w-5 h-5 mr-2 group-hover:animate-wiggle" />
+                            Browse Marketplace
+                        </Button>
+                    </Link>
                 </div>
             </div>
         )
@@ -64,14 +62,15 @@ export function CartPage({ onNavigate }: CartPageProps) {
                             {itemCount} {itemCount === 1 ? "item" : "items"} in your cart
                         </p>
                     </div>
-                    <Button
-                        variant="ghost"
-                        onClick={() => onNavigate("marketplace")}
-                        className="group text-muted-foreground hover:text-foreground hover:bg-ambient-100/50 dark:hover:bg-ambient-900/30 rounded-xl transition-all duration-300"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                        Continue Shopping
-                    </Button>
+                    <Link href="/marketplace">
+                        <Button
+                            variant="ghost"
+                            className="group text-muted-foreground hover:text-foreground hover:bg-ambient-100/50 dark:hover:bg-ambient-900/30 rounded-xl transition-all duration-300"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+                            Continue Shopping
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
@@ -186,13 +185,14 @@ export function CartPage({ onNavigate }: CartPageProps) {
                                     </div>
                                 </div>
 
-                                <Button
-                                    onClick={() => onNavigate("checkout")}
-                                    className="group w-full bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl py-6 text-lg font-semibold shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-[1.02] btn-shine"
-                                >
-                                    Proceed to Checkout
-                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Button>
+                                <Link href="/checkout">
+                                    <Button
+                                        className="group w-full bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-2xl py-6 text-lg font-semibold shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-[1.02] btn-shine"
+                                    >
+                                        Proceed to Checkout
+                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </Button>
+                                </Link>
 
                                 {/* Trust badges */}
                                 <div className="mt-6 pt-6 border-t border-border/50 space-y-3">
