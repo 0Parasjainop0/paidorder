@@ -1,10 +1,21 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import '@lottiefiles/dotlottie-wc';
 
 export const HeroLottie: React.FC = () => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // Only import and register the web component on the client
+        import('@lottiefiles/dotlottie-wc');
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return <div style={{ width: '500px', height: '500px' }} />;
+    }
+
     return (
         <div className="flex justify-center items-center py-10 relative overflow-hidden">
             {/* Decorative background glow for the animation */}

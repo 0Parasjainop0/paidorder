@@ -34,7 +34,8 @@ import {
 } from "lucide-react"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
-import { HeroLottie } from "@/components/hero-lottie"
+import dynamic from "next/dynamic"
+const HeroLottie = dynamic(() => import("@/components/hero-lottie").then(mod => mod.HeroLottie), { ssr: false })
 import { useAuth } from "@/hooks/use-auth"
 import { TestimonialCarousel } from "@/components/ui/testimonial-carousel"
 import { useState, useEffect, useRef } from "react"
