@@ -41,6 +41,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { SellerApplicationModal } from "@/components/auth/seller-application-modal"
+import { Rocket } from "lucide-react"
 
 export function ProfilePage() {
   const { profile, updateProfile, user } = useAuth()
@@ -62,6 +64,7 @@ export function ProfilePage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false)
   const [reviewData, setReviewData] = useState({ rating: 5, comment: "" })
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [isSellerModalOpen, setIsSellerModalOpen] = useState(false)
 
   const [activeTab, setActiveTab] = useState("overview")
 
@@ -457,36 +460,55 @@ export function ProfilePage() {
                 <CardTitle>Your Products</CardTitle>
               </CardHeader>
               <CardContent>
-                {myProducts.length > 0 ? (
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {myProducts.map(product => (
-                      <div key={product.id} className="border border-border rounded-xl p-4 flex flex-col gap-3">
-                        <img src={product.thumbnail_url || "/placeholder.svg"} className="w-full h-32 object-cover rounded-lg" />
-                        <div>
-                          <h4 className="font-semibold truncate">{product.title}</h4>
-                          <p className="text-sm text-muted-foreground">${product.price}</p>
+                {profile.role === "creator" ? (
+                  myProducts.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {myProducts.map(product => (
+                        <div key={product.id} className="border border-border rounded-xl p-4 flex flex-col gap-3">
+                          <img src={product.thumbnail_url || "/placeholder.svg"} className="w-full h-32 object-cover rounded-lg" />
+                          <div>
+                            <h4 className="font-semibold truncate">{product.title}</h4>
+                            <p className="text-sm text-muted-foreground">${product.price}</p>
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
+                            <span>{product.sales_count} Sales</span>
+                            <Badge variant={product.status === 'approved' ? 'default' : 'secondary'}>{product.status}</Badge>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
-                          <span>{product.sales_count} Sales</span>
-                          <Badge variant={product.status === 'approved' ? 'default' : 'secondary'}>{product.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No products yet</h3>
+                      <p className="text-muted-foreground mb-4">Start creating and selling your digital products</p>
+                      <Link href="/dashboard">
+                        <Button className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
+                          Submit Your First Product
+                        </Button>
+                      </Link>
+                    </div>
+                  )
                 ) : (
                   <div className="text-center py-12">
-                    <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No products yet</h3>
-                    <p className="text-muted-foreground mb-4">Start creating and selling your digital products</p>
-                    <Link href="/dashboard">
-                      <Button className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl">
-                        Submit Your First Product
-                      </Button>
-                    </Link>
+                    <div className="w-16 h-16 bg-ambient-100 dark:bg-ambient-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Rocket className="w-8 h-8 text-ambient-600" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">Become a Seller</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Join thousands of creators earning on Digiteria. Sell UI kits, templates, scripts, and more.
+                    </p>
+                    <Button
+                      onClick={() => setIsSellerModalOpen(true)}
+                      className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
+                    >
+                      Apply for Seller Account
+                    </Button>
                   </div>
                 )}
               </CardContent>
             </Card>
+            <SellerApplicationModal isOpen={isSellerModalOpen} onClose={() => setIsSellerModalOpen(false)} />
           </TabsContent>
 
           <TabsContent value="purchases" className="space-y-6">
