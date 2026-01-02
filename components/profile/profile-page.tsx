@@ -460,7 +460,7 @@ export function ProfilePage() {
                 <CardTitle>Your Products</CardTitle>
               </CardHeader>
               <CardContent>
-                {profile.role === "creator" ? (
+                {profile.role === "creator" || profile.role === "admin" ? (
                   myProducts.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {myProducts.map(product => (
