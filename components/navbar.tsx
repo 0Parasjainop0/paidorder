@@ -19,6 +19,7 @@ import { SellerApplicationModal } from "@/components/auth/seller-application-mod
 import { useAuth } from "@/hooks/use-auth"
 import { useCart } from "@/hooks/use-cart"
 import { toast } from "sonner"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 interface NavbarProps {
   currentPage?: string
@@ -29,6 +30,7 @@ export function Navbar({ currentPage }: NavbarProps) {
   const [mounted, setMounted] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showSellerModal, setShowSellerModal] = useState(false)
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false)
   const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin")
   const [scrolled, setScrolled] = useState(false)
   const { theme, setTheme } = useTheme()
@@ -59,16 +61,19 @@ export function Navbar({ currentPage }: NavbarProps) {
   ]
 
   const handleSignOut = async () => {
-    if (window.confirm("Are you sure you want to sign out?")) {
-      try {
-        await signOut()
-        toast.success("Signed out successfully")
-        router.push("/")
-      } catch (error) {
-        console.error("Sign out error:", error)
-        toast.error("Failed to sign out")
-      }
+    setShowSignOutDialog(true)
+  }
+
+  const confirmSignOut = async () => {
+    try {
+      await signOut()
+      toast.success("Signed out successfully")
+      router.push("/")
+    } catch (error) {
+      console.error("Sign out error:", error)
+      toast.error("Failed to sign out")
     }
+    setShowSignOutDialog(false)
   }
 
   const openAuthModal = (tab: "signin" | "signup") => {
@@ -365,6 +370,15 @@ export function Navbar({ currentPage }: NavbarProps) {
         onSuccess={() => router.push("/dashboard/profile")}
       />
       <SellerApplicationModal isOpen={showSellerModal} onClose={() => setShowSellerModal(false)} />
+      <ConfirmDialog
+        open={showSignOutDialog}
+        onOpenChange={setShowSignOutDialog}
+        onConfirm={confirmSignOut}
+        title="Sign Out"
+        description="Are you sure you want to sign out of your account?"
+        confirmText="Sign Out"
+        cancelText="Stay Signed In"
+      />
     </>
   )
 }

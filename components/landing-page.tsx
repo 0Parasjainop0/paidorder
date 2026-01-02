@@ -383,27 +383,54 @@ export function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-ambient-50 via-ambient-100/70 to-ambient-50 dark:from-ambient-950/60 dark:via-ambient-900/40 dark:to-ambient-950/60" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.1),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-ambient-50/50 to-background dark:via-ambient-950/30" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.08),transparent_60%)]" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <Badge className="bg-gradient-to-r from-ambient-600 to-purple-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-ambient-500/25">
+              <TrendingUp className="w-3.5 h-3.5 mr-1.5 inline" />
+              Platform Stats
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Creators Worldwide</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Join thousands of creators who have already transformed their digital products into thriving businesses.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {landingStats.map((stat, index) => (
-              <div
+              <Card
                 key={stat.label}
-                className="text-center group animate-fade-in-up"
+                className="group border-ambient-200/50 dark:border-ambient-800/30 bg-white/80 dark:bg-ambient-950/50 backdrop-blur-sm rounded-3xl hover:shadow-2xl hover:shadow-ambient-500/15 dark:hover:shadow-ambient-500/10 transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 animate-fade-in-up overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-ambient-900/50 shadow-lg shadow-ambient-500/10 text-ambient-600 dark:text-ambient-400 mb-4 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-ambient-500/20 transition-all duration-500 border border-ambient-200/50 dark:border-ambient-700/30">
-                  <stat.icon className="w-8 h-8" />
-                </div>
-                <div className="text-3xl md:text-4xl font-bold mb-1 gradient-text">
-                  <AnimatedCounter value={stat.value} />
-                </div>
-                <div className="text-muted-foreground group-hover:text-foreground transition-colors">{stat.label}</div>
-              </div>
+                <CardContent className="p-8 text-center relative">
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-ambient-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Icon */}
+                  <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-ambient-100 to-ambient-50 dark:from-ambient-900/80 dark:to-ambient-800/50 shadow-lg shadow-ambient-500/10 text-ambient-600 dark:text-ambient-400 mb-5 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-ambient-500/25 transition-all duration-500 border border-ambient-200/50 dark:border-ambient-700/30">
+                    <stat.icon className="w-7 h-7" />
+                  </div>
+
+                  {/* Value */}
+                  <div className="relative text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-ambient-600 via-ambient-500 to-purple-500 bg-clip-text text-transparent">
+                    <AnimatedCounter value={stat.value} />
+                  </div>
+
+                  {/* Label */}
+                  <div className="relative text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-wider">
+                    {stat.label}
+                  </div>
+
+                  {/* Decorative element */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-ambient-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -414,7 +441,7 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ambient-950/5 to-transparent dark:via-ambient-950/30" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in-up">
-            <Badge className="bg-gradient-to-r from-ambient-500/20 to-purple-500/20 text-ambient-600 dark:text-ambient-400 mb-4 border-ambient-500/30 px-4 py-1.5 text-sm font-medium">
+            <Badge className="bg-gradient-to-r from-ambient-600 to-purple-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-ambient-500/25">
               <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
               Showcase
             </Badge>
@@ -521,12 +548,11 @@ export function LandingPage() {
 
       {/* Categories Section */}
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-muted/40 to-muted/20" />
-        <div className="absolute inset-0 mesh-gradient opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-ambient-50/30 to-background dark:via-ambient-950/20" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in-up">
-            <Badge className="bg-gradient-to-r from-ambient-100 to-ambient-50 text-ambient-700 dark:bg-gradient-to-r dark:from-ambient-900/50 dark:to-ambient-950/30 dark:text-ambient-300 mb-4 border border-ambient-200/50 dark:border-ambient-700/30 px-4 py-1.5">
+            <Badge className="bg-gradient-to-r from-ambient-600 to-purple-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-ambient-500/25">
               Browse Categories
             </Badge>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -538,20 +564,20 @@ export function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
             {categories.map((category, index) => (
               <Link key={category.name} href="/marketplace">
                 <Card
-                  className="group border-ambient-200/50 dark:border-ambient-800/30 bg-card/80 backdrop-blur-sm rounded-2xl cursor-pointer hover:shadow-xl hover:shadow-ambient-500/15 transition-all duration-500 hover:scale-105 hover:-translate-y-1 card-hover-lift animate-fade-in-up overflow-hidden"
+                  className="group border-0 bg-white dark:bg-ambient-950/60 backdrop-blur-sm rounded-3xl cursor-pointer hover:shadow-2xl hover:shadow-ambient-500/20 transition-all duration-500 hover:scale-105 hover:-translate-y-2 animate-fade-in-up overflow-hidden shadow-lg shadow-ambient-100 dark:shadow-none"
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-ambient-500/0 to-ambient-600/0 group-hover:from-ambient-500/5 group-hover:to-ambient-600/10 transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-ambient-500/0 to-purple-500/0 group-hover:from-ambient-500/10 group-hover:to-purple-500/10 transition-all duration-500" />
                   <CardContent className="relative p-6 text-center">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-ambient-100 to-ambient-50 dark:from-ambient-900/50 dark:to-ambient-950/30 flex items-center justify-center mx-auto mb-4 group-hover:bg-gradient-to-br group-hover:from-ambient-500 group-hover:to-ambient-600 transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-ambient-500/30 border border-ambient-200/50 dark:border-ambient-700/30 group-hover:border-ambient-400">
-                      <category.icon className="w-7 h-7 text-ambient-600 dark:text-ambient-400 group-hover:text-white transition-colors duration-500" />
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ambient-100 to-ambient-50 dark:from-ambient-800/50 dark:to-ambient-900/50 flex items-center justify-center mx-auto mb-4 group-hover:bg-gradient-to-br group-hover:from-ambient-500 group-hover:to-purple-600 transition-all duration-500 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-ambient-500/40 group-hover:rotate-3">
+                      <category.icon className="w-8 h-8 text-ambient-600 dark:text-ambient-400 group-hover:text-white transition-colors duration-500" />
                     </div>
-                    <h3 className="font-semibold mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">{category.name}</h3>
-                    <p className="text-sm text-muted-foreground">{category.count.toLocaleString()} items</p>
+                    <h3 className="font-bold text-base mb-1 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">{category.name}</h3>
+                    <p className="text-sm font-medium text-ambient-600/70 dark:text-ambient-400/70">{category.count.toLocaleString()} items</p>
                   </CardContent>
                 </Card>
               </Link>
