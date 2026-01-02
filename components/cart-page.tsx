@@ -10,8 +10,7 @@ import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, 
 export function CartPage() {
     const { items, itemCount, subtotal, removeFromCart, updateQuantity, clearCart } = useCart()
 
-    const platformFee = subtotal * 0.05 // 5% platform fee
-    const total = subtotal + platformFee
+    const total = subtotal
 
     if (items.length === 0) {
         return (
@@ -170,13 +169,7 @@ export function CartPage() {
                                         <span>Subtotal</span>
                                         <span className="font-medium">₹{subtotal.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span className="flex items-center gap-1">
-                                            Platform fee
-                                            <span className="text-xs bg-ambient-100 dark:bg-ambient-900/50 text-ambient-600 dark:text-ambient-400 px-1.5 py-0.5 rounded">5%</span>
-                                        </span>
-                                        <span>₹{platformFee.toFixed(2)}</span>
-                                    </div>
+
                                     <div className="border-t border-border/50 pt-4">
                                         <div className="flex justify-between text-xl font-bold">
                                             <span>Total</span>

@@ -42,7 +42,40 @@ export default function TermsPage() {
                                         Welcome to Digiteria. By accessing or using our platform, you agree to be bound by these Terms of Service.
                                     </p>
 
-                                    <h3 className="text-lg font-semibold text-foreground mt-6">1. Account Registration</h3>
+                                    <h3 className="text-lg font-semibold text-foreground mt-6">1. Business Model</h3>
+                                    <div className="space-y-4">
+                                        <p>Digiteria operates on a transparent business model designed to support both the platform and our creators:</p>
+
+                                        <div className="bg-ambient-50/50 dark:bg-ambient-900/20 p-4 rounded-xl border border-ambient-100 dark:border-ambient-800/50">
+                                            <h4 className="font-medium text-foreground mb-2">Platform Earnings</h4>
+                                            <ul className="list-disc list-inside space-y-1 ml-1">
+                                                <li><strong>Commission:</strong> We charge a 15% commission on every sale.</li>
+                                                <li><strong>Subscriptions:</strong> Optional subscription plans for creators.</li>
+                                                <li><strong>Promotions:</strong> Fees for featured listings and ad slots.</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="bg-ambient-50/50 dark:bg-ambient-900/20 p-4 rounded-xl border border-ambient-100 dark:border-ambient-800/50">
+                                            <h4 className="font-medium text-foreground mb-2">Creator Earnings</h4>
+                                            <p className="mb-2">Creators earn money by selling:</p>
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Products
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Services
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Memberships
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Downloads
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="text-lg font-semibold text-foreground mt-6">2. Account Registration</h3>
                                     <p>
                                         You must provide accurate and complete information when creating an account. You are responsible for maintaining the security of your account credentials and for all activities that occur under your account.
                                     </p>
@@ -144,8 +177,8 @@ export default function TermsPage() {
                                         If you have any questions about these terms or our privacy practices, please contact us at:
                                     </p>
                                     <p className="mt-4 font-medium text-foreground">
-                                        Email: legal@digiteria.com<br />
-                                        Address: 123 Digital Street, Tech City, TC 12345
+                                        Email: shouryachair@gmail.com<br />
+                                        Address: Soon!
                                     </p>
                                 </div>
                             </CardContent>

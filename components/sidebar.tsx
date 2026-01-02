@@ -33,7 +33,6 @@ export function Sidebar({ currentPage }: SidebarProps) {
 
     const menuItems = [
         { id: "/", label: "Home", icon: Home },
-        { id: "/marketplace", label: "Marketplace", icon: ShoppingBag },
     ]
 
     if (profile?.role === "creator" || profile?.role === "admin") {
@@ -144,13 +143,15 @@ export function Sidebar({ currentPage }: SidebarProps) {
 
                 {/* Action Buttons */}
                 <div className="space-y-1">
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 group text-sm"
-                    >
-                        <Settings className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform duration-500" />
-                        Settings
-                    </Button>
+                    <Link href="/dashboard/profile">
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 group text-sm"
+                        >
+                            <Settings className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform duration-500" />
+                            Settings
+                        </Button>
+                    </Link>
                     <Button
                         variant="ghost"
                         onClick={handleSignOut}

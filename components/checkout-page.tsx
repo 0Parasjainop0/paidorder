@@ -42,8 +42,7 @@ function CheckoutForm({ orderNumber, setOrderNumber, setIsComplete }: {
     const [message, setMessage] = useState<string | null>(null)
     const [paymentMethod, setPaymentMethod] = useState("stripe")
 
-    const platformFee = subtotal * 0.05
-    const total = subtotal + platformFee
+    const total = subtotal
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -71,8 +70,8 @@ function CheckoutForm({ orderNumber, setOrderNumber, setIsComplete }: {
                 const newOrderNumber = `DIG-${Date.now().toString(36).toUpperCase()}`
                 items.forEach(item => {
                     const amount = item.product.price * item.quantity
-                    const pFee = amount * 0.05
-                    const sellerAmt = amount - pFee
+                    const pFee = amount * 0.15
+                    const sellerAmt = amount * 0.85
 
                     mockDb.createOrder({
                         order_number: newOrderNumber,
@@ -105,8 +104,8 @@ function CheckoutForm({ orderNumber, setOrderNumber, setIsComplete }: {
 
             items.forEach(item => {
                 const amount = item.product.price * item.quantity
-                const pFee = amount * 0.05
-                const sellerAmt = amount - pFee
+                const pFee = amount * 0.15
+                const sellerAmt = amount * 0.85
 
                 mockDb.createOrder({
                     order_number: newOrderNumber,
@@ -305,10 +304,7 @@ function CheckoutForm({ orderNumber, setOrderNumber, setIsComplete }: {
                                     <span>Subtotal</span>
                                     <span>₹{subtotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-muted-foreground">
-                                    <span>Platform fee</span>
-                                    <span>₹{platformFee.toFixed(2)}</span>
-                                </div>
+
                                 <div className="border-t border-border pt-3">
                                     <div className="flex justify-between text-lg font-bold">
                                         <span>Total</span>
@@ -361,6 +357,14 @@ export function CheckoutPage() {
         if (items.length > 0) {
             setInitializationError(null)
             // Create PaymentIntent as soon as the page loads
+            // Determine seller Stripe ID (taking the first item's creator for simplicity in this mixed-cart prototype)
+            const firstItem = items[0]
+            let stripeAccountId = undefined
+            if (firstItem) {
+                const seller = mockDb.getUser(firstItem.product.creator_id)
+                stripeAccountId = seller?.stripe_account_id
+            }
+
             fetch("/api/create-payment-intent", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -369,7 +373,8 @@ export function CheckoutPage() {
                         id: item.product.id,
                         quantity: item.quantity,
                         price: item.product.price // Send price for server fallback
-                    }))
+                    })),
+                    stripeAccountId // Pass the dynamic seller ID
                 }),
             })
                 .then((res) => {

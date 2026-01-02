@@ -55,22 +55,37 @@ export function Preloader() {
         }
     }, [])
 
+    const [starStyles, setStarStyles] = useState<any[]>([])
+    const [nodeStyles, setNodeStyles] = useState<any[]>([])
+
+    useEffect(() => {
+        setStarStyles([...Array(40)].map(() => ({
+            top: Math.random() * 100 + '%',
+            left: Math.random() * 100 + '%',
+            animationDuration: (Math.random() * 3 + 2) + 's',
+            animationDelay: Math.random() * 5 + 's'
+        })))
+        setNodeStyles([...Array(8)].map((_, i) => ({
+            top: Math.random() * 100 + '%',
+            left: Math.random() * 100 + '%',
+            animationDelay: i * 0.5 + 's',
+            animationDuration: '6s'
+        })))
+    }, [])
+
     // Memoize layers for performance
     const bgElements = useMemo(() => (
         <>
             {/* Deep Space Stars - Deep Layer (Slowest) */}
             <div className="absolute inset-0">
-                {[...Array(40)].map((_, i) => (
+                {starStyles.map((style, i) => (
                     <div
                         key={`star-d-${i}`}
                         className="absolute bg-white/10 rounded-full animate-pulse"
                         style={{
                             width: '1px',
                             height: '1px',
-                            top: Math.random() * 100 + '%',
-                            left: Math.random() * 100 + '%',
-                            animationDuration: (Math.random() * 3 + 2) + 's',
-                            animationDelay: Math.random() * 5 + 's'
+                            ...style
                         }}
                     />
                 ))}
@@ -78,23 +93,18 @@ export function Preloader() {
 
             {/* Glowing Tech Nodes - Mid Layer */}
             <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
+                {nodeStyles.map((style, i) => (
                     <div
                         key={`node-${i}`}
                         className="absolute w-1 h-1 bg-ambient-500/20 rounded-full blur-[2px] animate-float"
-                        style={{
-                            top: Math.random() * 100 + '%',
-                            left: Math.random() * 100 + '%',
-                            animationDelay: i * 0.5 + 's',
-                            animationDuration: '6s'
-                        }}
+                        style={style}
                     >
                         <div className="absolute inset-0 bg-ambient-400 rounded-full animate-ping opacity-40" />
                     </div>
                 ))}
             </div>
         </>
-    ), [])
+    ), [starStyles, nodeStyles])
 
     if (!shouldRender) return null
 

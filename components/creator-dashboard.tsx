@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
@@ -61,6 +61,8 @@ export function CreatorDashboard() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number; dataUrl: string } | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
+  const [stripeAccountId, setStripeAccountId] = useState("")
+  const [isSettingsProcessing, setIsSettingsProcessing] = useState(false)
 
   const [products, setProducts] = useState<Product[]>([])
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -71,12 +73,28 @@ export function CreatorDashboard() {
         const allProducts = mockDb.getProducts()
         const myProducts = allProducts.filter(p => p.creator_id === user.id)
         setProducts(myProducts)
+        // Load Stripe Connect ID
+        const currentUser = mockDb.getUser(user.id)
+        if (currentUser?.stripe_account_id) {
+          setStripeAccountId(currentUser.stripe_account_id)
+        }
       }
     }
 
     refreshData()
     return mockDb.subscribe(refreshData)
+    refreshData()
+    return mockDb.subscribe(refreshData)
   }, [user])
+
+  // Check for tab query param
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const tab = searchParams.get('tab')
+    if (tab && ['overview', 'products', 'orders', 'analytics', 'settings'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -112,6 +130,11 @@ export function CreatorDashboard() {
 
   const handleSaveProduct = () => {
     if (!user) return
+
+    if (!stripeAccountId) {
+      toast.error("Please configure your Stripe Connect ID in Settings before selling products.")
+      return
+    }
 
     // Validation for new products (require file)
     if (!editingProduct && !uploadedFile) {
@@ -502,6 +525,7 @@ export function CreatorDashboard() {
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
@@ -658,17 +682,71 @@ export function CreatorDashboard() {
                       <span className="font-semibold">₹{totalEarnings.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Platform Fee (10%)</span>
-                      <span className="text-red-600">-₹{(totalEarnings * 0.1).toFixed(2)}</span>
+                      <span>Platform Fee (15%)</span>
+                      <span className="text-red-600">-₹{(totalEarnings * 0.15).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Your Earnings (90%)</span>
-                      <span className="font-semibold text-green-600">₹{(totalEarnings * 0.9).toFixed(2)}</span>
+                      <span>Your Earnings (85%)</span>
+                      <span className="font-semibold text-green-600">₹{(totalEarnings * 0.85).toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
+              <CardHeader>
+                <CardTitle>Payment Settings</CardTitle>
+                <CardDescription>
+                  Configure your payout details to receive earnings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="stripeId">Stripe Connect Account ID</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="stripeId"
+                      placeholder="acct_..."
+                      value={stripeAccountId}
+                      onChange={(e) => setStripeAccountId(e.target.value)}
+                      className="rounded-xl"
+                    />
+                    <Button
+                      onClick={() => {
+                        if (!user) return
+                        setIsSettingsProcessing(true)
+                        // Persist to MockDB (and logically Supabase)
+                        mockDb.updateUser(user.id, { stripe_account_id: stripeAccountId })
+                        toast.success("Stripe Account ID saved!")
+                        setIsSettingsProcessing(false)
+                      }}
+                      disabled={isSettingsProcessing}
+                      className="bg-ambient-600 hover:bg-ambient-700 text-white rounded-xl"
+                    >
+                      Save
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    This is required to receive your 85% share of sales.
+                  </p>
+                </div>
+
+                {!stripeAccountId && (
+                  <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-900/50 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-red-900 dark:text-red-200">Action Required</p>
+                      <p className="text-sm text-red-700 dark:text-red-300">
+                        You must configure your Stripe Connect ID before you can list new products.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

@@ -30,6 +30,7 @@ export type Database = {
           total_products: number
           total_sales: number
           rating: number
+          stripe_account_id: string | null
         }
         Insert: {
           id: string
@@ -50,6 +51,7 @@ export type Database = {
           total_products?: number
           total_sales?: number
           rating?: number
+          stripe_account_id?: string | null
         }
         Update: {
           id?: string
@@ -70,6 +72,7 @@ export type Database = {
           total_products?: number
           total_sales?: number
           rating?: number
+          stripe_account_id?: string | null
         }
       }
       categories: {

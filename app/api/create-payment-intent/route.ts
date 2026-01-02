@@ -4,12 +4,12 @@ import { SEED_DATA } from "@/lib/seed-data"
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-02-24.acacia", // Use latest or appropriate version
+    apiVersion: "2025-12-15.clover", // Use latest or appropriate version
 })
 
 export async function POST(req: Request) {
     try {
-        const { items } = await req.json()
+        const { items, stripeAccountId } = await req.json()
 
         if (!items || !Array.isArray(items)) {
             return new NextResponse("Invalid request body", { status: 400 })
@@ -44,9 +44,7 @@ export async function POST(req: Request) {
             total += price * quantity
         }
 
-        // Add 5% platform fee
-        const platformFee = total * 0.05
-        const finalTotal = total + platformFee
+        const finalTotal = total
 
         // Create PaymentIntent
         // Amount in cents (USD)
@@ -60,6 +58,10 @@ export async function POST(req: Request) {
             amount: amountInCents,
             currency: "inr",
             payment_method_types: ["card"],
+            application_fee_amount: Math.round(amountInCents * 0.15), // 15% to platform
+            transfer_data: {
+                destination: stripeAccountId || 'acct_123456789', // Use dynamic ID or fallback
+            },
         })
 
         return NextResponse.json({
