@@ -143,7 +143,7 @@ export function Sidebar({ currentPage }: SidebarProps) {
 
                 {/* Action Buttons */}
                 <div className="space-y-1">
-                    <Link href="/dashboard/profile">
+                    <Link href="/dashboard/account">
                         <Button
                             variant="ghost"
                             className="w-full justify-start rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 group text-sm"
