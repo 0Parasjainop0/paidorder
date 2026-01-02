@@ -351,33 +351,14 @@ export function ProfilePage() {
               </div>
 
               <div className="flex gap-2">
-                {!isEditing ? (
+                <Link href="/dashboard/account">
                   <Button
-                    onClick={() => {
-                      setIsEditing(true)
-                      setActiveTab("settings")
-                    }}
                     className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl"
                   >
                     <Edit3 className="w-4 h-4 mr-2" />
                     Edit Profile
                   </Button>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSave}
-                      disabled={loading}
-                      className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save
-                    </Button>
-                    <Button onClick={handleCancel} variant="outline" className="rounded-xl">
-                      <X className="w-4 h-4 mr-2" />
-                      Cancel
-                    </Button>
-                  </div>
-                )}
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -412,7 +393,6 @@ export function ProfilePage() {
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="purchases">Purchases</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -439,10 +419,12 @@ export function ProfilePage() {
                       Submit New Product
                     </Button>
                   )}
-                  <Button variant="outline" className="w-full justify-start rounded-xl">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Account Settings
-                  </Button>
+                  <Link href="/dashboard/account">
+                    <Button variant="outline" className="w-full justify-start rounded-xl">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Account Settings
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
 
@@ -622,154 +604,9 @@ export function ProfilePage() {
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="settings" className="space-y-6">
-            {isEditing ? (
-              <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
-                <CardHeader>
-                  <CardTitle>Edit Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="full_name">Full Name</Label>
-                      <Input
-                        id="full_name"
-                        value={editData.full_name}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, full_name: e.target.value }))}
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        value={editData.username}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, username: e.target.value }))}
-                        className="rounded-xl"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      value={editData.bio}
-                      onChange={(e) => setEditData((prev) => ({ ...prev, bio: e.target.value }))}
-                      placeholder="Tell us about yourself..."
-                      className="rounded-xl"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Company</Label>
-                      <Input
-                        id="company"
-                        value={editData.company}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, company: e.target.value }))}
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={editData.location}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, location: e.target.value }))}
-                        className="rounded-xl"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={editData.website}
-                      onChange={(e) => setEditData((prev) => ({ ...prev, website: e.target.value }))}
-                      placeholder="https://yourwebsite.com"
-                      className="rounded-xl"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="github_url">GitHub URL</Label>
-                      <Input
-                        id="github_url"
-                        value={editData.github_url}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, github_url: e.target.value }))}
-                        placeholder="https://github.com/username"
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="twitter_url">Twitter URL</Label>
-                      <Input
-                        id="twitter_url"
-                        value={editData.twitter_url}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, twitter_url: e.target.value }))}
-                        placeholder="https://twitter.com/username"
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-                      <Input
-                        id="linkedin_url"
-                        value={editData.linkedin_url}
-                        onChange={(e) => setEditData((prev) => ({ ...prev, linkedin_url: e.target.value }))}
-                        placeholder="https://linkedin.com/in/username"
-                        className="rounded-xl"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="border-ambient-200/50 dark:border-ambient-800/30 bg-card/50 backdrop-blur-sm rounded-2xl">
-                <CardHeader>
-                  <CardTitle>Account Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl">
-                    <div>
-                      <h4 className="font-medium">Email Address</h4>
-                      <p className="text-sm text-muted-foreground">{profile.email}</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="rounded-xl">
-                      Change
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border border-ambient-200/50 dark:border-ambient-800/30 rounded-xl">
-                    <div>
-                      <h4 className="font-medium">Password</h4>
-                      <p className="text-sm text-muted-foreground">Last changed 30 days ago</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="rounded-xl">
-                      Change
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border border-red-200/50 dark:border-red-800/30 rounded-xl">
-                    <div>
-                      <h4 className="font-medium text-red-600">Delete Account</h4>
-                      <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
-                    </div>
-                    <Button variant="destructive" size="sm" className="rounded-xl">
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
         </Tabs>
       </div>
     </div>
   )
 }
+
