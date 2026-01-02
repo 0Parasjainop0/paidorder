@@ -57,6 +57,7 @@ export const SEED_DATA: MockDB = {
             github_url: "",
             twitter_url: "",
             linkedin_url: "",
+            stripe_account_id: null,
         },
         {
             id: "trade-master",
@@ -79,6 +80,7 @@ export const SEED_DATA: MockDB = {
             github_url: "",
             twitter_url: "",
             linkedin_url: "",
+            stripe_account_id: "acct_test_123",
         },
         {
             id: "creator-2",
@@ -101,6 +103,7 @@ export const SEED_DATA: MockDB = {
             github_url: "",
             twitter_url: "",
             linkedin_url: "",
+            stripe_account_id: null,
         }
     ],
     products: [
