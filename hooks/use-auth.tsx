@@ -101,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               linkedin_url: null,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
+              stripe_account_id: null,
             })
           }
         } catch (e) {
