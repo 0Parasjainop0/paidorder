@@ -950,6 +950,100 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Comparison Table Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-ambient-50/30 to-background dark:via-ambient-950/20" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-green-500/25">
+              <TrendingUp className="w-3.5 h-3.5 mr-1.5 inline" />
+              Compare
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Why Choose{" "}
+              <span className="gradient-text-animated">Digiteria?</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              See how we stack up against other platforms
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              <div className="grid grid-cols-5 gap-2 mb-4">
+                {/* Header Row */}
+                <div className="p-4"></div>
+                <div className="p-4 rounded-t-2xl bg-gradient-to-b from-ambient-500 to-ambient-600 text-center shadow-lg">
+                  <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-bold text-white text-lg">Digiteria</span>
+                  <div className="text-amber-300 text-xs font-medium mt-1">⭐ Recommended</div>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-t-xl text-center">
+                  <span className="font-semibold text-muted-foreground">Gumroad</span>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-t-xl text-center">
+                  <span className="font-semibold text-muted-foreground">Sellfy</span>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-t-xl text-center">
+                  <span className="font-semibold text-muted-foreground">Lemonsqueezy</span>
+                </div>
+              </div>
+
+              {/* Comparison Rows */}
+              {[
+                { feature: "Platform Fee", digiteria: "10%", gumroad: "10%", sellfy: "$19-99/mo", lemon: "5% + $0.50" },
+                { feature: "Monthly Fees", digiteria: "Free", gumroad: "Free", sellfy: "Required", lemon: "Free" },
+                { feature: "Payout Speed", digiteria: "3-5 days", gumroad: "7-14 days", sellfy: "7 days", lemon: "7-14 days" },
+                { feature: "Payment Methods", digiteria: "50+", gumroad: "Cards only", sellfy: "Cards, PayPal", lemon: "Cards, PayPal" },
+                { feature: "File Size Limit", digiteria: "5GB", gumroad: "16GB", sellfy: "2GB", lemon: "5GB" },
+                { feature: "Custom Domain", digiteria: "✓ Free", gumroad: "✓ Paid", sellfy: "✓ Paid", lemon: "✓ Free" },
+                { feature: "Analytics", digiteria: "Advanced", gumroad: "Basic", sellfy: "Standard", lemon: "Standard" },
+                { feature: "24/7 Support", digiteria: "✓ Yes", gumroad: "Email only", sellfy: "Chat + Email", lemon: "Email only" },
+                { feature: "Affiliate System", digiteria: "✓ Built-in", gumroad: "✓ Yes", sellfy: "✓ Yes", lemon: "✓ Yes" },
+                { feature: "License Keys", digiteria: "✓ Free", gumroad: "Limited", sellfy: "✓ Yes", lemon: "✓ Yes" },
+              ].map((row, index) => (
+                <div key={index} className="grid grid-cols-5 gap-2">
+                  <div className="p-4 flex items-center font-medium text-sm">
+                    {row.feature}
+                  </div>
+                  <div className="p-4 bg-ambient-50 dark:bg-ambient-950/50 flex items-center justify-center font-semibold text-ambient-600 dark:text-ambient-400 border-x border-ambient-200/30 dark:border-ambient-800/30">
+                    {row.digiteria}
+                  </div>
+                  <div className="p-4 bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+                    {row.gumroad}
+                  </div>
+                  <div className="p-4 bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+                    {row.sellfy}
+                  </div>
+                  <div className="p-4 bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+                    {row.lemon}
+                  </div>
+                </div>
+              ))}
+
+              {/* Bottom Row */}
+              <div className="grid grid-cols-5 gap-2 mt-2">
+                <div className="p-4"></div>
+                <div className="p-4 rounded-b-2xl bg-gradient-to-b from-ambient-600 to-ambient-700 text-center">
+                  <Button
+                    onClick={handleStartSelling}
+                    className="bg-white text-ambient-600 hover:bg-white/90 rounded-xl font-semibold shadow-lg"
+                  >
+                    Get Started Free
+                  </Button>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-b-xl"></div>
+                <div className="p-4 bg-muted/50 rounded-b-xl"></div>
+                <div className="p-4 bg-muted/50 rounded-b-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter Section */}
       <section className="py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-ambient-600 via-purple-600 to-ambient-600" />
