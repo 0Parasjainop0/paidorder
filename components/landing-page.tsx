@@ -781,6 +781,185 @@ export function LandingPage() {
 
       <TestimonialCarousel />
 
+      {/* Why Choose Us Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-ambient-50/30 to-background dark:via-ambient-950/20" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-purple-500/25">
+              <Shield className="w-3.5 h-3.5 mr-1.5 inline" />
+              Why Digiteria
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Everything You Need to{" "}
+              <span className="gradient-text-animated">Succeed</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Powerful features designed to help creators build, sell, and grow their digital business.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Shield,
+                title: "Secure Payments",
+                description: "Bank-grade security with Stripe integration. Your earnings are always protected.",
+                gradient: "from-blue-500 to-cyan-500"
+              },
+              {
+                icon: Zap,
+                title: "Instant Delivery",
+                description: "Automated file delivery. Customers get their purchases immediately.",
+                gradient: "from-yellow-500 to-orange-500"
+              },
+              {
+                icon: BarChart3,
+                title: "Advanced Analytics",
+                description: "Track sales, views, and conversions with real-time insights dashboard.",
+                gradient: "from-purple-500 to-pink-500"
+              },
+              {
+                icon: Globe,
+                title: "Global Reach",
+                description: "Sell worldwide with multi-currency support and localized experiences.",
+                gradient: "from-green-500 to-emerald-500"
+              },
+              {
+                icon: MessageCircle,
+                title: "24/7 Support",
+                description: "Get help anytime with our dedicated support team and community.",
+                gradient: "from-red-500 to-rose-500"
+              },
+              {
+                icon: Sparkles,
+                title: "No Monthly Fees",
+                description: "Keep more of what you earn. Only pay when you make a sale.",
+                gradient: "from-ambient-500 to-ambient-600"
+              }
+            ].map((feature, index) => (
+              <Card
+                key={feature.title}
+                className="group bg-white/80 dark:bg-ambient-950/50 border-ambient-200/50 dark:border-ambient-800/30 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-ambient-500/15 transition-all duration-500 hover:-translate-y-1"
+              >
+                <CardContent className="p-6">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} shadow-lg mb-4 group-hover:scale-110 transition-transform duration-500`}>
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-2 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ambient-50/50 to-transparent dark:via-ambient-950/30" />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-gradient-to-r from-amber-600 to-orange-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-amber-500/25">
+              <MessageCircle className="w-3.5 h-3.5 mr-1.5 inline" />
+              FAQ
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Frequently Asked{" "}
+              <span className="gradient-text">Questions</span>
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Got questions? We've got answers.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                question: "How do I start selling on Digiteria?",
+                answer: "Getting started is easy! Simply sign up for a free account, apply to become a seller, and once approved, you can start uploading your digital products immediately."
+              },
+              {
+                question: "What types of products can I sell?",
+                answer: "You can sell a wide variety of digital products including templates, UI kits, software, scripts, courses, ebooks, design assets, and more."
+              },
+              {
+                question: "What are the fees?",
+                answer: "We only charge a small commission on successful sales - no monthly fees, no setup costs. You keep the majority of your earnings."
+              },
+              {
+                question: "How do payouts work?",
+                answer: "Payouts are processed automatically to your connected bank account or PayPal. You can request a payout once you reach the minimum threshold of $50."
+              },
+              {
+                question: "Is my content protected?",
+                answer: "Yes! We use secure file delivery with download limits and license key generation to protect your digital products from unauthorized distribution."
+              }
+            ].map((faq, index) => (
+              <Card
+                key={index}
+                className="group bg-white/80 dark:bg-ambient-950/50 border-ambient-200/50 dark:border-ambient-800/30 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-ambient-500/10 transition-all duration-300"
+              >
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-2 flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-ambient-500 to-ambient-600 flex items-center justify-center text-white text-sm font-bold">
+                      {index + 1}
+                    </span>
+                    <span className="pt-1">{faq.question}</span>
+                  </h3>
+                  <p className="text-muted-foreground pl-11 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-ambient-600 via-purple-600 to-ambient-600" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.1),transparent_70%)]" />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="w-6 h-6 text-amber-300 animate-pulse" />
+            <span className="text-white/80 font-medium">Join 50,000+ creators</span>
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Get Creator Tips & Updates
+          </h2>
+          <p className="text-white/80 mb-8 max-w-xl mx-auto">
+            Subscribe to our newsletter for the latest tips, resources, and updates to help you grow your digital business.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-5 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all"
+            />
+            <Button
+              className="bg-white text-ambient-600 hover:bg-white/90 rounded-xl px-6 py-4 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              Subscribe
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+
+          <p className="text-white/50 text-sm mt-4">
+            No spam, unsubscribe anytime. We respect your privacy.
+          </p>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">
