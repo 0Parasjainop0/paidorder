@@ -378,9 +378,9 @@ export function LandingPage() {
             Trusted by creators and companies worldwide
           </p>
           <div className="relative">
-            {/* Gradient Fades */}
-            <div className="absolute left-0 top-0 bottom-0 w-64 bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-64 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
+            {/* Gradient Fades - extend beyond container */}
+            <div className="absolute -left-4 top-0 bottom-0 w-48 bg-gradient-to-r from-background via-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute -right-4 top-0 bottom-0 w-48 bg-gradient-to-l from-background via-background to-transparent z-10 pointer-events-none" />
 
             {/* Scrolling Logos */}
             <div className="flex animate-marquee space-x-12">
