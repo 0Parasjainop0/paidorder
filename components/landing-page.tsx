@@ -619,7 +619,7 @@ export function LandingPage() {
                         <Badge
                           key={feature}
                           variant="secondary"
-                          className="bg-gradient-to-r from-white/5 to-white/10 text-stone-200 border border-white/10 hover:border-ambient-400/50 py-2 px-5 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-ambient-500/20 text-sm font-medium"
+                          className="bg-white/10 text-white border border-white/20 hover:border-ambient-400/50 hover:bg-white/20 py-2 px-5 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-ambient-500/20 text-sm font-medium"
                           style={{ animationDelay: `${i * 50}ms` }}
                         >
                           {feature}
