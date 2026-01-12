@@ -275,7 +275,7 @@ export function LandingPage() {
   const handleStartSelling = () => {
     if (!user) {
       setShowAuthModal(true)
-    } else if (profile?.role === "creator") {
+    } else if (profile?.role === "creator" || profile?.role === "admin") {
       router.push("/dashboard")
     } else {
       setShowSellerModal(true)
@@ -668,15 +668,14 @@ export function LandingPage() {
                   selling today – it's free to get started!
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Link href="/dashboard">
-                    <Button
-                      size="lg"
-                      className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
-                    >
-                      Create Your Store
-                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    onClick={handleStartSelling}
+                    className="group bg-white text-ambient-600 hover:bg-white/95 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-500 hover:scale-105 shadow-xl hover:shadow-2xl btn-shine"
+                  >
+                    Create Your Store
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
                   <Link href="/marketplace">
                     <Button
                       size="lg"
