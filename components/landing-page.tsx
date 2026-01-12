@@ -371,6 +371,142 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Trusted By / Logo Marquee Section */}
+      <section className="py-12 border-y border-ambient-200/30 dark:border-ambient-800/20 bg-gradient-to-r from-ambient-50/50 via-background to-ambient-50/50 dark:from-ambient-950/50 dark:via-background dark:to-ambient-950/50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-sm font-medium text-muted-foreground mb-8 uppercase tracking-widest">
+            Trusted by creators and companies worldwide
+          </p>
+          <div className="relative">
+            {/* Gradient Fades */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+            {/* Scrolling Logos */}
+            <div className="flex animate-marquee space-x-16">
+              {[
+                { name: "TechCorp", icon: "💻" },
+                { name: "DesignHub", icon: "🎨" },
+                { name: "DevStudio", icon: "⚡" },
+                { name: "CreatorCo", icon: "🚀" },
+                { name: "InnovateLab", icon: "💡" },
+                { name: "PixelPerfect", icon: "✨" },
+                { name: "CloudBase", icon: "☁️" },
+                { name: "NextGen", icon: "🔮" },
+              ].map((company, i) => (
+                <div key={i} className="flex items-center gap-3 text-muted-foreground/60 hover:text-muted-foreground transition-colors cursor-default whitespace-nowrap">
+                  <span className="text-2xl">{company.icon}</span>
+                  <span className="text-xl font-semibold">{company.name}</span>
+                </div>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {[
+                { name: "TechCorp", icon: "💻" },
+                { name: "DesignHub", icon: "🎨" },
+                { name: "DevStudio", icon: "⚡" },
+                { name: "CreatorCo", icon: "🚀" },
+                { name: "InnovateLab", icon: "💡" },
+                { name: "PixelPerfect", icon: "✨" },
+                { name: "CloudBase", icon: "☁️" },
+                { name: "NextGen", icon: "🔮" },
+              ].map((company, i) => (
+                <div key={`dup-${i}`} className="flex items-center gap-3 text-muted-foreground/60 hover:text-muted-foreground transition-colors cursor-default whitespace-nowrap">
+                  <span className="text-2xl">{company.icon}</span>
+                  <span className="text-xl font-semibold">{company.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-ambient-50/30 to-background dark:via-ambient-950/20" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-green-500/25">
+              <Zap className="w-3.5 h-3.5 mr-1.5 inline" />
+              Simple Process
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Start Selling in{" "}
+              <span className="gradient-text-animated">3 Easy Steps</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Go from idea to income in minutes. No technical experience required.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line */}
+            <div className="hidden md:block absolute top-24 left-[16.67%] right-[16.67%] h-0.5 bg-gradient-to-r from-ambient-500 via-purple-500 to-green-500" />
+
+            {[
+              {
+                step: "01",
+                icon: Rocket,
+                title: "Create Your Store",
+                description: "Sign up and set up your digital storefront in under 5 minutes. Customize your profile and brand.",
+                color: "from-ambient-500 to-ambient-600"
+              },
+              {
+                step: "02",
+                icon: Code,
+                title: "Upload Products",
+                description: "Add your digital products - templates, courses, software, designs. Set pricing and descriptions.",
+                color: "from-purple-500 to-purple-600"
+              },
+              {
+                step: "03",
+                icon: DollarSign,
+                title: "Get Paid",
+                description: "Start earning instantly. We handle payments, delivery, and customer support. You focus on creating.",
+                color: "from-green-500 to-emerald-600"
+              }
+            ].map((item, index) => (
+              <Card
+                key={item.step}
+                className="group relative bg-white/80 dark:bg-ambient-950/50 border-ambient-200/50 dark:border-ambient-800/30 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-ambient-500/15 transition-all duration-500 hover:-translate-y-2"
+              >
+                <CardContent className="p-8 text-center relative">
+                  {/* Step Number Badge */}
+                  <div className={`absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br ${item.color} rounded-bl-3xl flex items-end justify-start p-3`}>
+                    <span className="text-white font-bold text-lg">{item.step}</span>
+                  </div>
+
+                  {/* Icon */}
+                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br ${item.color} shadow-xl shadow-ambient-500/20 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                    <item.icon className="w-9 h-9 text-white" />
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-ambient-600 dark:group-hover:text-ambient-400 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* CTA Below Steps */}
+          <div className="text-center mt-12">
+            <Button
+              size="lg"
+              onClick={handleStartSelling}
+              className="group bg-gradient-to-r from-ambient-500 via-ambient-600 to-ambient-500 hover:from-ambient-600 hover:via-ambient-700 hover:to-ambient-600 text-white rounded-2xl px-10 py-6 text-lg font-semibold shadow-xl shadow-ambient-500/30 hover:shadow-ambient-500/50 transition-all duration-500 hover:scale-105 btn-shine"
+            >
+              Get Started Free
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-24 relative overflow-hidden">
         {/* Background */}
