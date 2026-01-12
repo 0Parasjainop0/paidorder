@@ -585,27 +585,41 @@ export function LandingPage() {
           </div>
 
           <div className="relative group">
-            <Card className="border-ambient-800/30 bg-gradient-to-br from-[#0a0a0b] to-[#111113] dark:from-[#0a0a0b] dark:to-[#111113] rounded-[2rem] overflow-hidden shadow-2xl shadow-ambient-500/10 hover:shadow-ambient-500/20 transition-all duration-700">
-              <CardContent className="p-0">
-                <div className="flex flex-col lg:flex-row min-h-[500px]">
+            {/* Glow effect behind card */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-ambient-500/20 via-purple-500/20 to-ambient-500/20 rounded-[2.5rem] blur-2xl opacity-50 group-hover:opacity-75 transition-opacity duration-700" />
+
+            <Card className="relative border border-ambient-500/20 bg-gradient-to-br from-[#0c0c0e] via-[#0f0f12] to-[#131316] rounded-[2rem] overflow-hidden shadow-2xl shadow-ambient-500/10 hover:shadow-ambient-500/25 transition-all duration-700">
+              {/* Animated border gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-ambient-500/10 via-purple-500/10 to-ambient-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+              <CardContent className="p-0 relative">
+                <div className="flex flex-col lg:flex-row min-h-[520px]">
                   {/* Content Area */}
-                  <div className="flex-1 p-8 lg:p-12 flex flex-col justify-center">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-ambient-500/20 to-ambient-600/10 flex items-center justify-center mb-6 shadow-lg shadow-ambient-500/20 border border-ambient-500/20 group-hover:scale-110 transition-transform duration-500">
+                  <div className="flex-1 p-8 lg:p-14 flex flex-col justify-center relative">
+                    {/* Decorative orb */}
+                    <div className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-br from-ambient-500/10 to-purple-500/5 rounded-full blur-3xl" />
+
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ambient-500/30 to-purple-500/20 flex items-center justify-center mb-8 shadow-xl shadow-ambient-500/30 border border-ambient-400/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       {(() => {
                         const Icon = showcaseData[currentShowcase].icon
-                        return <Icon className="w-7 h-7 text-ambient-400" />
+                        return <Icon className="w-8 h-8 text-ambient-300" />
                       })()}
                     </div>
-                    <h3 className="text-3xl lg:text-4xl font-bold mb-4 text-white">{showcaseData[currentShowcase].title}</h3>
-                    <p className="text-stone-400 text-lg mb-8 leading-relaxed max-w-md">
+
+                    <h3 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-5 text-white leading-tight">
+                      {showcaseData[currentShowcase].title}
+                    </h3>
+
+                    <p className="text-stone-400 text-lg mb-8 leading-relaxed max-w-lg">
                       {showcaseData[currentShowcase].description}
                     </p>
-                    <div className="flex flex-wrap gap-3 mb-8">
+
+                    <div className="flex flex-wrap gap-3">
                       {showcaseData[currentShowcase].features.map((feature, i) => (
                         <Badge
                           key={feature}
                           variant="secondary"
-                          className="bg-white/5 text-stone-300 border-white/10 hover:bg-white/10 py-1.5 px-4 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                          className="bg-gradient-to-r from-white/5 to-white/10 text-stone-200 border border-white/10 hover:border-ambient-400/50 py-2 px-5 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-ambient-500/20 text-sm font-medium"
                           style={{ animationDelay: `${i * 50}ms` }}
                         >
                           {feature}
@@ -615,15 +629,24 @@ export function LandingPage() {
                   </div>
 
                   {/* Image Area */}
-                  <div className="flex-1 relative bg-gradient-to-br from-stone-900/30 to-stone-900/10 border-l border-white/5 p-4 lg:p-8 flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.1),transparent_70%)]" />
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-[1.02] transition-transform duration-700">
+                  <div className="flex-1 relative bg-gradient-to-br from-ambient-950/50 via-purple-950/30 to-stone-900/20 border-l border-white/5 p-6 lg:p-10 flex items-center justify-center overflow-hidden">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.15),transparent_60%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,92,246,0.1),transparent_60%)]" />
+
+                    {/* Floating particles */}
+                    <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-ambient-400 rounded-full animate-pulse opacity-50" />
+                    <div className="absolute bottom-1/3 right-1/4 w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
+
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-[1.03] group-hover:shadow-ambient-500/30 transition-all duration-700">
                       <img
                         src={showcaseData[currentShowcase].image}
                         alt={showcaseData[currentShowcase].title}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-tr from-ambient-500/20 via-transparent to-purple-500/10 pointer-events-none" />
+                      {/* Image overlay gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-ambient-500/20 via-transparent to-purple-500/15 pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
                     </div>
                   </div>
                 </div>
