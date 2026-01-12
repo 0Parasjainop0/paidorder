@@ -2,6 +2,7 @@
 
 import {
     AlertDialog,
+    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -9,7 +10,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 import { AlertTriangle, LogOut } from "lucide-react"
 
 interface ConfirmDialogProps {
@@ -33,8 +33,9 @@ export function ConfirmDialog({
     cancelText = "Cancel",
     variant = "default"
 }: ConfirmDialogProps) {
-    const handleConfirm = () => {
-        onConfirm()
+    const handleConfirm = async () => {
+        await onConfirm()
+        onOpenChange(false)
     }
 
     return (
@@ -59,7 +60,7 @@ export function ConfirmDialog({
                     <AlertDialogCancel className="flex-1 rounded-xl border-2 border-ambient-200 dark:border-ambient-700 hover:bg-ambient-50 dark:hover:bg-ambient-900/50 transition-all duration-300">
                         {cancelText}
                     </AlertDialogCancel>
-                    <Button
+                    <AlertDialogAction
                         onClick={handleConfirm}
                         className={`flex-1 rounded-xl font-semibold shadow-lg transition-all duration-300 ${variant === "destructive"
                             ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-500/25"
@@ -67,7 +68,7 @@ export function ConfirmDialog({
                             }`}
                     >
                         {confirmText}
-                    </Button>
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
