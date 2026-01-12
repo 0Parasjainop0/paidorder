@@ -149,52 +149,48 @@ export function Navbar({ currentPage }: NavbarProps) {
                   Start Selling
                 </Button>
               )}
-              {!loading && (
-                <>
-                  {user ? (
-                    <div className="flex items-center gap-4">
-                      <Link
-                        href="/dashboard/profile"
-                        className="relative h-9 pl-1 pr-4 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-lg shadow-ambient-500/20 active:scale-95 border-none flex items-center"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-sm shadow-sm">
-                            {profile?.avatar_url ? (
-                              <img src={profile.avatar_url} className="h-full w-full rounded-full object-cover" />
-                            ) : (
-                              <span>{profile?.full_name?.[0] || profile?.email[0].toUpperCase()}</span>
-                            )}
-                          </div>
-                          <span className="text-xs font-bold text-white tracking-tight">Dashboard</span>
-                        </div>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleSignOut}
-                        className="text-muted-foreground hover:text-red-500 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        <span className="hidden sm:inline">Sign out</span>
-                      </Button>
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/dashboard/profile"
+                    className="relative h-9 pl-1 pr-4 rounded-full group bg-ambient-700 hover:bg-ambient-800 transition-all duration-300 shadow-lg shadow-ambient-500/20 active:scale-95 border-none flex items-center"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 w-7 rounded-full bg-ambient-300 flex items-center justify-center text-ambient-900 font-bold text-sm shadow-sm">
+                        {profile?.avatar_url ? (
+                          <img src={profile.avatar_url} className="h-full w-full rounded-full object-cover" />
+                        ) : (
+                          <span>{profile?.full_name?.[0] || profile?.email?.[0]?.toUpperCase() || "U"}</span>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-white tracking-tight">Dashboard</span>
                     </div>
-                  ) : (
-                    <>
-                      <Button
-                        variant="ghost"
-                        onClick={() => openAuthModal("signin")}
-                        className="text-sm font-medium rounded-xl hover:bg-muted/50 transition-all duration-300"
-                      >
-                        Sign In
-                      </Button>
-                      <Button
-                        onClick={() => openAuthModal("signup")}
-                        className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl font-medium shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 transition-all duration-300 hover:scale-105 btn-shine"
-                      >
-                        Sign Up
-                      </Button>
-                    </>
-                  )}
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="text-muted-foreground hover:text-red-500 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Sign out</span>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => openAuthModal("signin")}
+                    className="text-sm font-medium rounded-xl hover:bg-muted/50 transition-all duration-300"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => openAuthModal("signup")}
+                    className="bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl font-medium shadow-lg shadow-ambient-500/25 hover:shadow-ambient-500/40 transition-all duration-300 hover:scale-105 btn-shine"
+                  >
+                    Sign Up
+                  </Button>
                 </>
               )}
 
@@ -280,83 +276,81 @@ export function Navbar({ currentPage }: NavbarProps) {
                   </Link>
                 ))}
 
-                {!loading && (
-                  <div className="flex flex-col space-y-2 pt-2 mt-2 border-t border-border/40">
-                    {user ? (
-                      <>
+                <div className="flex flex-col space-y-2 pt-2 mt-2 border-t border-border/40">
+                  {user ? (
+                    <>
+                      <Link
+                        href="/dashboard/profile"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Profile
+                      </Link>
+                      {(profile?.role === "creator" || profile?.role === "admin") && (
                         <Link
-                          href="/dashboard/profile"
+                          href="/dashboard"
                           onClick={() => setIsMenuOpen(false)}
                           className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                         >
-                          <User className="w-4 h-4 mr-2" />
-                          Profile
+                          <LayoutDashboard className="w-4 h-4 mr-2" />
+                          Dashboard
                         </Link>
-                        {(profile?.role === "creator" || profile?.role === "admin") && (
-                          <Link
-                            href="/dashboard"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
-                          >
-                            <LayoutDashboard className="w-4 h-4 mr-2" />
-                            Dashboard
-                          </Link>
-                        )}
-                        {profile?.role === "admin" && (
-                          <Link
-                            href="/dashboard/admin"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
-                          >
-                            <Shield className="w-4 h-4 mr-2" />
-                            Admin Panel
-                          </Link>
-                        )}
+                      )}
+                      {profile?.role === "admin" && (
                         <Link
-                          href="/dashboard/analytics"
+                          href="/dashboard/admin"
                           onClick={() => setIsMenuOpen(false)}
                           className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
                         >
-                          <LineChart className="w-4 h-4 mr-2" />
-                          Analytics
+                          <Shield className="w-4 h-4 mr-2" />
+                          Admin Panel
                         </Link>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            handleSignOut()
-                            setIsMenuOpen(false)
-                          }}
-                          className="justify-start rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                        >
-                          <LogOut className="w-4 h-4 mr-2" />
-                          Sign Out
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            openAuthModal("signin")
-                            setIsMenuOpen(false)
-                          }}
-                          className="justify-start rounded-xl"
-                        >
-                          Sign In
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            openAuthModal("signup")
-                            setIsMenuOpen(false)
-                          }}
-                          className="justify-start bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl shadow-lg shadow-ambient-500/25"
-                        >
-                          Sign Up
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                )}
+                      )}
+                      <Link
+                        href="/dashboard/analytics"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center justify-start rounded-xl px-4 py-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <LineChart className="w-4 h-4 mr-2" />
+                        Analytics
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          handleSignOut()
+                          setIsMenuOpen(false)
+                        }}
+                        className="justify-start rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          openAuthModal("signin")
+                          setIsMenuOpen(false)
+                        }}
+                        className="justify-start rounded-xl"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          openAuthModal("signup")
+                          setIsMenuOpen(false)
+                        }}
+                        className="justify-start bg-gradient-to-r from-ambient-500 to-ambient-600 hover:from-ambient-600 hover:to-ambient-700 text-white rounded-xl shadow-lg shadow-ambient-500/25"
+                      >
+                        Sign Up
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
