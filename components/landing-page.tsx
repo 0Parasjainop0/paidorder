@@ -887,68 +887,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ambient-50/50 to-transparent dark:via-ambient-950/30" />
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="bg-gradient-to-r from-amber-600 to-orange-600 text-white mb-4 border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-amber-500/25">
-              <MessageCircle className="w-3.5 h-3.5 mr-1.5 inline" />
-              FAQ
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Frequently Asked{" "}
-              <span className="gradient-text">Questions</span>
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Got questions? We've got answers.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {[
-              {
-                question: "How do I start selling on Digiteria?",
-                answer: "Getting started is easy! Simply sign up for a free account, apply to become a seller, and once approved, you can start uploading your digital products immediately."
-              },
-              {
-                question: "What types of products can I sell?",
-                answer: "You can sell a wide variety of digital products including templates, UI kits, software, scripts, courses, ebooks, design assets, and more."
-              },
-              {
-                question: "What are the fees?",
-                answer: "We only charge a small commission on successful sales - no monthly fees, no setup costs. You keep the majority of your earnings."
-              },
-              {
-                question: "How do payouts work?",
-                answer: "Payouts are processed automatically to your connected bank account or PayPal. You can request a payout once you reach the minimum threshold of $50."
-              },
-              {
-                question: "Is my content protected?",
-                answer: "Yes! We use secure file delivery with download limits and license key generation to protect your digital products from unauthorized distribution."
-              }
-            ].map((faq, index) => (
-              <Card
-                key={index}
-                className="group bg-white/80 dark:bg-ambient-950/50 border-ambient-200/50 dark:border-ambient-800/30 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-ambient-500/10 transition-all duration-300"
-              >
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-2 flex items-start gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-ambient-500 to-ambient-600 flex items-center justify-center text-white text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    <span className="pt-1">{faq.question}</span>
-                  </h3>
-                  <p className="text-muted-foreground pl-11 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Comparison Table Section */}
       <section className="py-24 relative overflow-hidden">
@@ -997,7 +936,7 @@ export function LandingPage() {
                 { feature: "Platform Fee", digiteria: "10%", gumroad: "10%", sellfy: "$19-99/mo", lemon: "5% + $0.50" },
                 { feature: "Monthly Fees", digiteria: "Free", gumroad: "Free", sellfy: "Required", lemon: "Free" },
                 { feature: "Payout Speed", digiteria: "3-5 days", gumroad: "7-14 days", sellfy: "7 days", lemon: "7-14 days" },
-                { feature: "Payment Methods", digiteria: "50+", gumroad: "Cards only", sellfy: "Cards, PayPal", lemon: "Cards, PayPal" },
+                { feature: "Payment Methods", digiteria: "Cards only", gumroad: "Cards only", sellfy: "Cards, PayPal", lemon: "Cards, PayPal" },
                 { feature: "File Size Limit", digiteria: "5GB", gumroad: "16GB", sellfy: "2GB", lemon: "5GB" },
                 { feature: "Custom Domain", digiteria: "✓ Free", gumroad: "✓ Paid", sellfy: "✓ Paid", lemon: "✓ Free" },
                 { feature: "Analytics", digiteria: "Advanced", gumroad: "Basic", sellfy: "Standard", lemon: "Standard" },

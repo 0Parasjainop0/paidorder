@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import {
     MessageCircle,
     Search,
@@ -160,8 +162,10 @@ export default function FAQPage() {
 
     return (
         <div className="min-h-screen bg-background">
+            <Navbar />
+
             {/* Hero Section */}
-            <section className="py-20 relative overflow-hidden">
+            <section className="py-20 pt-28 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-ambient-50/50 via-background to-background dark:from-ambient-950/30" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.1),transparent_50%)]" />
 
@@ -303,6 +307,8 @@ export default function FAQPage() {
                     </Link>
                 </div>
             </section>
+
+            <Footer />
         </div>
     )
 }
