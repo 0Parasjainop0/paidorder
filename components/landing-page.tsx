@@ -383,36 +383,40 @@ export function LandingPage() {
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
             {/* Scrolling Logos */}
-            <div className="flex animate-marquee space-x-16">
+            <div className="flex animate-marquee space-x-12">
               {[
-                { name: "TechCorp", icon: "💻" },
-                { name: "DesignHub", icon: "🎨" },
-                { name: "DevStudio", icon: "⚡" },
-                { name: "CreatorCo", icon: "🚀" },
-                { name: "InnovateLab", icon: "💡" },
-                { name: "PixelPerfect", icon: "✨" },
-                { name: "CloudBase", icon: "☁️" },
-                { name: "NextGen", icon: "🔮" },
+                { name: "TechCorp", icon: Monitor, color: "from-blue-500 to-cyan-500" },
+                { name: "DesignHub", icon: Palette, color: "from-pink-500 to-rose-500" },
+                { name: "DevStudio", icon: Zap, color: "from-yellow-500 to-orange-500" },
+                { name: "CreatorCo", icon: Rocket, color: "from-purple-500 to-violet-500" },
+                { name: "InnovateLab", icon: Sparkles, color: "from-amber-500 to-yellow-500" },
+                { name: "PixelPerfect", icon: Layout, color: "from-green-500 to-emerald-500" },
+                { name: "CloudBase", icon: HardDrive, color: "from-sky-500 to-blue-500" },
+                { name: "NextGen", icon: Globe, color: "from-indigo-500 to-purple-500" },
               ].map((company, i) => (
-                <div key={i} className="flex items-center gap-3 text-muted-foreground/60 hover:text-muted-foreground transition-colors cursor-default whitespace-nowrap">
-                  <span className="text-2xl">{company.icon}</span>
-                  <span className="text-xl font-semibold">{company.name}</span>
+                <div key={i} className="flex items-center gap-3 text-muted-foreground/70 hover:text-foreground transition-all duration-300 cursor-default whitespace-nowrap group">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${company.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <company.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-lg font-bold tracking-tight">{company.name}</span>
                 </div>
               ))}
               {/* Duplicate for seamless loop */}
               {[
-                { name: "TechCorp", icon: "💻" },
-                { name: "DesignHub", icon: "🎨" },
-                { name: "DevStudio", icon: "⚡" },
-                { name: "CreatorCo", icon: "🚀" },
-                { name: "InnovateLab", icon: "💡" },
-                { name: "PixelPerfect", icon: "✨" },
-                { name: "CloudBase", icon: "☁️" },
-                { name: "NextGen", icon: "🔮" },
+                { name: "TechCorp", icon: Monitor, color: "from-blue-500 to-cyan-500" },
+                { name: "DesignHub", icon: Palette, color: "from-pink-500 to-rose-500" },
+                { name: "DevStudio", icon: Zap, color: "from-yellow-500 to-orange-500" },
+                { name: "CreatorCo", icon: Rocket, color: "from-purple-500 to-violet-500" },
+                { name: "InnovateLab", icon: Sparkles, color: "from-amber-500 to-yellow-500" },
+                { name: "PixelPerfect", icon: Layout, color: "from-green-500 to-emerald-500" },
+                { name: "CloudBase", icon: HardDrive, color: "from-sky-500 to-blue-500" },
+                { name: "NextGen", icon: Globe, color: "from-indigo-500 to-purple-500" },
               ].map((company, i) => (
-                <div key={`dup-${i}`} className="flex items-center gap-3 text-muted-foreground/60 hover:text-muted-foreground transition-colors cursor-default whitespace-nowrap">
-                  <span className="text-2xl">{company.icon}</span>
-                  <span className="text-xl font-semibold">{company.name}</span>
+                <div key={`dup-${i}`} className="flex items-center gap-3 text-muted-foreground/70 hover:text-foreground transition-all duration-300 cursor-default whitespace-nowrap group">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${company.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <company.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-lg font-bold tracking-tight">{company.name}</span>
                 </div>
               ))}
             </div>
