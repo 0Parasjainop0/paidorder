@@ -57,6 +57,7 @@ export function Navbar({ currentPage }: NavbarProps) {
     { id: "/", label: "Home" },
     { id: "/marketplace", label: "Marketplace" },
     { id: "/contact", label: "Contact" },
+    { id: "/faq", label: "FAQ" },
     { id: "/terms", label: "Terms & Policy" },
   ]
 
