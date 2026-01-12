@@ -49,8 +49,12 @@ export function Sidebar({ currentPage }: SidebarProps) {
     }
 
     const handleSignOut = async () => {
-        await signOut()
-        router.push("/")
+        try {
+            await signOut()
+            router.push("/")
+        } catch (error) {
+            console.error("Sign out error:", error)
+        }
     }
 
     const isActive = (path: string) => {
@@ -174,7 +178,8 @@ export function Sidebar({ currentPage }: SidebarProps) {
                         </button>
                     </Link>
                     <button
-                        onClick={handleSignOut}
+                        type="button"
+                        onClick={() => handleSignOut()}
                         className="w-full flex items-center justify-start rounded-xl px-4 py-2.5 transition-all duration-300 group text-sm font-medium cursor-pointer"
                         style={{
                             backgroundColor: '#b91c1c',
